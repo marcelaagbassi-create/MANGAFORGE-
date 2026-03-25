@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>MangaForge — La forge des créateurs</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+         signOut, onAuthStateChanged, updateProfile
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, doc, addDoc, setDoc, getDoc, getDocs,
+         updateDoc, deleteDoc, onSnapshot, query, orderBy, limit,
+         serverTimestamp, increment, arrayUnion, arrayRemove, where
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+// Firebase Storage non utilisé — images via Cloudinary (gratuit)
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAXYLx7Jx96o6YUv7LKp_IDJu4LnXEZBZM",
+  authDomain: "mangaforge-cbfcb.firebaseapp.com",
+  projectId: "mangaforge-cbfcb",
+  storageBucket: "mangaforge-cbfcb.firebasestorage.app",
+  messagingSenderId: "938021767891",
+  appId: "1:938021767891:web:ea269053224da7908ae226"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+window.FB = {
+  auth, db,
+  createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile,
+  collection, doc, addDoc, setDoc, getDoc, getDocs, updateDoc, deleteDoc,
+  onSnapshot, query, orderBy, limit, serverTimestamp, increment, arrayUnion, arrayRemove, where
+};
+
+onAuthStateChanged(auth, user => { if(window.onAuthReady) window.onAuthReady(user); });
+</script>
+</head>
+<body>
+
+<!-- ══════════ LOADER ══════════ -->
+<div id="loader" style="position:fixed;inset:0;background:#0a0e1a;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999">
+  <div style="font-family:'Cinzel',serif;font-size:26px;font-weight:900;background:linear-gradient(135deg,#e63946,#f4a261);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:18px">⛩ MANGAFORGE</div>
+  <div style="width:38px;height:38px;border:3px solid rgba(255,255,255,.08);border-top-color:#e63946;border-radius:50%;animation:spin .8s linear infinite"></div>
+  <p style="color:#444;font-size:12px;margin-top:14px;font-family:'Rajdhani',sans-serif;letter-spacing:.1em">Connexion...</p>
+</div>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+
+<!-- ══════════ AUTH ══════════ -->
+<div id="auth-screen" style="display:none;min-height:100vh;background:#0a0e1a;align-items:center;justify-content:center;padding:20px;position:relative;z-index:1">
+  <!-- glow bg -->
+  <div style="position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 70% 60% at 80% 0%,rgba(230,57,70,.12),transparent 55%),radial-gradient(ellipse 60% 50% at 0% 90%,rgba(155,93,229,.1),transparent 55%)"></div>
+  <div style="width:100%;max-width:420px;position:relative;z-index:1">
+    <div style="text-align:center;margin-bottom:32px">
+      <div style="font-size:44px;margin-bottom:10px">⛩</div>
+      <div style="font-family:'Cinzel',serif;font-size:28px;font-weight:900;background:linear-gradient(135deg,#e63946,#f4a261);-webkit-background-clip:text;-webkit-text-fill-color:transparent">MANGAFORGE</div>
+      <div style="font-size:9px;color:#444;letter-spacing:.3em;text-transform:uppercase;margin-top:5px;font-family:'Rajdhani',sans-serif">La forge des créateurs</div>
+    </div>
+
+    <div style="display:flex;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:4px;margin-bottom:22px">
+      <button id="tab-login-btn" onclick="showAuthTab('login')" style="flex:1;padding:9px;border-radius:7px;border:none;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;letter-spacing:.05em;background:linear-gradient(135deg,#e63946,#c1121f);color:#fff;cursor:pointer;transition:all .2s">CONNEXION</button>
+      <button id="tab-signup-btn" onclick="showAuthTab('signup')" style="flex:1;padding:9px;border-radius:7px;border:none;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;letter-spacing:.05em;background:transparent;color:#555;cursor:pointer;transition:all .2s">INSCRIPTION</button>
+    </div>
+
+    <!-- Login -->
+    <div id="form-login" style="background:rgba(255,255,255,.04);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:24px">
+      <div style="margin-bottom:13px">
+        <label style="font-size:10px;color:#666;letter-spacing:.12em;text-transform:uppercase;font-family:'Rajdhani',sans-serif;font-weight:700;display:block;margin-bottom:5px">Email</label>
+        <input type="email" id="li-email" placeholder="votre@email.com" onkeydown="if(event.key==='Enter')doLogin()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:9px;padding:11px 14px;color:#ddd;font-size:13px;outline:none;font-family:'Rajdhani',sans-serif"/>
+      </div>
+      <div style="margin-bottom:20px">
+        <label style="font-size:10px;color:#666;letter-spacing:.12em;text-transform:uppercase;font-family:'Rajdhani',sans-serif;font-weight:700;display:block;margin-bottom:5px">Mot de passe</label>
+        <input type="password" id="li-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:9px;padding:11px 14px;color:#ddd;font-size:13px;outline:none;font-family:'Rajdhani',sans-serif"/>
+      </div>
+      <button onclick="doLogin()" style="width:100%;background:linear-gradient(135deg,#e63946,#c1121f);border:none;color:#fff;padding:12px;border-radius:9px;font-size:13px;font-weight:700;letter-spacing:.08em;font-family:'Rajdhani',sans-serif;box-shadow:0 4px 18px rgba(230,57,70,.35);cursor:pointer">SE CONNECTER →</button>
+      <p id="li-err" style="color:#e63946;font-size:12px;margin-top:10px;display:none;font-family:'Rajdhani',sans-serif;text-align:center"></p>
+    </div>
+
+    <!-- Signup -->
+    <div id="form-signup" style="display:none;background:rgba(255,255,255,.04);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:24px">
+      <div style="margin-bottom:13px">
+        <label style="font-size:10px;color:#666;letter-spacing:.12em;text-transform:uppercase;font-family:'Rajdhani',sans-serif;font-weight:700;display:block;margin-bottom:5px">Pseudo *</label>
+        <input type="text" id="su-name" placeholder="VotrePseudo" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:9px;padding:11px 14px;color:#ddd;font-size:13px;outline:none;font-family:'Rajdhani',sans-serif"/>
+      </div>
+      <div style="margin-bottom:13px">
+        <label style="font-size:10px;color:#666;letter-spacing:.12em;text-transform:uppercase;font-family:'Rajdhani',sans-serif;font-weight:700;display:block;margin-bottom:5px">Rôle *</label>
+        <select id="su-role" style="width:100%;background:rgba(12,16,30,.9);border:1px solid rgba(255,255,255,.09);border-radius:9px;padding:11px 14px;color:#ddd;font-size:13px;outline:none;font-family:'Rajdhani',sans-serif">
+          <option value="Scénariste">Scénariste</option>
+          <option value="Dessinateur">Dessinateur</option>
+          <option value="Dessinatrice">Dessinatrice</option>
+          <option value="Scénariste & Dessinateur">Scénariste & Dessinateur</option>
+        </select>
+      </div>
+      <div style="margin-bottom:13px">
+        <label style="font-size:10px;color:#666;letter-spacing:.12em;text-transform:uppercase;font-family:'Rajdhani',sans-serif;font-weight:700;display:block;margin-bottom:5px">Email *</label>
+        <input type="email" id="su-email" placeholder="votre@email.com" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:9px;padding:11px 14px;color:#ddd;font-size:13px;outline:none;font-family:'Rajdhani',sans-serif"/>
+      </div>
+      <div style="margin-bottom:20px">
+        <label style="font-size:10px;color:#666;letter-spacing:.12em;text-transform:uppercase;font-family:'Rajdhani',sans-serif;font-weight:700;display:block;margin-bottom:5px">Mot de passe * (min. 6 car.)</label>
+        <input type="password" id="su-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doSignup()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:9px;padding:11px 14px;color:#ddd;font-size:13px;outline:none;font-family:'Rajdhani',sans-serif"/>
+      </div>
+      <button onclick="doSignup()" style="width:100%;background:linear-gradient(135deg,#e63946,#c1121f);border:none;color:#fff;padding:12px;border-radius:9px;font-size:13px;font-weight:700;letter-spacing:.08em;font-family:'Rajdhani',sans-serif;box-shadow:0 4px 18px rgba(230,57,70,.35);cursor:pointer">CRÉER MON COMPTE →</button>
+      <p id="su-err" style="color:#e63946;font-size:12px;margin-top:10px;display:none;font-family:'Rajdhani',sans-serif;text-align:center"></p>
+    </div>
+    <p style="text-align:center;color:#333;font-size:11px;margin-top:16px;font-family:'Rajdhani',sans-serif">En vous inscrivant, vous rejoignez la communauté MangaForge 🌸</p>
+  </div>
+</div>
+
+<!-- ══════════ MAIN APP ══════════ -->
+<div id="main-app" style="display:none">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--red:#e63946;--orange:#f4a261;--teal:#2a9d8f;--purple:#9b5de5;--bg:#0a0e1a;--border:rgba(255,255,255,.09);--border2:rgba(255,255,255,.16);--text:#f0f0f0;--muted:#888;--dim:#3a3a3a}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:4px}
+input,textarea,select{font-family:'Rajdhani',sans-serif}
+input::placeholder,textarea::placeholder{color:var(--dim)}
+button{cursor:pointer;font-family:'Rajdhani',sans-serif}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 80% 60% at 85% 0%,rgba(230,57,70,.12),transparent 55%),
+             radial-gradient(ellipse 65% 55% at -5% 90%,rgba(155,93,229,.1),transparent 55%),
+             radial-gradient(ellipse 50% 40% at 50% 50%,rgba(42,157,143,.05),transparent 65%)}
+.glass{background:rgba(255,255,255,.04);backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);border:1px solid rgba(255,255,255,.09);border-radius:14px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}
+
+/* APP */
+#app{max-width:920px;margin:0 auto;position:relative;z-index:1}
+
+/* NOTIF */
+#notif{position:fixed;top:18px;right:18px;z-index:600;backdrop-filter:blur(16px);background:rgba(42,157,143,.92);color:#fff;padding:11px 18px;border-radius:10px;font-weight:700;font-size:13px;border:1px solid rgba(255,255,255,.2);box-shadow:0 8px 32px rgba(0,0,0,.5);animation:slideDown .3s ease;display:none;max-width:300px}
+#notif.err{background:rgba(230,57,70,.92)}
+
+/* HEADER */
+header{position:sticky;top:0;z-index:50;background:rgba(10,14,26,.65);backdrop-filter:blur(28px) saturate(160%);-webkit-backdrop-filter:blur(28px) saturate(160%);border-bottom:1px solid rgba(255,255,255,.08);padding:0 20px}
+.h-inner{display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none}
+.logo-icon{font-size:26px}
+.logo-name{font-family:'Cinzel',serif;font-size:20px;font-weight:900;background:linear-gradient(135deg,#e63946,#f4a261);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo-sub{font-size:8px;color:var(--dim);letter-spacing:.3em;text-transform:uppercase}
+.h-right{display:flex;gap:8px;align-items:center}
+.sw{position:relative}
+.sw input{background:rgba(255,255,255,.05);backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:22px;padding:7px 14px 7px 32px;color:#ccc;font-size:12px;outline:none;width:155px;transition:border-color .2s,width .2s}
+.sw input:focus{border-color:rgba(255,255,255,.2);width:185px}
+.sw-ico{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--dim);pointer-events:none}
+.btn-pub{background:linear-gradient(135deg,#e63946,#c1121f);border:none;color:#fff;padding:8px 16px;border-radius:8px;font-size:11px;font-weight:700;letter-spacing:.08em;white-space:nowrap;box-shadow:0 4px 18px rgba(230,57,70,.35);transition:opacity .2s,transform .15s}
+.btn-pub:hover{opacity:.9;transform:translateY(-1px)}
+.btn-logout{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#666;padding:7px 12px;border-radius:7px;font-size:11px;font-weight:700;transition:all .2s}
+.btn-logout:hover{background:rgba(230,57,70,.15);border-color:rgba(230,57,70,.3);color:#e63946}
+
+/* ── BOTTOM NAV ── icônes noires → rouge au clic */
+nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:920px;background:rgba(10,14,26,.75);backdrop-filter:blur(28px) saturate(160%);-webkit-backdrop-filter:blur(28px) saturate(160%);border-top:1px solid rgba(255,255,255,.08);display:flex;z-index:50}
+.nb{flex:1;background:none;border:none;padding:11px 4px 9px;display:flex;flex-direction:column;align-items:center;gap:3px;color:#222;transition:color .2s}
+.nb.active{color:#e63946}
+.nb .ico{font-size:18px;filter:grayscale(1) brightness(.4)}
+.nb.active .ico{filter:none}
+.nb .lbl{font-size:8px;letter-spacing:.05em;text-transform:uppercase;font-weight:700}
+.nb-bar{width:18px;height:2px;background:#e63946;border-radius:1px;display:none}
+.nb.active .nb-bar{display:block}
+
+/* MAIN */
+main{padding:22px 20px 88px;position:relative;z-index:1}
+.sec{display:none;animation:fadeUp .3s ease}.sec.active{display:block}
+.sec-title{font-family:'Cinzel',serif;font-size:22px;color:var(--text);margin-bottom:4px}
+.sec-sub{color:var(--dim);font-size:12px;margin-bottom:20px}
+
+/* AVATAR */
+.av{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;border:2px solid rgba(255,255,255,.15);flex-shrink:0;font-family:'Rajdhani',sans-serif;overflow:hidden}
+.av img{width:100%;height:100%;object-fit:cover}
+.rb{font-size:10px;padding:2px 9px;border-radius:3px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff;display:inline-block}
+.card-h{transition:transform .2s}.card-h:hover{transform:translateY(-4px)}
+.empty{text-align:center;padding:55px 20px;color:var(--dim)}
+.empty .eico{font-size:36px;margin-bottom:12px;opacity:.3}
+.empty p{font-size:13px;line-height:1.6}
+.spin-sm{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+
+/* FEED */
+.composer{padding:16px;margin-bottom:16px}
+.composer textarea{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:#ddd;font-size:13px;resize:none;height:78px;outline:none;transition:border-color .2s;line-height:1.55}
+.composer textarea:focus{border-color:rgba(255,255,255,.2)}
+.cfoot{display:flex;justify-content:space-between;align-items:center;margin-top:9px}
+.cchar{font-size:11px;color:var(--dim)}
+.btn-post{background:linear-gradient(135deg,#e63946,#c1121f);border:none;color:#fff;padding:8px 20px;border-radius:8px;font-size:11px;font-weight:700;letter-spacing:.06em;box-shadow:0 3px 12px rgba(230,57,70,.3);transition:opacity .2s}
+.btn-post:hover{opacity:.9}
+.post-list{display:flex;flex-direction:column;gap:11px}
+.post{padding:15px}.post-hd{display:flex;gap:11px;margin-bottom:9px;align-items:flex-start}
+.post-inf{flex:1}.post-nm{font-weight:700;font-size:14px;color:#ddd}
+.post-tm{font-size:10px;color:var(--dim);margin-left:6px;font-weight:400}
+.post-txt{color:#aaa;font-size:13px;line-height:1.65;margin-bottom:11px;word-break:break-word}
+.post-ft{display:flex;gap:14px;border-top:1px solid rgba(255,255,255,.05);padding-top:9px;align-items:center}
+.post-ft button{background:none;border:none;color:#555;font-size:12px;padding:0;display:flex;align-items:center;gap:4px;transition:color .2s}
+.post-ft button:hover{color:#aaa}.post-ft button.liked{color:#e63946}
+.del-btn{margin-left:auto;font-size:11px;color:var(--dim) !important}.del-btn:hover{color:#e63946 !important}
+
+/* STORIES LIST */
+.gbar{display:flex;gap:7px;margin-bottom:20px;flex-wrap:wrap;overflow-x:auto;padding-bottom:4px}
+.gbtn{background:rgba(255,255,255,.05);backdrop-filter:blur(6px);border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:22px;font-size:11px;font-weight:700;letter-spacing:.06em;transition:all .2s;white-space:nowrap;flex-shrink:0}
+.gbtn.active{background:#e63946;border-color:#e63946;color:#fff;box-shadow:0 4px 14px rgba(230,57,70,.3)}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:15px}
+.sc{border-radius:14px;overflow:hidden;cursor:pointer;position:relative}
+.sc-cov{height:130px;display:flex;align-items:center;justify-content:center;font-size:52px;position:relative;overflow:hidden}
+.sc-cov img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.sc-em{position:relative;z-index:1}
+.sc-body{padding:13px 15px}
+.sc-genre{font-size:9px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;margin-bottom:4px}
+.sc-title{font-family:'Cinzel',serif;font-size:16px;color:var(--text);margin-bottom:5px;line-height:1.25}
+.sc-syn{font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:9px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px}
+.tag{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#999;font-size:9px;padding:2px 7px;border-radius:20px}
+.sc-ft{display:flex;align-items:center;justify-content:space-between}
+.sc-auth{display:flex;align-items:center;gap:7px}
+.sc-meta{display:flex;gap:9px;align-items:center;font-size:11px;color:#555}
+.badge-new{position:absolute;top:9px;right:9px;background:#e63946;color:#fff;font-size:8px;padding:3px 7px;border-radius:3px;font-weight:800;letter-spacing:.12em;z-index:3}
+
+/* COMMUNITY */
+.ugrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:13px}
+.uc{border-radius:14px;padding:15px;cursor:pointer}
+.uc-top{display:flex;align-items:flex-start;gap:11px;margin-bottom:9px}
+.uc-bio{font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:11px}
+.uc-ft{display:flex;justify-content:space-between;align-items:center}
+.uc-stats{display:flex;gap:13px}
+.sbl .v{font-size:15px;font-weight:900;color:var(--text)}.sbl .l{font-size:9px;color:#555;letter-spacing:.1em;text-transform:uppercase}
+.btn-flw{border:1px solid;padding:5px 13px;border-radius:5px;font-size:11px;font-weight:700;letter-spacing:.08em;transition:all .2s}
+
+/* COLLAB */
+.ctypes{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:22px}
+.ct{border-radius:14px;padding:19px}.ct-ico{font-size:28px;margin-bottom:9px}
+.ct-ttl{font-family:'Cinzel',serif;font-size:15px;color:var(--text);margin-bottom:5px}
+.ct-desc{font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:11px}
+.ct-cnt{font-size:11px;font-weight:700}
+.clist{display:flex;flex-direction:column;gap:11px}
+.ci{border-radius:14px;padding:15px;display:flex;gap:13px;align-items:flex-start}
+.ci-body{flex:1}.ci-hd{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:4px}
+.ci-nm{font-weight:700;color:#ddd;font-size:14px}
+.ci-type{font-size:9px;padding:2px 8px;border-radius:3px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.ci-det{font-size:12px;color:var(--muted);line-height:1.5}
+.btn-ct{background:rgba(255,255,255,.05);border:1px solid var(--border);color:#aaa;padding:7px 13px;border-radius:7px;font-size:11px;font-weight:700;white-space:nowrap;transition:background .2s}
+.btn-ct:hover{background:rgba(255,255,255,.1)}
+.btn-ann{width:100%;margin-top:16px;background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.15);border-radius:12px;color:#888;padding:13px;font-size:12px;font-weight:700;letter-spacing:.06em;transition:background .2s,border-color .2s}
+.btn-ann:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.25)}
+
+/* PROFILE */
+.prof-wrap{border-radius:16px;overflow:hidden;margin-bottom:18px}
+.prof-cov{height:140px;position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(230,57,70,.3),rgba(155,93,229,.2))}
+.prof-cov img.cov-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cov-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 30%,rgba(10,14,26,.75))}
+.cov-edit{position:absolute;top:12px;right:12px;background:rgba(0,0,0,.45);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.2);color:#fff;padding:5px 11px;border-radius:6px;font-size:10px;font-weight:700;transition:background .2s}
+.cov-edit:hover{background:rgba(0,0,0,.65)}
+.prof-av-slot{position:absolute;bottom:-26px;left:22px}
+.prof-body{padding:36px 22px 22px}
+.prof-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px}
+.prof-name{font-family:'Cinzel',serif;font-size:22px;color:var(--text);font-weight:700}
+.prof-bio{color:var(--muted);font-size:12px;margin-top:7px;line-height:1.65;max-width:500px}
+.prof-stats{display:flex;gap:24px;margin-top:17px;padding-top:17px;border-top:1px solid rgba(255,255,255,.07)}
+.btn-ep{background:rgba(255,255,255,.06);border:1px solid var(--border2);color:#ccc;padding:7px 15px;border-radius:7px;font-size:11px;font-weight:700;transition:background .2s}
+.btn-ep:hover{background:rgba(255,255,255,.1)}
+.sec-lbl{font-size:11px;color:#666;letter-spacing:.15em;text-transform:uppercase;font-weight:700;margin-bottom:13px;display:block}
+
+/* MODALS */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:200;display:none;align-items:center;justify-content:center;padding:14px}
+.overlay.open{display:flex}
+.mbox{background:rgba(10,14,28,.93);backdrop-filter:blur(28px) saturate(160%);-webkit-backdrop-filter:blur(28px) saturate(160%);border:1px solid rgba(255,255,255,.1);border-radius:18px;width:100%;max-height:90vh;overflow-y:auto;position:relative;box-shadow:0 32px 80px rgba(0,0,0,.65)}
+.mbox::-webkit-scrollbar{width:3px}
+.mcl{position:absolute;top:13px;right:13px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:#ccc;width:30px;height:30px;border-radius:50%;font-size:17px;display:flex;align-items:center;justify-content:center;z-index:3;transition:background .2s}
+.mcl:hover{background:rgba(255,255,255,.15)}
+.mhd{padding:22px 22px 0}.mhd h2{font-family:'Cinzel',serif;font-size:20px;color:var(--text);margin-bottom:4px}.mhd p{font-size:12px;color:var(--dim)}
+.mbody{padding:20px 22px 22px}
+
+/* STORY DETAIL MODAL */
+.sm-cov{height:200px;display:flex;align-items:center;justify-content:center;font-size:78px;border-radius:18px 18px 0 0;position:relative;overflow:hidden}
+.sm-cov img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:18px 18px 0 0}
+.sm-em{position:relative;z-index:1}
+.sm-genre{font-size:10px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;margin-bottom:6px}
+.sm-title{font-family:'Cinzel',serif;font-size:26px;color:var(--text);margin-bottom:10px;line-height:1.2}
+.sm-auth{display:flex;align-items:center;gap:10px;margin-bottom:13px}
+.sm-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:15px}
+.sm-syn{border-left:3px solid;padding:13px 18px;border-radius:0 8px 8px 0;margin-bottom:18px}
+.sm-syn p{color:#ccc;line-height:1.7;font-size:14px}
+.sm-stats{display:flex;gap:18px;margin-bottom:18px}
+.sm-stat .v{font-size:21px;font-weight:900;color:var(--text)}.sm-stat .l{font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.1em}
+
+/* EPISODES */
+.ep-section{margin-top:4px}
+.ep-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.ep-ttl{font-size:12px;color:#888;letter-spacing:.15em;text-transform:uppercase;font-weight:700}
+.btn-add-ep{background:rgba(255,255,255,.06);border:1px solid var(--border2);color:#ccc;padding:6px 14px;border-radius:7px;font-size:11px;font-weight:700;transition:background .2s}
+.btn-add-ep:hover{background:rgba(255,255,255,.1)}
+.ep-list{display:flex;flex-direction:column;gap:10px}
+.ep-item{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:11px;overflow:hidden;cursor:pointer;transition:background .2s}
+.ep-item:hover{background:rgba(255,255,255,.07)}
+.ep-thumb{width:100%;height:160px;object-fit:cover;display:block}
+.ep-thumb-placeholder{width:100%;height:100px;display:flex;align-items:center;justify-content:center;font-size:34px;background:rgba(255,255,255,.03)}
+.ep-info{padding:11px 14px}
+.ep-num{font-size:9px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;margin-bottom:3px}
+.ep-title{font-family:'Cinzel',serif;font-size:14px;color:var(--text);margin-bottom:4px}
+.ep-desc{font-size:11px;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ep-meta{display:flex;gap:12px;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.05);font-size:10px;color:#555}
+
+/* EPISODE READER */
+.reader-header{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.btn-back{background:rgba(255,255,255,.06);border:1px solid var(--border);color:#ccc;padding:7px 14px;border-radius:7px;font-size:11px;font-weight:700;transition:background .2s}
+.btn-back:hover{background:rgba(255,255,255,.1)}
+.reader-pages{display:flex;flex-direction:column;gap:6px}
+.reader-page{width:100%;border-radius:10px;display:block}
+
+/* COMMENTS */
+.cmts-wrap{border-top:1px solid rgba(255,255,255,.07);padding-top:17px;margin-top:4px}
+.cmts-ttl{font-size:11px;color:#888;letter-spacing:.15em;text-transform:uppercase;margin-bottom:13px}
+.cmt{display:flex;gap:9px;margin-bottom:11px}
+.cmt-bub{background:rgba(255,255,255,.04);border-radius:10px;padding:9px 13px;flex:1}
+.cmt-au{font-size:11px;font-weight:700;color:#ccc}.cmt-tm{font-size:10px;color:var(--dim);font-weight:400;margin-left:5px}
+.cmt-tx{font-size:12px;color:#999;margin-top:3px;word-break:break-word}
+.cmt-form{display:flex;gap:7px;margin-top:11px}
+.cmt-form input{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:9px;padding:9px 14px;color:#ccc;font-size:12px;outline:none;transition:border-color .2s}
+.cmt-form input:focus{border-color:rgba(255,255,255,.2)}
+.btn-cmt{border:none;color:#fff;padding:9px 16px;border-radius:9px;font-size:14px;font-weight:700;transition:opacity .2s}
+.btn-cmt:hover{opacity:.85}
+
+/* FORMS */
+.fld{display:flex;flex-direction:column;gap:5px;margin-bottom:13px}
+.fld label{font-size:11px;color:#888;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
+.fld input,.fld textarea,.fld select{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:9px;padding:10px 14px;color:#ddd;font-size:13px;outline:none;transition:border-color .2s}
+.fld input:focus,.fld textarea:focus,.fld select:focus{border-color:rgba(255,255,255,.25)}
+.fld select{background:rgba(12,16,30,.85)}
+.fld textarea{resize:vertical;min-height:95px;line-height:1.55}
+.fld input[type=file]{padding:8px 12px;color:#888;font-size:12px}
+.fld input[type=file]::file-selector-button{background:rgba(255,255,255,.07);border:1px solid var(--border);color:#ccc;padding:4px 10px;border-radius:5px;cursor:pointer;font-size:11px;margin-right:10px;font-family:'Rajdhani',sans-serif;font-weight:700}
+.img-prev{width:100%;max-height:140px;object-fit:cover;border-radius:9px;margin-top:6px;display:none;border:1px solid var(--border)}
+.btn-row{display:flex;gap:9px;margin-top:6px}
+.btn-sec{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);color:#999;padding:11px;border-radius:9px;font-size:12px;font-weight:700;transition:background .2s}
+.btn-sec:hover{background:rgba(255,255,255,.08)}
+.btn-pri{flex:2;background:linear-gradient(135deg,#e63946,#c1121f);border:none;color:#fff;padding:11px;border-radius:9px;font-size:12px;font-weight:700;letter-spacing:.06em;box-shadow:0 4px 16px rgba(230,57,70,.32);transition:opacity .2s}
+.btn-pri:hover{opacity:.9}
+
+/* USER MODAL */
+.um-cov{height:125px;border-radius:18px 18px 0 0;position:relative;overflow:hidden}
+.um-av{position:absolute;bottom:-24px;left:20px}
+.um-body{padding:36px 22px 22px}
+.um-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px}
+.um-nm{font-family:'Cinzel',serif;font-size:22px;color:var(--text);font-weight:700}
+.um-bio{color:var(--muted);font-size:13px;margin-top:7px;line-height:1.6}
+.um-stats{display:flex;gap:20px;margin-top:15px;padding-top:15px;border-top:1px solid rgba(255,255,255,.07);margin-bottom:17px}
+.um-sr{background:rgba(255,255,255,.04);border-left:3px solid;padding:9px 13px;border-radius:0 8px 8px 0;display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;cursor:pointer}
+.um-sr:hover{background:rgba(255,255,255,.07)}
+.um-sr-t{font-family:'Cinzel',serif;font-size:13px;color:#ddd;font-weight:700}
+.um-sr-m{font-size:10px;color:#555;margin-top:2px}
+.divider{height:1px;background:rgba(255,255,255,.07);margin:13px 0}
+.btn-msg{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border2);color:#ccc;padding:11px;border-radius:9px;font-size:12px;font-weight:700;letter-spacing:.06em;transition:background .2s}
+.btn-msg:hover{background:rgba(255,255,255,.09)}
+
+/* MESSAGES */
+.msg-hist{max-height:270px;overflow-y:auto;margin-bottom:13px;display:flex;flex-direction:column;gap:8px;padding-right:3px}
+.msg-bub{max-width:76%;padding:9px 13px;border-radius:12px;font-size:13px;line-height:1.5;word-break:break-word}
+.msg-me{align-self:flex-end;background:linear-gradient(135deg,rgba(230,57,70,.28),rgba(193,18,31,.18));border:1px solid rgba(230,57,70,.3);color:#f0f0f0}
+.msg-them{align-self:flex-start;background:rgba(255,255,255,.06);border:1px solid var(--border);color:#ccc}
+.msg-t{font-size:9px;color:var(--dim);margin-top:2px;text-align:right}
+.msg-form{display:flex;gap:7px}
+.msg-form input{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:9px;padding:10px 14px;color:#ddd;font-size:13px;outline:none;transition:border-color .2s}
+.msg-form input:focus{border-color:rgba(255,255,255,.25)}
+
+@media(max-width:600px){.ctypes,.sgrid,.ugrid{grid-template-columns:1fr}.sw input{width:100px}.sm-title{font-size:20px}}
+</style>
+
+<div id="notif"><span id="notif-msg"></span></div>
+<div id="app">
+
+<header>
+  <div class="h-inner">
+    <div class="logo" onclick="switchTab('feed',document.querySelector('.nb'))">
+      <span class="logo-icon">⛩</span>
+      <div><div class="logo-name">MANGAFORGE</div><div class="logo-sub">La forge des créateurs</div></div>
+    </div>
+    <div class="h-right">
+      <div class="sw"><span class="sw-ico">🔍</span>
+        <input type="text" id="srch" placeholder="Rechercher..." oninput="onSearch()"/>
+      </div>
+      <button class="btn-pub" onclick="openPublishModal()">+ PUBLIER</button>
+      <button class="btn-logout" onclick="doLogout()" title="Déconnexion">↩</button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- FEED -->
+<div class="sec active" id="tab-feed">
+  <h1 class="sec-title">Fil d'actualité</h1>
+  <p class="sec-sub">Partagez vos actualités avec toute la communauté</p>
+  <div class="glass composer">
+    <textarea id="post-inp" placeholder="Partagez une annonce, cherchez un collaborateur..."></textarea>
+    <div class="cfoot"><span class="cchar" id="pchar">0 / 500</span><button class="btn-post" onclick="submitPost()">PUBLIER →</button></div>
+  </div>
+  <div class="post-list" id="post-list"><div class="empty"><div class="eico">⏳</div><p>Chargement...</p></div></div>
+</div>
+
+<!-- STORIES -->
+<div class="sec" id="tab-stories">
+  <h1 class="sec-title">Histoires</h1>
+  <p class="sec-sub">Cliquez sur une histoire pour lire ses épisodes</p>
+  <div class="gbar" id="gbar"></div>
+  <div class="sgrid" id="sgrid"><div class="empty" style="grid-column:1/-1"><div class="eico">⏳</div><p>Chargement...</p></div></div>
+</div>
+
+<!-- COMMUNITY -->
+<div class="sec" id="tab-community">
+  <h1 class="sec-title">Communauté</h1>
+  <p class="sec-sub">Scénaristes et dessinateurs à la recherche de collaborations</p>
+  <div class="ugrid" id="ugrid"><div class="empty" style="grid-column:1/-1"><div class="eico">⏳</div><p>Chargement...</p></div></div>
+</div>
+
+<!-- COLLAB -->
+<div class="sec" id="tab-collab">
+  <h1 class="sec-title">Espace Collaboration</h1>
+  <p class="sec-sub">Trouvez votre binôme créatif</p>
+  <div class="ctypes">
+    <div class="ct glass" style="border:1px solid rgba(230,57,70,.18)"><div class="ct-ico">✍️</div><div class="ct-ttl">Scénaristes</div><div class="ct-desc">Vous avez une histoire ? Trouvez votre dessinateur.</div><div class="ct-cnt" id="cnt-sc" style="color:#e63946">...</div></div>
+    <div class="ct glass" style="border:1px solid rgba(244,162,97,.18)"><div class="ct-ico">🎨</div><div class="ct-ttl">Dessinateurs</div><div class="ct-desc">Vous cherchez une histoire à illustrer ? On vous attend.</div><div class="ct-cnt" id="cnt-dr" style="color:#f4a261">...</div></div>
+  </div>
+  <span class="sec-lbl">🔥 Annonces actives</span>
+  <div class="clist" id="clist"><div class="empty"><div class="eico">⏳</div><p>Chargement...</p></div></div>
+  <button class="btn-ann" onclick="openCollabModal()">+ PUBLIER UNE ANNONCE DE COLLABORATION</button>
+</div>
+
+<!-- PROFILE -->
+<div class="sec" id="tab-profile">
+  <div class="glass prof-wrap">
+    <div class="prof-cov" id="prof-cov">
+      <div class="cov-overlay"></div>
+      <button class="cov-edit" onclick="document.getElementById('cov-inp').click()">🖼 Changer</button>
+      <input type="file" id="cov-inp" accept="image/*" style="display:none" onchange="uploadCover(event)"/>
+      <div class="prof-av-slot">
+        <div class="av" id="prof-av" style="width:54px;height:54px;font-size:18px;cursor:pointer;font-weight:900" onclick="document.getElementById('av-inp').click()"></div>
+        <input type="file" id="av-inp" accept="image/*" style="display:none" onchange="uploadAvatar(event)"/>
+      </div>
+    </div>
+    <div class="prof-body">
+      <div class="prof-top">
+        <div>
+          <div class="prof-name" id="pname">Chargement...</div>
+          <span class="rb" id="pbadge" style="background:#e63946;margin-top:4px;display:none"></span>
+          <p class="prof-bio" id="pbio"></p>
+        </div>
+        <button class="btn-ep" onclick="openEditProfile()">✏️ Modifier</button>
+      </div>
+      <div class="prof-stats">
+        <div class="sbl"><div class="v" id="myfoll">0</div><div class="l">Followers</div></div>
+        <div class="sbl"><div class="v" id="mystories">0</div><div class="l">Histoires</div></div>
+        <div class="sbl"><div class="v" id="myfollowing">0</div><div class="l">Suivis</div></div>
+      </div>
+    </div>
+  </div>
+  <span class="sec-lbl">Mes histoires publiées</span>
+  <div class="sgrid" id="mysgrid"><div class="empty" style="grid-column:1/-1"><div class="eico">📖</div><p>Cliquez sur <strong>+ PUBLIER</strong> pour commencer !</p></div></div>
+</div>
+
+</main>
+
+<nav>
+  <button class="nb active" onclick="switchTab('feed',this)"><span class="ico">🏠</span><span class="lbl">Fil</span><div class="nb-bar"></div></button>
+  <button class="nb" onclick="switchTab('stories',this)"><span class="ico">📚</span><span class="lbl">Histoires</span><div class="nb-bar"></div></button>
+  <button class="nb" onclick="switchTab('community',this)"><span class="ico">👥</span><span class="lbl">Communauté</span><div class="nb-bar"></div></button>
+  <button class="nb" onclick="switchTab('collab',this)"><span class="ico">🤝</span><span class="lbl">Collab</span><div class="nb-bar"></div></button>
+  <button class="nb" onclick="switchTab('profile',this)"><span class="ico">👤</span><span class="lbl">Profil</span><div class="nb-bar"></div></button>
+</nav>
+</div><!-- /#app -->
+
+<!-- ── STORY DETAIL + EPISODES MODAL ── -->
+<div class="overlay" id="m-story" onclick="if(event.target===this)closeM('m-story')">
+  <div class="mbox" style="max-width:700px">
+    <button class="mcl" onclick="closeM('m-story')">×</button>
+    <div class="sm-cov" id="sm-cov"></div>
+    <div class="mbody">
+      <div class="sm-genre" id="sm-genre"></div>
+      <div class="sm-title" id="sm-title"></div>
+      <div class="sm-auth" id="sm-auth"></div>
+      <div class="sm-tags" id="sm-tags"></div>
+      <div class="sm-syn" id="sm-syn-wrap"><p id="sm-syn-txt"></p></div>
+      <div class="sm-stats">
+        <div class="sm-stat"><div class="v" id="sm-ep-count">0</div><div class="l">Épisodes</div></div>
+        <div class="sm-stat"><div class="v" id="sm-lk">0</div><div class="l">Likes</div></div>
+        <div class="sm-stat"><div class="v" id="sm-cc">0</div><div class="l">Commentaires</div></div>
+      </div>
+      <div id="sm-acts" style="display:flex;gap:9px;margin-bottom:18px"></div>
+
+      <!-- ÉPISODES LIST -->
+      <div class="ep-section">
+        <div class="ep-header">
+          <span class="ep-ttl">📺 Épisodes</span>
+          <button class="btn-add-ep" id="btn-add-ep" onclick="openAddEpisode()" style="display:none">+ Ajouter un épisode</button>
+        </div>
+        <div class="ep-list" id="ep-list"><div class="empty"><div class="eico">📺</div><p>Aucun épisode publié.</p></div></div>
+      </div>
+
+      <!-- COMMENTS -->
+      <div class="cmts-wrap">
+        <div class="cmts-ttl">Commentaires</div>
+        <div id="sm-cmts"></div>
+        <div class="cmt-form">
+          <input type="text" id="cmt-inp" placeholder="Écrire un commentaire..."/>
+          <button class="btn-cmt" id="cmt-btn" onclick="addCmt()">→</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── EPISODE READER MODAL ── -->
+<div class="overlay" id="m-reader" onclick="if(event.target===this)closeM('m-reader')">
+  <div class="mbox" style="max-width:720px">
+    <button class="mcl" onclick="closeM('m-reader')">×</button>
+    <div class="mbody">
+      <div class="reader-header">
+        <button class="btn-back" onclick="closeM('m-reader')">← Retour</button>
+        <div>
+          <div style="font-family:'Cinzel',serif;font-size:14px;color:var(--text)" id="rd-title"></div>
+          <div style="font-size:11px;color:var(--dim)" id="rd-num"></div>
+        </div>
+      </div>
+      <div class="reader-pages" id="rd-pages"></div>
+      <div style="margin-top:20px;text-align:center">
+        <button id="rd-prev-btn" onclick="readerNav(-1)" style="background:rgba(255,255,255,.06);border:1px solid var(--border);color:#ccc;padding:9px 22px;border-radius:8px;font-size:12px;font-weight:700;margin-right:8px">← Précédent</button>
+        <button id="rd-next-btn" onclick="readerNav(1)" style="background:linear-gradient(135deg,#e63946,#c1121f);border:none;color:#fff;padding:9px 22px;border-radius:8px;font-size:12px;font-weight:700;box-shadow:0 3px 12px rgba(230,57,70,.3)">Suivant →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── ADD EPISODE MODAL ── -->
+<div class="overlay" id="m-addepisode" onclick="if(event.target===this)closeM('m-addepisode')">
+  <div class="mbox" style="max-width:540px">
+    <button class="mcl" onclick="closeM('m-addepisode')">×</button>
+    <div class="mhd"><h2>📺 Ajouter un épisode</h2><p>Publiez un nouveau chapitre pour vos lecteurs</p></div>
+    <div class="mbody">
+      <div class="fld"><label>Titre de l'épisode *</label><input type="text" id="ep-title-inp" placeholder="ex: Chapitre 1 — La rencontre"/></div>
+      <div class="fld"><label>Description</label><textarea id="ep-desc-inp" placeholder="Résumé de cet épisode..." style="min-height:70px"></textarea></div>
+      <div class="fld">
+        <label>Pages / Images de l'épisode *</label>
+        <input type="file" id="ep-pages-inp" accept="image/*" multiple onchange="prevEpPages(event)"/>
+        <p style="font-size:11px;color:var(--dim);margin-top:5px">Sélectionnez plusieurs images dans l'ordre des pages</p>
+        <div id="ep-pages-preview" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px"></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-sec" onclick="closeM('m-addepisode')">Annuler</button>
+        <button class="btn-pri" id="ep-submit-btn" onclick="submitEpisode()">PUBLIER L'ÉPISODE</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── USER PROFILE MODAL ── -->
+<div class="overlay" id="m-user" onclick="if(event.target===this)closeM('m-user')">
+  <div class="mbox" style="max-width:560px">
+    <button class="mcl" onclick="closeM('m-user')">×</button>
+    <div class="um-cov" id="um-cov"></div>
+    <div class="um-body">
+      <div class="um-top">
+        <div><div class="um-nm" id="um-nm"></div><span class="rb" id="um-badge" style="margin-top:4px;display:inline-block"></span><p class="um-bio" id="um-bio" style="margin-top:7px"></p></div>
+        <button id="um-flw-btn" onclick="toggleFlwModal(this)" style="border:none;color:#fff;padding:8px 18px;border-radius:7px;font-size:12px;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.3)">+ SUIVRE</button>
+      </div>
+      <div class="um-stats">
+        <div class="sbl"><div class="v" id="um-foll"></div><div class="l">Followers</div></div>
+        <div class="sbl"><div class="v" id="um-sc"></div><div class="l">Histoires</div></div>
+        <div class="sbl"><div class="v" id="um-collabs">0</div><div class="l">Collabs</div></div>
+      </div>
+      <div id="um-stories"></div><div id="um-collab"></div>
+      <div class="divider"></div>
+      <button class="btn-msg" id="um-msg-btn" onclick="msgFromModal()">💬 ENVOYER UN MESSAGE</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MSG MODAL ── -->
+<div class="overlay" id="m-msg" onclick="if(event.target===this)closeM('m-msg')">
+  <div class="mbox" style="max-width:460px">
+    <button class="mcl" onclick="closeM('m-msg')">×</button>
+    <div class="mhd"><h2>💬 Message privé</h2><p id="msg-to"></p></div>
+    <div class="mbody">
+      <div class="msg-hist" id="msg-hist"></div>
+      <div class="msg-form"><input type="text" id="msg-inp" placeholder="Votre message..." onkeydown="if(event.key==='Enter')sendMsg()"/><button class="btn-cmt" style="background:#e63946" onclick="sendMsg()">→</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── PUBLISH STORY MODAL ── -->
+<div class="overlay" id="m-publish" onclick="if(event.target===this)closeM('m-publish')">
+  <div class="mbox" style="max-width:540px">
+    <button class="mcl" onclick="closeM('m-publish')">×</button>
+    <div class="mhd"><h2>📖 Publier une histoire</h2><p>Partagez votre univers avec la communauté</p></div>
+    <div class="mbody">
+      <div class="fld"><label>Titre *</label><input type="text" id="p-title" placeholder="Le titre de votre manga"/></div>
+      <div class="fld"><label>Genre *</label>
+        <select id="p-genre"><option value="">-- Genre --</option><option>Shonen</option><option>Shojo</option><option>Seinen</option><option>Josei</option><option>Isekai</option><option>Dark Fantasy</option><option>Romance</option><option>Horreur</option><option>SF</option><option>Slice of Life</option><option>Autre</option></select>
+      </div>
+      <div class="fld"><label>Synopsis *</label><textarea id="p-syn" placeholder="Décrivez votre univers, vos personnages, l'intrigue..." style="min-height:110px"></textarea></div>
+      <div class="fld"><label>Tags (séparés par virgules)</label><input type="text" id="p-tags" placeholder="ex: Action, Magie, Amour"/></div>
+      <div class="fld"><label>Image de couverture</label><input type="file" id="p-cov-f" accept="image/*" onchange="prevImg(event,'p-cov-prev')"/><img id="p-cov-prev" class="img-prev" alt=""/></div>
+      <div class="btn-row"><button class="btn-sec" onclick="closeM('m-publish')">Annuler</button><button class="btn-pri" id="pub-submit-btn" onclick="submitStory()">PUBLIER MON HISTOIRE</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── EDIT PROFILE MODAL ── -->
+<div class="overlay" id="m-editprof" onclick="if(event.target===this)closeM('m-editprof')">
+  <div class="mbox" style="max-width:490px">
+    <button class="mcl" onclick="closeM('m-editprof')">×</button>
+    <div class="mhd"><h2>✏️ Mon profil</h2><p>Visible par toute la communauté</p></div>
+    <div class="mbody">
+      <div class="fld"><label>Pseudo *</label><input type="text" id="ep-nm" placeholder="VotrePseudo"/></div>
+      <div class="fld"><label>Rôle *</label><select id="ep-role"><option value="Scénariste">Scénariste</option><option value="Dessinateur">Dessinateur</option><option value="Dessinatrice">Dessinatrice</option><option value="Scénariste & Dessinateur">Scénariste & Dessinateur</option></select></div>
+      <div class="fld"><label>Biographie</label><textarea id="ep-bio" placeholder="Parlez de vous, votre style, vos inspirations..." style="min-height:85px"></textarea></div>
+      <div class="fld"><label>Photo de profil</label><input type="file" id="ep-av-f" accept="image/*" onchange="prevImg(event,'ep-av-prev')"/><img id="ep-av-prev" class="img-prev" style="width:80px;height:80px;border-radius:50%;object-fit:cover" alt=""/></div>
+      <div class="btn-row"><button class="btn-sec" onclick="closeM('m-editprof')">Annuler</button><button class="btn-pri" id="ep-save-btn" onclick="saveProfile()">ENREGISTRER</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── COLLAB MODAL ── -->
+<div class="overlay" id="m-collab" onclick="if(event.target===this)closeM('m-collab')">
+  <div class="mbox" style="max-width:490px">
+    <button class="mcl" onclick="closeM('m-collab')">×</button>
+    <div class="mhd"><h2>🤝 Annonce de collaboration</h2><p>Décrivez ce que vous cherchez ou proposez</p></div>
+    <div class="mbody">
+      <div class="fld"><label>Type *</label><select id="ca-type"><option value="Cherche dessinateur">Cherche dessinateur/dessinatrice</option><option value="Cherche scénariste">Cherche scénariste</option><option value="Propose illustration">Propose mes services (illustrateur)</option><option value="Propose scénario">Propose mes services (scénariste)</option><option value="Projet commun">Cherche partenaire projet commun</option></select></div>
+      <div class="fld"><label>Description *</label><textarea id="ca-det" placeholder="Décrivez votre projet, style, attentes..." style="min-height:100px"></textarea></div>
+      <div class="btn-row"><button class="btn-sec" onclick="closeM('m-collab')">Annuler</button><button class="btn-pri" onclick="submitCollab()">PUBLIER L'ANNONCE</button></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main-app -->
+
+<script>
+// ══════════════════════════════════════════════════════
+//  MANGAFORGE — LOGIQUE PRINCIPALE
+// ══════════════════════════════════════════════════════
+const EMOJIS=["🌟","🔮","⚡","🌊","🔥","🗡️","🌙","🦋","🐉","👁️","🗻","🎭"];
+const CLRS=["#e63946","#f4a261","#2a9d8f","#9b5de5","#e76f51","#06d6a0","#118ab2"];
+const GNRS=["Tous","Shonen","Shojo","Seinen","Josei","Isekai","Dark Fantasy","Romance","Horreur","SF","Slice of Life","Autre"];
+
+let curGenre="Tous", openSid=null, openUid=null, openMsgUid=null;
+let currentUser=null, myProfile=null;
+let unsubPosts=null, unsubStories=null, unsubCollab=null, unsubMsgs=null, unsubEps=null;
+let cachedPosts=[], cachedStories=[], cachedCollabs=[];
+let epPageFiles=[], currentEpisodes=[], readerEpIdx=0;
+
+// ── Utils ──
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}
+function escA(s){return String(s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;')}
+function ago(ts){if(!ts)return'';const d=ts.toDate?ts.toDate():new Date(ts);const s=(Date.now()-d)/1000;if(s<60)return'à l\'instant';if(s<3600)return`il y a ${Math.floor(s/60)}min`;if(s<86400)return`il y a ${Math.floor(s/3600)}h`;return`il y a ${Math.floor(s/86400)}j`}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2)}
+
+function notif(msg,err=false){
+  const el=document.getElementById('notif');
+  document.getElementById('notif-msg').textContent=msg;
+  el.className=err?'err':'';el.style.display='block';
+  clearTimeout(el._t);el._t=setTimeout(()=>el.style.display='none',3800);
+}
+function openM(id){document.getElementById(id).classList.add('open')}
+function closeM(id){document.getElementById(id).classList.remove('open')}
+function setBtn(id,loading,label=''){const b=document.getElementById(id);if(!b)return;b.disabled=loading;b.innerHTML=loading?`<span class="spin-sm"></span>En cours...`:label}
+
+function avEl(u,sz=40){
+  const nm=u?.name||u?.displayName||'?';
+  const init=nm.split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2)||'?';
+  const fs=Math.round(sz*.36);const col=u?.color||'#555';
+  if(u?.photoURL||u?.avatar)return`<div class="av" style="width:${sz}px;height:${sz}px"><img src="${u.photoURL||u.avatar}"/></div>`;
+  return`<div class="av" style="width:${sz}px;height:${sz}px;background:linear-gradient(135deg,${col},${col}88);font-size:${fs}px">${init}</div>`;
+}
+function rbEl(role){
+  const c=role&&role.includes('Dessinat')?'#f4a261':role&&role.includes('&')?'#9b5de5':'#e63946';
+  return`<span class="rb" style="background:${c}">${esc(role||'Membre')}</span>`;
+}
+function prevImg(e,pid){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{const i=document.getElementById(pid);if(i){i.src=ev.target.result;i.style.display='block'}};r.readAsDataURL(f)}
+
+// ══════════════════════════════════════════════════════
+//  CLOUDINARY — UPLOAD D'IMAGES (GRATUIT, SANS STORAGE)
+// ══════════════════════════════════════════════════════
+// ┌─────────────────────────────────────────────────────┐
+// │  ÉTAPE UNIQUE — CLOUDINARY (5 minutes)              │
+// │  1. Allez sur cloudinary.com → créez un compte      │
+// │  2. Dashboard → copiez votre "Cloud name"           │
+// │  3. Settings → Upload → Add upload preset           │
+// │     Nommez-le "mangaforge" → Signing Mode: Unsigned │
+// │  4. Remplacez les 2 valeurs ci-dessous              │
+// └─────────────────────────────────────────────────────┘
+const CLOUD_NAME    = 'dgigrn8pk';
+const UPLOAD_PRESET = 'mangaforge';  // ← le preset unsigned à créer sur Cloudinary (voir note ci-dessous)
+
+async function toBase64(file){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();r.onload=e=>res(e.target.result);r.onerror=rej;r.readAsDataURL(file);
+  });
+}
+
+// Compresse une image avant upload (réduit la taille × 5 à 10)
+async function compressImage(file, maxW=1200, quality=0.82){
+  return new Promise(res=>{
+    const img=new Image();
+    const url=URL.createObjectURL(file);
+    img.onload=()=>{
+      URL.revokeObjectURL(url);
+      let w=img.width, h=img.height;
+      if(w>maxW){h=Math.round(h*(maxW/w));w=maxW;}
+      const canvas=document.createElement('canvas');
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      canvas.toBlob(blob=>res(blob||file),'image/jpeg',quality);
+    };
+    img.onerror=()=>res(file);
+    img.src=url;
+  });
+}
+
+// Upload vers Cloudinary — renvoie l'URL publique
+async function uploadFile(file_or_b64, folder='misc'){
+  let blob;
+  if(typeof file_or_b64 === 'string'){
+    const arr=file_or_b64.split(',');
+    const mime=arr[0].match(/:(.*?);/)[1];
+    const bstr=atob(arr[1]);let n=bstr.length;
+    const u8=new Uint8Array(n);while(n--)u8[n]=bstr.charCodeAt(n);
+    blob=new Blob([u8],{type:mime});
+  } else {
+    blob=await compressImage(file_or_b64);
+  }
+  const fd=new FormData();
+  fd.append('file', blob);
+  fd.append('upload_preset', UPLOAD_PRESET);
+  // Ne pas envoyer 'folder' — certains presets le bloquent
+  // fd.append('folder', `mangaforge/${folder}`);
+
+  const res=await fetch(
+    `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
+    { method:'POST', body:fd }
+    // Pas de headers manuels — laisser le navigateur gérer le CORS
+  );
+
+  if(!res.ok){
+    let errMsg='Upload échoué';
+    try{
+      const errData=await res.json();
+      errMsg=errData?.error?.message||errMsg;
+    }catch(e){
+      try{errMsg=await res.text()}catch(e2){}
+    }
+    // Messages d'erreur clairs selon le cas
+    if(res.status===400 && errMsg.toLowerCase().includes('preset')){
+      throw new Error('Preset "mangaforge" introuvable sur Cloudinary. Vérifiez le nom exact du preset.');
+    }
+    if(res.status===401||errMsg.toLowerCase().includes('unauthorized')){
+      throw new Error('Cloud name incorrect. Vérifiez CLOUD_NAME dans le fichier HTML.');
+    }
+    throw new Error(errMsg);
+  }
+  const data=await res.json();
+  return data.secure_url;
+}
+
+// ── AUTH ──
+function showAuthTab(tab){
+  document.getElementById('form-login').style.display=tab==='login'?'block':'none';
+  document.getElementById('form-signup').style.display=tab==='signup'?'block':'none';
+  const on='background:linear-gradient(135deg,#e63946,#c1121f);color:#fff';
+  const off='background:transparent;color:#555';
+  document.getElementById('tab-login-btn').style.cssText=tab==='login'?on:off;
+  document.getElementById('tab-signup-btn').style.cssText=tab==='signup'?on:off;
+}
+
+async function doLogin(){
+  const em=document.getElementById('li-email').value.trim(),pw=document.getElementById('li-pass').value;
+  const er=document.getElementById('li-err');er.style.display='none';
+  if(!em||!pw){er.textContent='Remplissez tous les champs.';er.style.display='block';return}
+  try{await FB.signInWithEmailAndPassword(FB.auth,em,pw)}
+  catch(e){er.textContent=e.code.includes('invalid-credential')||e.code.includes('wrong-password')||e.code.includes('user-not-found')?'Email ou mot de passe incorrect.':'Erreur : '+e.message;er.style.display='block'}
+}
+async function doSignup(){
+  const nm=document.getElementById('su-name').value.trim(),rl=document.getElementById('su-role').value;
+  const em=document.getElementById('su-email').value.trim(),pw=document.getElementById('su-pass').value;
+  const er=document.getElementById('su-err');er.style.display='none';
+  if(!nm||!em||!pw){er.textContent='Remplissez tous les champs.';er.style.display='block';return}
+  if(pw.length<6){er.textContent='Mot de passe : 6 caractères minimum.';er.style.display='block';return}
+  try{
+    const cred=await FB.createUserWithEmailAndPassword(FB.auth,em,pw);
+    await FB.updateProfile(cred.user,{displayName:nm});
+    await FB.setDoc(FB.doc(FB.db,'users',cred.user.uid),{name:nm,role:rl,bio:'',color:rand(CLRS),avatar:'',cover:'',followers:0,following:[],createdAt:FB.serverTimestamp()});
+  }catch(e){er.textContent=e.code==='auth/email-already-in-use'?'Email déjà utilisé.':'Erreur : '+e.message;er.style.display='block'}
+}
+async function doLogout(){unsubAll();await FB.signOut(FB.auth)}
+function unsubAll(){[unsubPosts,unsubStories,unsubCollab,unsubMsgs,unsubEps].forEach(u=>{if(u)u()});unsubPosts=unsubStories=unsubCollab=unsubMsgs=unsubEps=null}
+
+window.onAuthReady=async function(user){
+  if(!user){
+    document.getElementById('loader').style.display='none';
+    document.getElementById('auth-screen').style.display='flex';
+    document.getElementById('main-app').style.display='none';
+    currentUser=null;myProfile=null;return;
+  }
+  currentUser=user;
+  const snap=await FB.getDoc(FB.doc(FB.db,'users',user.uid));
+  myProfile=snap.exists()?snap.data():{name:user.displayName||'Nouveau membre',role:'Scénariste',bio:'',color:rand(CLRS),avatar:'',cover:'',followers:0,following:[]};
+  if(!snap.exists())await FB.setDoc(FB.doc(FB.db,'users',user.uid),{...myProfile,createdAt:FB.serverTimestamp()});
+  document.getElementById('loader').style.display='none';
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('main-app').style.display='block';
+  startListeners();renderProfile();renderGbar();
+};
+
+// ── LISTENERS ──
+function startListeners(){
+  unsubPosts=FB.onSnapshot(FB.query(FB.collection(FB.db,'posts'),FB.orderBy('createdAt','desc'),FB.limit(50)),snap=>{
+    cachedPosts=snap.docs.map(d=>({id:d.id,...d.data()}));renderFeed();
+  });
+  unsubStories=FB.onSnapshot(FB.query(FB.collection(FB.db,'stories'),FB.orderBy('createdAt','desc'),FB.limit(100)),snap=>{
+    cachedStories=snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderStories();renderMyStories();updateMyStoriesCount();
+  });
+  unsubCollab=FB.onSnapshot(FB.query(FB.collection(FB.db,'collabs'),FB.orderBy('createdAt','desc')),snap=>{
+    cachedCollabs=snap.docs.map(d=>({id:d.id,...d.data()}));renderCollab();
+  });
+}
+
+// ── TAB ──
+function switchTab(name,btn){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='community')renderUsers();
+  if(name==='profile')renderProfile();
+}
+
+// ── SEARCH — fonctionne sur toutes les sections ──
+function onSearch(){
+  const activeTab=document.querySelector('.sec.active');
+  if(!activeTab)return;
+  // Toujours filtrer les histoires si on est sur stories ou profile
+  if(activeTab.id==='tab-stories')renderStories();
+  else if(activeTab.id==='tab-community'){
+    // Filtre aussi la communauté
+    const q=document.getElementById('srch').value.toLowerCase().trim();
+    if(!q){renderUsers();return}
+    const grid=document.getElementById('ugrid');
+    const items=grid.querySelectorAll('.uc');
+    items.forEach(el=>{
+      const name=(el.querySelector('.sbl')?.parentElement?.querySelector('div')?.textContent||'').toLowerCase();
+      el.style.display=name.includes(q)?'':'none';
+    });
+  } else {
+    // Sur feed ou collab, redirige vers histoires
+    renderStories();
+  }
+}
+
+// ── FEED ──
+document.getElementById('post-inp').addEventListener('input',function(){document.getElementById('pchar').textContent=`${this.value.length} / 500`});
+function renderFeed(){
+  const el=document.getElementById('post-list');
+  if(!cachedPosts.length){el.innerHTML='<div class="empty"><div class="eico">💬</div><p>Aucune publication.<br>Soyez le premier !</p></div>';return}
+  el.innerHTML=cachedPosts.map(p=>{
+    const isMe=p.uid===currentUser?.uid;
+    const lk=(p.likedBy||[]).includes(currentUser?.uid);
+    const epThumb=p.isEpisodePost&&p.coverUrl
+      ?`<div onclick="openStory('${p.storyId||''}')" style="cursor:pointer;margin-bottom:10px;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,.1)"><img src="${p.coverUrl}" style="width:100%;max-height:200px;object-fit:cover;display:block"/><div style="padding:8px 12px;background:rgba(255,255,255,.04);font-size:11px;color:#e63946;font-weight:700;letter-spacing:.1em">📺 LIRE CET ÉPISODE →</div></div>`
+      :'';
+    return`<div class="glass post card-h">
+      <div class="post-hd">${avEl({name:p.userName,color:p.userColor,photoURL:p.userAvatar},38)}
+        <div class="post-inf"><span class="post-nm">${esc(p.userName||'Anonyme')}</span><span class="post-tm">${ago(p.createdAt)}</span><br/>${rbEl(p.userRole)}</div>
+        ${isMe?`<button class="del-btn" onclick="delPost('${p.id}')">🗑</button>`:''}
+      </div>
+      <p class="post-txt">${esc(p.text)}</p>
+      ${epThumb}
+      <div class="post-ft">
+        <button class="${lk?'liked':''}" onclick="likePost('${p.id}',${lk})">${lk?'❤️':'🤍'} ${p.likes||0}</button>
+        ${!isMe?`<button onclick="qMsg('${p.uid}','${escA(p.userName||'Inconnu')}')">💬 Message</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+async function submitPost(){
+  const inp=document.getElementById('post-inp'),txt=inp.value.trim();
+  if(!txt){notif('Écrivez quelque chose.',true);return}
+  if(txt.length>500){notif('Maximum 500 caractères.',true);return}
+  try{
+    await FB.addDoc(FB.collection(FB.db,'posts'),{uid:currentUser.uid,userName:myProfile.name||currentUser.displayName,userRole:myProfile.role||'',userColor:myProfile.color||'#555',userAvatar:myProfile.avatar||'',text:txt,likes:0,likedBy:[],createdAt:FB.serverTimestamp()});
+    inp.value='';document.getElementById('pchar').textContent='0 / 500';notif('Publication partagée !');
+  }catch(e){notif('Erreur: '+e.message,true)}
+}
+async function likePost(id,was){const r=FB.doc(FB.db,'posts',id);await FB.updateDoc(r,{likes:FB.increment(was?-1:1),likedBy:was?FB.arrayRemove(currentUser.uid):FB.arrayUnion(currentUser.uid)})}
+async function delPost(id){if(!confirm('Supprimer ?'))return;await FB.deleteDoc(FB.doc(FB.db,'posts',id));notif('Supprimée.')}
+
+// ── STORIES ──
+function renderGbar(){
+  document.getElementById('gbar').innerHTML=GNRS.map(g=>`<button class="gbtn${g===curGenre?' active':''}" onclick="setG('${g}')">${g}</button>`).join('');
+}
+function setG(g){curGenre=g;renderGbar();renderStories()}
+
+function renderStoriesFromList(list,tid){
+  const grid=document.getElementById(tid);if(!grid)return;
+  if(!list.length){grid.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="eico">📖</div><p>Aucune histoire trouvée.</p></div>`;return}
+  grid.innerHTML=list.map(s=>{
+    const lk=(s.likedBy||[]).includes(currentUser?.uid);
+    return`<div class="glass sc card-h" onclick="openStory('${s.id}')">
+      ${s.isNew?'<div class="badge-new">NOUVEAU</div>':''}
+      <div class="sc-cov" style="background:${s.coverUrl?'#111':`linear-gradient(135deg,${s.color}33,${s.color}11)`};border-bottom:2px solid ${s.color}44">
+        ${s.coverUrl
+          ? `<img src="${s.coverUrl}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1"/>`
+          : `<span class="sc-em">${s.emoji||'📖'}</span>`}
+      </div>
+      <div class="sc-body">
+        <div class="sc-genre" style="color:${s.color}">${esc(s.genre)}</div>
+        <div class="sc-title">${esc(s.title)}</div>
+        <div class="sc-syn">${esc(s.synopsis)}</div>
+        <div class="tags">${(s.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>
+        <div class="sc-ft">
+          <div class="sc-auth">${avEl({name:s.authorName,color:s.authorColor,photoURL:s.authorAvatar},24)}<span style="font-size:11px;color:#777">${esc(s.authorName||'Anonyme')}</span></div>
+          <div class="sc-meta">
+            <span>📺 ${s.episodeCount||0} ep.</span>
+            <button onclick="event.stopPropagation();likeStory('${s.id}',${lk})" style="background:none;border:none;font-size:11px;color:${lk?'#e63946':'#666'};cursor:pointer;padding:0">${lk?'❤️':'🤍'} ${s.likes||0}</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderStories(){
+  const q=document.getElementById('srch').value.toLowerCase().trim();
+  const list=cachedStories.filter(s=>{
+    const mg=curGenre==='Tous'||s.genre===curGenre;
+    const mq=!q||(s.title||'').toLowerCase().includes(q)||(s.synopsis||'').toLowerCase().includes(q)||(s.genre||'').toLowerCase().includes(q)||(s.authorName||'').toLowerCase().includes(q)||(s.tags||[]).some(t=>t.toLowerCase().includes(q));
+    return mg&&mq;
+  });
+  renderStoriesFromList(list,'sgrid');
+}
+function renderMyStories(){renderStoriesFromList(cachedStories.filter(s=>s.uid===currentUser?.uid),'mysgrid')}
+function updateMyStoriesCount(){document.getElementById('mystories').textContent=cachedStories.filter(s=>s.uid===currentUser?.uid).length}
+async function likeStory(id,was){const r=FB.doc(FB.db,'stories',id);await FB.updateDoc(r,{likes:FB.increment(was?-1:1),likedBy:was?FB.arrayRemove(currentUser.uid):FB.arrayUnion(currentUser.uid)})}
+
+// ── STORY MODAL ──
+async function openStory(id){
+  const s=cachedStories.find(x=>x.id===id);if(!s)return;
+  openSid=id;
+  const cov=document.getElementById('sm-cov');
+  if(s.coverUrl){cov.innerHTML=`<img src="${s.coverUrl}" alt=""/><span class="sm-em" style="font-size:60px;text-shadow:0 2px 20px rgba(0,0,0,.8)">${s.emoji||''}</span>`;cov.style.background=s.color+'22'}
+  else{cov.innerHTML=`<span class="sm-em">${s.emoji||'📖'}</span>`;cov.style.background=`linear-gradient(135deg,${s.color}44,${s.color}11)`}
+  cov.style.borderBottom=`2px solid ${s.color}44`;
+  document.getElementById('sm-genre').style.color=s.color;
+  document.getElementById('sm-genre').textContent=s.genre;
+  document.getElementById('sm-title').textContent=s.title;
+  document.getElementById('sm-auth').innerHTML=avEl({name:s.authorName,color:s.authorColor,photoURL:s.authorAvatar},34)+`<div><span style="font-weight:700;color:#ddd;font-size:13px">${esc(s.authorName||'Anonyme')}</span><br/>${rbEl(s.authorRole)}</div>`;
+  document.getElementById('sm-tags').innerHTML=(s.tags||[]).map(t=>`<span style="background:${s.color}22;border:1px solid ${s.color}44;color:${s.color};font-size:10px;padding:3px 10px;border-radius:20px">${esc(t)}</span>`).join('');
+  const sw=document.getElementById('sm-syn-wrap');
+  sw.style.cssText=`border-left:3px solid ${s.color};background:${s.color}0d;padding:13px 18px;border-radius:0 8px 8px 0;margin-bottom:18px`;
+  document.getElementById('sm-syn-txt').textContent=s.synopsis;
+  const lk=(s.likedBy||[]).includes(currentUser?.uid);
+  document.getElementById('sm-lk').textContent=s.likes||0;
+  document.getElementById('sm-cc').textContent=(s.comments||[]).length;
+  document.getElementById('cmt-btn').style.background=s.color;
+  const isOwn=s.uid===currentUser?.uid;
+  document.getElementById('sm-acts').innerHTML=isOwn?`<button onclick="delStory('${id}')" style="background:rgba(230,57,70,.12);border:1px solid rgba(230,57,70,.28);color:#e63946;padding:8px 16px;border-radius:8px;font-size:11px;font-weight:700">🗑 Supprimer</button>`:'';
+  // Show/hide add episode button
+  const addBtn=document.getElementById('btn-add-ep');
+  addBtn.style.display=isOwn?'block':'none';
+  addBtn.style.borderColor=s.color;addBtn.style.color=s.color;
+  renderCmts(s);
+  loadEpisodes(id,s.color);
+  openM('m-story');
+}
+
+function renderCmts(s){
+  const el=document.getElementById('sm-cmts'),cmts=s.comments||[];
+  if(!cmts.length){el.innerHTML='<p style="font-size:12px;color:var(--dim);margin-bottom:8px">Aucun commentaire. Soyez le premier !</p>';return}
+  el.innerHTML=cmts.map(c=>`<div class="cmt"><div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,${c.color||'#555'},#333);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0">${(c.name||'?').split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2)||'?'}</div><div class="cmt-bub"><div class="cmt-au">${esc(c.name)}<span class="cmt-tm">• ${c.time}</span></div><div class="cmt-tx">${esc(c.text)}</div></div></div>`).join('');
+}
+async function addCmt(){
+  const s=cachedStories.find(x=>x.id===openSid);if(!s)return;
+  const inp=document.getElementById('cmt-inp'),tx=inp.value.trim();if(!tx)return;
+  const cmt={name:myProfile.name||currentUser.displayName||'Anonyme',text:tx,time:'à l\'instant',color:myProfile.color||'#555',uid:currentUser.uid};
+  await FB.updateDoc(FB.doc(FB.db,'stories',openSid),{comments:FB.arrayUnion(cmt)});
+  inp.value='';if(!s.comments)s.comments=[];s.comments.push(cmt);
+  document.getElementById('sm-cc').textContent=s.comments.length;renderCmts(s);
+}
+async function delStory(id){
+  if(!confirm('Supprimer cette histoire définitivement ?'))return;
+  await FB.deleteDoc(FB.doc(FB.db,'stories',id));
+  closeM('m-story');notif('Histoire supprimée.');
+}
+
+// ── ÉPISODES ──
+function loadEpisodes(storyId,color){
+  if(unsubEps){unsubEps();unsubEps=null}
+  const epList=document.getElementById('ep-list');
+  document.getElementById('sm-ep-count').textContent='...';
+  unsubEps=FB.onSnapshot(
+    FB.query(FB.collection(FB.db,'stories',storyId,'episodes'),FB.orderBy('createdAt','asc')),
+    snap=>{
+      currentEpisodes=snap.docs.map(d=>({id:d.id,...d.data()}));
+      document.getElementById('sm-ep-count').textContent=currentEpisodes.length;
+      // Update episode count on story card
+      FB.updateDoc(FB.doc(FB.db,'stories',storyId),{episodeCount:currentEpisodes.length}).catch(()=>{});
+      if(!currentEpisodes.length){
+        epList.innerHTML='<div class="empty"><div class="eico">📺</div><p>Aucun épisode publié.<br>L\'auteur prépare le contenu...</p></div>';return;
+      }
+      epList.innerHTML=currentEpisodes.map((ep,i)=>`
+        <div class="ep-item" onclick="openReader(${i})">
+          ${ep.thumbUrl?`<img class="ep-thumb" src="${ep.thumbUrl}" alt="" loading="lazy"/>`:`<div class="ep-thumb-placeholder">${ep.emoji||'📖'}</div>`}
+          <div class="ep-info">
+            <div class="ep-num" style="color:${color}">ÉPISODE ${i+1}</div>
+            <div class="ep-title">${esc(ep.title||'Sans titre')}</div>
+            ${ep.description?`<div class="ep-desc">${esc(ep.description)}</div>`:''}
+            <div class="ep-meta">
+              <span>📄 ${(ep.pages||[]).length} page(s)</span>
+              <span>${ago(ep.createdAt)}</span>
+            </div>
+          </div>
+        </div>`).join('');
+    }
+  );
+}
+
+function openAddEpisode(){
+  document.getElementById('ep-title-inp').value='';
+  document.getElementById('ep-desc-inp').value='';
+  document.getElementById('ep-pages-inp').value='';
+  document.getElementById('ep-pages-preview').innerHTML='';
+  epPageFiles=[];
+  closeM('m-story');
+  openM('m-addepisode');
+}
+
+function prevEpPages(e){
+  epPageFiles=[...e.target.files];
+  const prev=document.getElementById('ep-pages-preview');
+  prev.innerHTML='';
+  epPageFiles.forEach((f,i)=>{
+    const r=new FileReader();
+    r.onload=ev=>{
+      prev.insertAdjacentHTML('beforeend',`<div style="text-align:center"><img src="${ev.target.result}" style="width:70px;height:100px;object-fit:cover;border-radius:6px;border:1px solid rgba(255,255,255,.1)"/><div style="font-size:9px;color:var(--dim);margin-top:3px">P.${i+1}</div></div>`);
+    };r.readAsDataURL(f);
+  });
+}
+
+async function submitEpisode(){
+  const title=document.getElementById('ep-title-inp').value.trim();
+  const desc=document.getElementById('ep-desc-inp').value.trim();
+  if(!title){notif('Le titre de l\'épisode est obligatoire.',true);return}
+  if(!epPageFiles.length){notif('Ajoutez au moins une image de page.',true);return}
+  setBtn('ep-submit-btn',true);
+  try{
+    const pages=[];
+    let thumbUrl='';
+    for(let i=0;i<epPageFiles.length;i++){
+      notif(`Upload page ${i+1}/${epPageFiles.length}...`);
+      const url=await uploadFile(epPageFiles[i],'episodes');
+      pages.push({url,order:i});
+      if(i===0)thumbUrl=url;
+    }
+    await FB.addDoc(FB.collection(FB.db,'stories',openSid,'episodes'),{
+      title,description:desc,pages,thumbUrl,
+      emoji:rand(EMOJIS),authorId:currentUser.uid,
+      createdAt:FB.serverTimestamp()
+    });
+
+    // ── Publier automatiquement dans le fil d'actualité ──
+    const story=cachedStories.find(x=>x.id===openSid);
+    const epNum=(story?.episodeCount||0)+1;
+    await FB.addDoc(FB.collection(FB.db,'posts'),{
+      uid: currentUser.uid,
+      userName: myProfile.name||currentUser.displayName||'Anonyme',
+      userRole: myProfile.role||'',
+      userColor: myProfile.color||'#555',
+      userAvatar: myProfile.avatar||'',
+      text: `📺 Nouvel épisode publié !\n\n« ${story?.title||'Une histoire'} » — Épisode ${epNum} : ${title}${desc?'\n\n'+desc:''}`,
+      storyId: openSid,
+      storyTitle: story?.title||'',
+      coverUrl: thumbUrl||story?.coverUrl||'',
+      isEpisodePost: true,
+      likes:0, likedBy:[],
+      createdAt: FB.serverTimestamp()
+    });
+
+    epPageFiles=[];
+    closeM('m-addepisode');
+    openM('m-story');
+    notif('✅ Épisode publié ! Visible dans le fil d\'actualité.');
+  }catch(e){notif('Erreur upload : '+e.message,true)}
+  setBtn('ep-submit-btn',false,'PUBLIER L\'ÉPISODE');
+}
+
+// ── READER ──
+function openReader(idx){
+  readerEpIdx=idx;
+  showReaderEp(idx);
+  openM('m-reader');
+}
+function showReaderEp(idx){
+  const ep=currentEpisodes[idx];if(!ep)return;
+  document.getElementById('rd-title').textContent=ep.title||'Épisode '+(idx+1);
+  document.getElementById('rd-num').textContent=`Épisode ${idx+1} / ${currentEpisodes.length}`;
+  const pages=(ep.pages||[]).sort((a,b)=>a.order-b.order);
+  document.getElementById('rd-pages').innerHTML=pages.length
+    ?pages.map(p=>`<img class="reader-page" src="${p.url}" alt="" loading="lazy"/>`).join('')
+    :'<div class="empty"><div class="eico">🖼️</div><p>Aucune page disponible.</p></div>';
+  document.getElementById('rd-prev-btn').style.opacity=idx===0?'.4':'1';
+  document.getElementById('rd-prev-btn').disabled=idx===0;
+  document.getElementById('rd-next-btn').style.opacity=idx===currentEpisodes.length-1?'.4':'1';
+  document.getElementById('rd-next-btn').disabled=idx===currentEpisodes.length-1;
+  document.getElementById('rd-pages').scrollTop=0;
+}
+function readerNav(dir){
+  const next=readerEpIdx+dir;
+  if(next<0||next>=currentEpisodes.length)return;
+  readerEpIdx=next;showReaderEp(next);
+}
+
+// ── PUBLISH STORY ──
+function openPublishModal(){openM('m-publish')}
+async function submitStory(){
+  const title=document.getElementById('p-title').value.trim();
+  const genre=document.getElementById('p-genre').value;
+  const syn=document.getElementById('p-syn').value.trim();
+  const tags=document.getElementById('p-tags').value.split(',').map(t=>t.trim()).filter(Boolean);
+  const fi=document.getElementById('p-cov-f');const pi=document.getElementById('p-cov-prev');
+  if(!title){notif('Le titre est obligatoire.',true);return}
+  if(!genre){notif('Choisissez un genre.',true);return}
+  if(!syn){notif('Le synopsis est obligatoire.',true);return}
+  setBtn('pub-submit-btn',true);
+  try{
+    let coverUrl='',coverPath='';
+    if(fi.files[0]){
+      coverUrl=await uploadFile(fi.files[0],'covers');
+    }
+    await FB.addDoc(FB.collection(FB.db,'stories'),{
+      uid:currentUser.uid,authorName:myProfile.name||currentUser.displayName||'Anonyme',
+      authorRole:myProfile.role||'',authorColor:myProfile.color||'#555',authorAvatar:myProfile.avatar||'',
+      title,genre,synopsis:syn,tags,likes:0,likedBy:[],comments:[],
+      emoji:rand(EMOJIS),color:rand(CLRS),coverUrl,
+      episodeCount:0,isNew:true,createdAt:FB.serverTimestamp()
+    });
+    ['p-title','p-syn','p-tags'].forEach(i=>document.getElementById(i).value='');
+    document.getElementById('p-genre').value='';pi.style.display='none';pi.src='';fi.value='';
+    closeM('m-publish');
+    document.querySelectorAll('.nb')[1].click();
+    notif('✅ Histoire publiée ! Ajoutez vos épisodes dedans.');
+  }catch(e){notif('Erreur: '+e.message,true)}
+  setBtn('pub-submit-btn',false,'PUBLIER MON HISTOIRE');
+}
+
+// ── COMMUNITY ──
+async function renderUsers(){
+  const grid=document.getElementById('ugrid');
+  grid.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="eico">⏳</div><p>Chargement...</p></div>';
+  try{
+    const snap=await FB.getDocs(FB.query(FB.collection(FB.db,'users'),FB.limit(60)));
+    const users=snap.docs.map(d=>({id:d.id,...d.data()}));
+    if(!users.length){grid.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="eico">👥</div><p>Aucun membre encore.</p></div>';return}
+    const following=myProfile?.following||[];
+    grid.innerHTML=users.map(u=>{
+      const isMe=u.id===currentUser?.uid;
+      const flwd=following.includes(u.id);
+      const sc=cachedStories.filter(s=>s.uid===u.id).length;
+      return`<div class="glass uc card-h" onclick="${isMe?`document.querySelectorAll('.nb')[4].click()`:`openUserProf('${u.id}')`}">
+        <div class="uc-top">${avEl({name:u.name,color:u.color,photoURL:u.avatar},44)}
+          <div style="flex:1;min-width:0"><div style="font-weight:900;color:var(--text);font-size:14px;margin-bottom:3px">${esc(u.name||'Utilisateur')}${isMe?' <span style="font-size:9px;color:var(--dim)">(vous)</span>':''}</div>${rbEl(u.role)}</div>
+        </div>
+        <div class="uc-bio">${esc(u.bio)||'<em style="color:var(--dim)">Pas de biographie</em>'}</div>
+        <div class="uc-ft">
+          <div class="uc-stats">
+            <div class="sbl"><div class="v">${u.followers||0}</div><div class="l">Followers</div></div>
+            ${sc?`<div class="sbl"><div class="v">${sc}</div><div class="l">Histoires</div></div>`:''}
+          </div>
+          ${!isMe?`<button class="btn-flw" onclick="event.stopPropagation();flwUser('${u.id}',${flwd},this)" style="background:${flwd?'transparent':u.color||'#e63946'};border-color:${u.color||'#e63946'};color:${flwd?u.color||'#e63946':'#fff'}">${flwd?'SUIVI ✓':'+ SUIVRE'}</button>`:''}
+        </div>
+      </div>`;
+    }).join('');
+    document.getElementById('cnt-sc').textContent=`${users.filter(u=>u.role&&u.role.includes('Scénariste')).length} membre(s)`;
+    document.getElementById('cnt-dr').textContent=`${users.filter(u=>u.role&&u.role.includes('Dessinat')).length} membre(s)`;
+  }catch(e){grid.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="eico">⚠️</div><p>Erreur de chargement.</p></div>`}
+}
+async function flwUser(id, was, btn){
+  // Disable button during operation
+  if(btn){btn.disabled=true;btn.textContent='...'}
+  try{
+    const uRef=FB.doc(FB.db,'users',id), meRef=FB.doc(FB.db,'users',currentUser.uid);
+    if(was){
+      await FB.updateDoc(uRef,{followers:FB.increment(-1)});
+      await FB.updateDoc(meRef,{following:FB.arrayRemove(id)});
+      myProfile.following=(myProfile.following||[]).filter(x=>x!==id);
+    } else {
+      await FB.updateDoc(uRef,{followers:FB.increment(1)});
+      await FB.updateDoc(meRef,{following:FB.arrayUnion(id)});
+      if(!myProfile.following)myProfile.following=[];
+      if(!myProfile.following.includes(id))myProfile.following.push(id);
+    }
+    document.getElementById('myfollowing').textContent=myProfile.following.length;
+    // Reload users to refresh UI
+    renderUsers();
+  }catch(e){notif('Erreur follow: '+e.message,true)}
+  if(btn){btn.disabled=false}
+}
+
+// ── USER PROFILE MODAL ──
+async function openUserProf(id){
+  openUid=id;
+  const snap=await FB.getDoc(FB.doc(FB.db,'users',id));if(!snap.exists())return;
+  const u={id,...snap.data()};
+  const cov=document.getElementById('um-cov');
+  if(u.cover){cov.innerHTML=`<img src="${u.cover}" style="width:100%;height:100%;object-fit:cover"/>`;cov.style.background='#111'}
+  else{cov.innerHTML='';cov.style.background=`linear-gradient(135deg,${u.color||'#333'}55,${u.color||'#333'}11)`}
+  cov.innerHTML+=`<div class="um-av">${avEl({name:u.name,color:u.color,photoURL:u.avatar},56)}</div>`;
+  document.getElementById('um-nm').textContent=u.name||'Utilisateur';
+  const badge=document.getElementById('um-badge');badge.textContent=u.role||'Membre';badge.style.background=u.role&&u.role.includes('Dessinat')?'#f4a261':'#e63946';
+  document.getElementById('um-bio').textContent=u.bio||'Pas de biographie.';
+  const flwd=(myProfile?.following||[]).includes(id);
+  const fb=document.getElementById('um-flw-btn');fb.dataset.uid=id;
+  fb.style.background=flwd?'transparent':u.color||'#e63946';fb.style.border=`1px solid ${u.color||'#e63946'}`;fb.style.color=flwd?u.color||'#e63946':'#fff';fb.textContent=flwd?'SUIVI ✓':'+ SUIVRE';
+  document.getElementById('um-foll').textContent=u.followers||0;
+  const uSt=cachedStories.filter(s=>s.uid===id);document.getElementById('um-sc').textContent=uSt.length;
+  document.getElementById('um-collabs').textContent=cachedCollabs.filter(c=>c.uid===id).length;
+  const ss=document.getElementById('um-stories');
+  ss.innerHTML=uSt.length?`<div style="font-size:11px;color:#666;letter-spacing:.15em;text-transform:uppercase;margin-bottom:11px">Histoires publiées</div>`+uSt.map(s=>`<div class="um-sr" style="border-color:${s.color}" onclick="closeM('m-user');openStory('${s.id}')"><div><div class="um-sr-t">${esc(s.title)}</div><div class="um-sr-m">${s.episodeCount||0} ep. • ${s.likes||0} likes</div></div><span style="font-size:21px">${s.emoji||'📖'}</span></div>`).join(''):'';
+  const ann=cachedCollabs.find(a=>a.uid===id);
+  document.getElementById('um-collab').innerHTML=ann?`<div style="background:${u.color||'#555'}11;border:1px solid ${u.color||'#555'}33;border-radius:10px;padding:12px 16px;margin-top:13px"><div style="font-size:11px;font-weight:700;color:${u.color||'#aaa'};margin-bottom:4px">🤝 ${esc(ann.type)}</div><div style="font-size:11px;color:var(--muted)">${esc(ann.detail)}</div></div>`:'';
+  const mb=document.getElementById('um-msg-btn');mb.dataset.uid=id;mb.dataset.nm=u.name||'Utilisateur';
+  openM('m-user');
+}
+async function toggleFlwModal(btn){
+  const id=btn.dataset.uid;if(!id)return;
+  const was=(myProfile?.following||[]).includes(id);
+  await flwUser(id,was,null);
+  // Re-fetch user to get updated followers count
+  const snap=await FB.getDoc(FB.doc(FB.db,'users',id));if(!snap.exists())return;
+  const u=snap.data();
+  const now=(myProfile?.following||[]).includes(id);
+  btn.style.background=now?'transparent':u.color||'#e63946';
+  btn.style.border=`1px solid ${u.color||'#e63946'}`;
+  btn.style.color=now?u.color||'#e63946':'#fff';
+  btn.textContent=now?'SUIVI ✓':'+ SUIVRE';
+  document.getElementById('um-foll').textContent=u.followers||0;
+}
+function msgFromModal(){const mb=document.getElementById('um-msg-btn');qMsg(mb.dataset.uid,mb.dataset.nm)}
+
+// ── MESSAGES ──
+function qMsg(userId,userName){
+  closeM('m-user');openMsgUid=userId;
+  document.getElementById('msg-to').textContent=`Conversation avec ${userName}`;
+  document.getElementById('msg-inp').dataset.uid=userId;
+  loadMsgs(userId);openM('m-msg');
+}
+function loadMsgs(userId){
+  if(unsubMsgs){unsubMsgs();unsubMsgs=null}
+  const convId=[currentUser.uid,userId].sort().join('_');
+  unsubMsgs=FB.onSnapshot(FB.query(FB.collection(FB.db,'messages',convId,'msgs'),FB.orderBy('createdAt','asc'),FB.limit(100)),snap=>{
+    const hist=document.getElementById('msg-hist');
+    const msgs=snap.docs.map(d=>d.data());
+    if(!msgs.length){hist.innerHTML='<p style="font-size:12px;color:var(--dim);text-align:center;padding:18px 0">Commencez la conversation !</p>';return}
+    hist.innerHTML=msgs.map(m=>`<div style="display:flex;flex-direction:column;align-items:${m.from===currentUser.uid?'flex-end':'flex-start'}"><div class="msg-bub ${m.from===currentUser.uid?'msg-me':'msg-them'}">${esc(m.text)}</div><div class="msg-t">${ago(m.createdAt)}</div></div>`).join('');
+    hist.scrollTop=hist.scrollHeight;
+  });
+}
+async function sendMsg(){
+  const inp=document.getElementById('msg-inp'),tx=inp.value.trim();if(!tx)return;
+  const toId=inp.dataset.uid;if(!toId)return;
+  const convId=[currentUser.uid,toId].sort().join('_');
+  await FB.addDoc(FB.collection(FB.db,'messages',convId,'msgs'),{from:currentUser.uid,text:tx,createdAt:FB.serverTimestamp()});
+  inp.value='';
+}
+
+// ── COLLAB ──
+function renderCollab(){
+  const el=document.getElementById('clist');
+  if(!cachedCollabs.length){el.innerHTML='<div class="empty"><div class="eico">🤝</div><p>Aucune annonce.<br>Publiez la vôtre !</p></div>';return}
+  el.innerHTML=cachedCollabs.map(a=>{
+    const isMe=a.uid===currentUser?.uid;
+    return`<div class="glass ci">${avEl({name:a.userName,color:a.userColor,photoURL:a.userAvatar},42)}
+      <div class="ci-body"><div class="ci-hd"><span class="ci-nm">${esc(a.userName||'Anonyme')}</span><span class="ci-type" style="background:${a.userColor||'#555'}22;border:1px solid ${a.userColor||'#555'}44;color:${a.userColor||'#aaa'}">${esc(a.type)}</span>${isMe?`<button onclick="delCollab('${a.id}')" style="background:none;border:none;color:var(--dim);font-size:11px;cursor:pointer;margin-left:auto">🗑</button>`:''}</div><div class="ci-det">${esc(a.detail)}</div></div>
+      ${!isMe?`<button class="btn-ct" onclick="qMsg('${a.uid}','${escA(a.userName||'Inconnu')}')">Contacter</button>`:''}
+    </div>`;
+  }).join('');
+}
+function openCollabModal(){openM('m-collab')}
+async function submitCollab(){
+  const type=document.getElementById('ca-type').value,det=document.getElementById('ca-det').value.trim();
+  if(!det){notif('Décrivez votre annonce.',true);return}
+  const old=cachedCollabs.filter(c=>c.uid===currentUser.uid);
+  for(const o of old)await FB.deleteDoc(FB.doc(FB.db,'collabs',o.id));
+  await FB.addDoc(FB.collection(FB.db,'collabs'),{uid:currentUser.uid,userName:myProfile.name||currentUser.displayName||'Anonyme',userRole:myProfile.role||'',userColor:myProfile.color||'#555',userAvatar:myProfile.avatar||'',type,detail:det,createdAt:FB.serverTimestamp()});
+  document.getElementById('ca-det').value='';closeM('m-collab');notif('Annonce publiée !');
+}
+async function delCollab(id){await FB.deleteDoc(FB.doc(FB.db,'collabs',id));notif('Annonce supprimée.')}
+
+// ── PROFILE ──
+function renderProfile(){
+  const u=myProfile;if(!u)return;
+  const av=document.getElementById('prof-av');
+  const init=(u.name||'?').split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2)||'?';
+  if(u.avatar){av.innerHTML=`<img src="${u.avatar}" style="width:100%;height:100%;object-fit:cover"/>`;av.style.background='none'}
+  else{av.innerHTML=init;av.style.background=`linear-gradient(135deg,${u.color||'#555'},${u.color||'#555'}88)`;av.style.fontSize='18px';av.style.fontWeight='900'}
+  const pc=document.getElementById('prof-cov');
+  if(u.cover){let ci=pc.querySelector('img.cov-img');if(!ci){ci=document.createElement('img');ci.className='cov-img';ci.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover';pc.prepend(ci)}ci.src=u.cover;pc.style.background='#111'}
+  document.getElementById('pname').textContent=u.name||'Mon Profil';
+  const badge=document.getElementById('pbadge');badge.textContent=u.role||'';badge.style.display=u.role?'inline-block':'none';badge.style.background=u.role&&u.role.includes('Dessinat')?'#f4a261':'#e63946';
+  const bio=document.getElementById('pbio');bio.textContent=u.bio||'';bio.style.fontStyle=u.bio?'normal':'italic';bio.style.color=u.bio?'var(--muted)':'var(--dim)';
+  document.getElementById('myfoll').textContent=u.followers||0;
+  document.getElementById('myfollowing').textContent=(u.following||[]).length;
+  renderMyStories();updateMyStoriesCount();
+}
+function openEditProfile(){
+  const u=myProfile||{};
+  document.getElementById('ep-nm').value=u.name||'';
+  document.getElementById('ep-role').value=u.role||'Scénariste';
+  document.getElementById('ep-bio').value=u.bio||'';
+  document.getElementById('ep-av-prev').style.display='none';
+  openM('m-editprof');
+}
+async function saveProfile(){
+  const nm=document.getElementById('ep-nm').value.trim();if(!nm){notif('Le nom est obligatoire.',true);return}
+  setBtn('ep-save-btn',true);
+  try{
+    const updates={name:nm,role:document.getElementById('ep-role').value,bio:document.getElementById('ep-bio').value.trim()};
+    const ei=document.getElementById('ep-av-prev');
+    if(ei.src&&ei.style.display!=='none'&&ei.src.startsWith('data:')){
+      updates.avatar=await uploadFile(ei.src,'avatars');
+    }
+    await FB.updateDoc(FB.doc(FB.db,'users',currentUser.uid),updates);
+    Object.assign(myProfile,updates);
+    await FB.updateProfile(currentUser,{displayName:nm});
+    closeM('m-editprof');renderProfile();notif('Profil mis à jour !');
+  }catch(e){notif('Erreur: '+e.message,true)}
+  setBtn('ep-save-btn',false,'ENREGISTRER');
+}
+async function uploadAvatar(e){
+  const f=e.target.files[0];if(!f)return;notif('Upload avatar...');
+  try{
+    const url=await uploadFile(f,'avatars');
+    await FB.updateDoc(FB.doc(FB.db,'users',currentUser.uid),{avatar:url});
+    myProfile.avatar=url;renderProfile();notif('Photo mise à jour !');
+  }catch(err){notif('Erreur upload: '+err.message,true)}
+}
+async function uploadCover(e){
+  const f=e.target.files[0];if(!f)return;notif('Upload bannière...');
+  try{
+    const url=await uploadFile(f,'covers_profile');
+    await FB.updateDoc(FB.doc(FB.db,'users',currentUser.uid),{cover:url});
+    myProfile.cover=url;renderProfile();notif('Bannière mise à jour !');
+  }catch(err){notif('Erreur upload: '+err.message,true)}
+}
+</script>
+</div><!-- /main-app -->
+</body>
+</html>
