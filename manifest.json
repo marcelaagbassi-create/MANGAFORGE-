@@ -1,0 +1,45 @@
+{
+  "name": "MangaForge — La forge des créateurs",
+  "short_name": "MangaForge",
+  "description": "La plateforme de création et lecture de manga par DAVIESLAY",
+  "start_url": "./mangaforge.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0a0e1a",
+  "theme_color": "#e63946",
+  "lang": "fr",
+  "categories": ["entertainment", "social", "books"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%230a0e1a'/%3E%3Ctext x='50%25' y='54%25' text-anchor='middle' dominant-baseline='middle' font-size='320' font-family='serif'%3E%E2%9B%A9%3C/text%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%230a0e1a'/%3E%3Ctext x='50%25' y='54%25' text-anchor='middle' dominant-baseline='middle' font-size='320' font-family='serif'%3E%E2%9B%A9%3C/text%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Fil d'actualité",
+      "short_name": "Fil",
+      "description": "Voir le fil d'actualité",
+      "url": "./mangaforge.html#feed",
+      "icons": [{"src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3C/svg%3E", "sizes": "96x96"}]
+    },
+    {
+      "name": "Studio Créateur",
+      "short_name": "Studio",
+      "description": "Accéder au studio de création",
+      "url": "./mangaforge.html#studio"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}
