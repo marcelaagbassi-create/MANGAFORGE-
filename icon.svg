@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0e1a"/>
+      <stop offset="100%" stop-color="#141827"/>
+    </linearGradient>
+    <linearGradient id="red" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e63946"/>
+      <stop offset="100%" stop-color="#f4a261"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Fond carré arrondi style app icon -->
+  <rect width="512" height="512" rx="110" fill="url(#bg)"/>
+
+  <!-- Bordure rouge subtile -->
+  <rect width="512" height="512" rx="110" fill="none"
+        stroke="rgba(230,57,70,0.35)" stroke-width="3"/>
+
+  <!-- Barre dégradé rouge en haut -->
+  <rect x="0" y="0" width="512" height="7" rx="3" fill="url(#red)"/>
+
+  <!-- ⛩ exactement comme dans l'app — emoji natif -->
+  <text x="256" y="330"
+    text-anchor="middle"
+    dominant-baseline="middle"
+    font-size="270">⛩</text>
+
+  <!-- MANGAFORGE -->
+  <text x="256" y="458"
+    text-anchor="middle"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="36" font-weight="900" letter-spacing="4"
+    fill="url(#red)">MANGAFORGE</text>
+</svg>
