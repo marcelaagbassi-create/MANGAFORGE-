@@ -17,14 +17,12 @@
   <rect width="512" height="512" rx="110" fill="none"
         stroke="rgba(230,57,70,0.35)" stroke-width="3"/>
 
-  <!-- Barre dégradé rouge en haut -->
-  <rect x="0" y="0" width="512" height="7" rx="3" fill="url(#red)"/>
-
   <!-- ⛩ exactement comme dans l'app — emoji natif -->
   <text x="256" y="330"
     text-anchor="middle"
     dominant-baseline="middle"
-    font-size="270">⛩</text>
+    font-size="270"
+    fill="url(#red)">⛩</text>
 
   <!-- MANGAFORGE -->
   <text x="256" y="458"
