@@ -68,21 +68,19 @@ setTimeout(() => {
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <meta name="apple-mobile-web-app-title" content="MangaForge"/>
   <meta name="mobile-web-app-capable" content="yes"/>
-  <link rel="apple-touch-icon" href="icon.svg"/>
+  <link rel="apple-touch-icon" href="icons/icon-192.png"/>
   <script>
-    // Register Service Worker
-    if('serviceWorker' in navigator){
+    // Register Service Worker — only when hosted (not local file)
+    if('serviceWorker' in navigator && location.protocol !== 'file:' && location.protocol !== 'content:'){
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
           .then(reg => console.log('[PWA] SW registered:', reg.scope))
           .catch(err => console.warn('[PWA] SW failed:', err));
       });
     }
-    // Install prompt
     let deferredPrompt;
     window.addEventListener('beforeinstallprompt', e => {
       e.preventDefault(); deferredPrompt = e;
-      // Show install button if needed
       const btn = document.getElementById('pwa-install-btn');
       if(btn) btn.style.display = 'block';
     });
@@ -103,11 +101,39 @@ setTimeout(() => {
     <div class="loader-orb loader-orb-3"></div>
   </div>
   <div class="loader-logo-wrap">
-    <div class="loader-icon" style="color:#e63946;filter:drop-shadow(0 0 24px rgba(230,57,70,.7)) drop-shadow(0 0 8px rgba(230,57,70,.9))">⛩</div>
-    <div class="loader-title">MANGAFORGE</div>
-    <div class="loader-sub">LA FORGE DES CRÉATEURS</div>
+    <!-- Torii SVG exact — même design que l'icône de l'app -->
+    <div class="loader-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="72" height="72" style="animation:loader-float 2.5s ease-in-out infinite;filter:drop-shadow(0 0 22px rgba(230,57,70,.85)) drop-shadow(0 0 6px rgba(230,57,70,1))">
+        <defs>
+          <linearGradient id="lg-loader" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#e63946"/>
+            <stop offset="100%" stop-color="#f4a261"/>
+          </linearGradient>
+        </defs>
+        <!-- Fond carré arrondi noir comme l'icône app -->
+        <rect width="512" height="512" rx="110" fill="#0a0e1a"/>
+        <rect width="512" height="512" rx="110" fill="none" stroke="rgba(230,57,70,0.35)" stroke-width="3"/>
+        <!-- ⛩ Torii gate — fidèle au SVG original -->
+        <text x="256" y="330"
+          text-anchor="middle"
+          dominant-baseline="middle"
+          font-size="270"
+          fill="url(#lg-loader)">⛩</text>
+        <!-- MANGAFORGE -->
+        <text x="256" y="458"
+          text-anchor="middle"
+          font-family="Georgia, 'Times New Roman', serif"
+          font-size="36" font-weight="900" letter-spacing="4"
+          fill="url(#lg-loader)">MANGAFORGE</text>
+      </svg>
+    </div>
+    <div class="loader-sub" style="margin-top:16px">LA FORGE DES CRÉATEURS</div>
   </div>
   <div class="loader-bar-wrap">
+    <div class="loader-bar-fill"></div>
+  </div>
+  <p class="loader-status" id="loader-status">Initialisation...</p>
+</div>
     <div class="loader-bar-fill"></div>
   </div>
   <p class="loader-status" id="loader-status">Initialisation...</p>
@@ -124,9 +150,8 @@ setTimeout(() => {
 .loader-orb-2{width:300px;height:300px;background:rgba(155,93,229,.1);transform:translate(10%,10%);animation-delay:1.3s}
 .loader-orb-3{width:250px;height:250px;background:rgba(42,157,143,.08);transform:translate(-20%,30%);animation-delay:2.6s}
 .loader-logo-wrap{position:relative;z-index:1;text-align:center;animation:loader-title-in .6s cubic-bezier(.16,1,.3,1) both}
-.loader-icon{font-size:56px;animation:loader-float 2.5s ease-in-out infinite;margin-bottom:14px;filter:drop-shadow(0 0 20px rgba(230,57,70,.4))}
-.loader-title{font-family:'Cinzel',serif;font-size:32px;font-weight:900;background:linear-gradient(135deg,#e63946,#f4a261,#e63946);background-size:200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer-text 2s linear infinite;letter-spacing:.08em}
-.loader-sub{font-size:9px;color:rgba(255,255,255,.25);letter-spacing:.35em;text-transform:uppercase;margin-top:6px;font-family:'Rajdhani',sans-serif;font-weight:700}
+.loader-icon{display:flex;align-items:center;justify-content:center;margin-bottom:8px}
+.loader-sub{font-size:9px;color:rgba(255,255,255,.25);letter-spacing:.35em;text-transform:uppercase;font-family:'Rajdhani',sans-serif;font-weight:700}
 .loader-bar-wrap{width:160px;height:2px;background:rgba(255,255,255,.06);border-radius:2px;margin-top:38px;overflow:hidden;position:relative;z-index:1}
 .loader-bar-fill{height:100%;width:0;background:linear-gradient(90deg,#e63946,#f4a261);border-radius:2px;animation:loader-bar 1.8s cubic-bezier(.4,0,.2,1) .2s forwards}
 .loader-status{font-family:'Rajdhani',sans-serif;font-size:11px;color:rgba(255,255,255,.2);letter-spacing:.15em;text-transform:uppercase;margin-top:14px;position:relative;z-index:1}
@@ -144,7 +169,7 @@ setTimeout(() => {
   </div>
   <div style="width:100%;max-width:420px;position:relative;z-index:1">
     <div style="text-align:center;margin-bottom:32px">
-      <div style="font-size:44px;margin-bottom:10px">⛩</div>
+      <div style="margin-bottom:10px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="44" height="44" style="filter:drop-shadow(0 0 16px rgba(230,57,70,.5))"><defs><linearGradient id="alg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e63946"/><stop offset="100%" stop-color="#f4a261"/></linearGradient></defs><g fill="url(#alg)"><rect x="26" y="18" width="8" height="64" rx="2"/><rect x="66" y="18" width="8" height="64" rx="2"/><rect x="16" y="16" width="68" height="10" rx="3"/><rect x="4" y="8" width="92" height="10" rx="3"/><rect x="28" y="32" width="44" height="9" rx="2"/></g></svg></div>
       <div style="font-family:'Cinzel',serif;font-size:28px;font-weight:900;background:linear-gradient(135deg,#e63946,#f4a261);-webkit-background-clip:text;-webkit-text-fill-color:transparent">MANGAFORGE</div>
       <div style="font-size:9px;color:#444;letter-spacing:.3em;text-transform:uppercase;margin-top:5px;font-family:'Rajdhani',sans-serif">La forge des créateurs</div>
     </div>
@@ -1589,10 +1614,10 @@ input:focus,textarea:focus,select:focus{
 </div>
 
 <!-- ══════════ AI ASSISTANT FLOTTANT ══════════ -->
-<button class="ai-assistant-btn" id="ai-assistant-btn" onclick="openAiFullscreen()" title="Assistant IA MangaForge">✨</button>
+<button class="ai-assistant-btn" id="ai-assistant-btn" onclick="openAiFullscreen()" title="Assistant IA MangaForge"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="22" height="22"><defs><linearGradient id="rg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e63946"/><stop offset="100%" stop-color="#f4a261"/></linearGradient></defs><g fill="url(#rg1)"><rect x="26" y="18" width="8" height="64" rx="2"/><rect x="66" y="18" width="8" height="64" rx="2"/><rect x="16" y="16" width="68" height="10" rx="3"/><rect x="4" y="8" width="92" height="10" rx="3"/><rect x="28" y="32" width="44" height="9" rx="2"/></g></svg></button>
 <div class="ai-assistant-panel" id="ai-assistant-panel">
   <div class="aap-header">
-    <div class="aap-avatar">✨</div>
+    <div class="aap-avatar"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="20" height="20"><defs><linearGradient id="rg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e63946"/><stop offset="100%" stop-color="#f4a261"/></linearGradient></defs><g fill="url(#rg2)"><rect x="26" y="18" width="8" height="64" rx="2"/><rect x="66" y="18" width="8" height="64" rx="2"/><rect x="16" y="16" width="68" height="10" rx="3"/><rect x="4" y="8" width="92" height="10" rx="3"/><rect x="28" y="32" width="44" height="9" rx="2"/></g></svg></div>
     <div>
       <div class="aap-name">Assistant MangaForge</div>
       <div class="aap-sub">IA • Aide créative</div>
@@ -1603,10 +1628,10 @@ input:focus,textarea:focus,select:focus{
     <div class="aap-msg-ai">Bonjour ! Je suis votre assistant créatif. Je peux vous aider à développer vos histoires, écrire des synopsis, trouver des idées de personnages, ou analyser vos œuvres. 🎌</div>
   </div>
   <div class="aap-quick-btns">
-    <button class="aap-quick" onclick="aapQuick('Donne-moi une idée de manga originale')">💡 Idée manga</button>
-    <button class="aap-quick" onclick="aapQuick('Comment développer un antagoniste mémorable ?')">😈 Antagoniste</button>
-    <button class="aap-quick" onclick="aapQuick('Tips pour écrire un synopsis accrocheur')">✍️ Synopsis</button>
-    <button class="aap-quick" onclick="aapQuick('Quels sont les arcs narratifs efficaces en manga ?')">📖 Arcs</button>
+    <button class="aap-quick" onclick="aapQuick('Donne-moi une idée de manga originale')"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="#f4a261" stroke-width="1.8"><circle cx="10" cy="8" r="4"/><path d="M8 14h4M9 16h2" stroke-linecap="round"/><path d="M10 4V2M4 8H2M18 8h-2M5.5 5.5L4 4M15 4l-1.5 1.5" stroke-linecap="round"/></svg> Idée manga</button>
+    <button class="aap-quick" onclick="aapQuick('Comment développer un antagoniste mémorable ?')"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="#e63946" stroke-width="1.8"><circle cx="10" cy="9" r="5"/><path d="M7 7c.5-1 2.5-1 3 0M13 7c.5-1 2.5-1 3 0" stroke-linecap="round"/><path d="M7 12s1 2 3 2 3-2 3-2" stroke-linecap="round"/><path d="M6 5c-1-2 0-4 2-4M14 5c1-2 0-4-2-4" stroke-linecap="round"/></svg> Antagoniste</button>
+    <button class="aap-quick" onclick="aapQuick('Tips pour écrire un synopsis accrocheur')"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="#9b5de5" stroke-width="1.8"><path d="M3 17h14M13 3l4 4-8 8H5v-4l8-8z" stroke-linecap="round" stroke-linejoin="round"/></svg> Synopsis</button>
+    <button class="aap-quick" onclick="aapQuick('Quels sont les arcs narratifs efficaces en manga ?')"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="#f4a261" stroke-width="1.8"><path d="M4 4h5v12H4zM11 4h5v12h-5z" stroke-linejoin="round"/><path d="M9 4v12M11 4v12" stroke-linecap="round"/></svg> Arcs</button>
   </div>
   <div class="aap-input-row">
     <input class="aap-input" id="aap-input" placeholder="Posez votre question..." onkeydown="if(event.key==='Enter')aapSend()"/>
@@ -1619,7 +1644,7 @@ input:focus,textarea:focus,select:focus{
   <!-- Header IA -->
   <div style="background:rgba(10,14,26,.95);backdrop-filter:blur(28px);border-bottom:1px solid rgba(155,93,229,.2);padding:0 16px;height:58px;display:flex;align-items:center;gap:12px;flex-shrink:0">
     <button onclick="closeAiFullscreen()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#aaa;width:34px;height:34px;border-radius:10px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">←</button>
-    <div style="width:36px;height:36px;background:linear-gradient(135deg,#9b5de5,#7b2fd6);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;box-shadow:0 4px 14px rgba(155,93,229,.4)">✨</div>
+    <div style="width:36px;height:36px;background:linear-gradient(135deg,#9b5de5,#7b2fd6);border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 14px rgba(155,93,229,.4)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="22" height="22"><defs><linearGradient id="rg3" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e63946"/><stop offset="100%" stop-color="#f4a261"/></linearGradient></defs><g fill="url(#rg3)"><rect x="26" y="18" width="8" height="64" rx="2"/><rect x="66" y="18" width="8" height="64" rx="2"/><rect x="16" y="16" width="68" height="10" rx="3"/><rect x="4" y="8" width="92" height="10" rx="3"/><rect x="28" y="32" width="44" height="9" rx="2"/></g></svg></div>
     <div style="flex:1">
       <div style="font-family:'Cinzel',serif;font-size:13px;color:#ddd;font-weight:700;letter-spacing:.04em">Assistant MangaForge</div>
       <div style="font-size:9px;color:rgba(155,93,229,.7);letter-spacing:.15em;text-transform:uppercase;font-family:'Rajdhani',sans-serif;font-weight:700">IA • Aide créative</div>
@@ -1629,26 +1654,26 @@ input:focus,textarea:focus,select:focus{
 
   <!-- Boutons rapides -->
   <div style="padding:10px 14px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.04);background:rgba(0,0,0,.2)">
-    <button class="aap-quick" onclick="aapFullQuick('Donne-moi une idée de manga originale et innovante')">💡 Idée manga</button>
-    <button class="aap-quick" onclick="aapFullQuick('Comment créer un antagoniste inoubliable ?')">😈 Antagoniste</button>
-    <button class="aap-quick" onclick="aapFullQuick('Écris un synopsis accrocheur pour un shonen dark fantasy')">📝 Synopsis</button>
-    <button class="aap-quick" onclick="aapFullQuick('Quels sont les arcs narratifs les plus efficaces en manga ?')">📖 Arcs</button>
-    <button class="aap-quick" onclick="aapFullQuick('Comment développer un système de magie original ?')">🔮 Magie</button>
-    <button class="aap-quick" onclick="aapFullQuick('Tips pour écrire des dialogues naturels et percutants')">💬 Dialogues</button>
-    <button class="aap-quick" onclick="aapFullQuick('Comment structurer un monde de manga cohérent ?')">🌍 Worldbuilding</button>
+    <button class="aap-quick" onclick="aapFullQuick('Donne-moi une idée de manga originale et innovante')"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="#f4a261" stroke-width="1.8"><circle cx="10" cy="8" r="4"/><path d="M8 14h4M9 16h2" stroke-linecap="round"/><path d="M10 4V2M4 8H2M18 8h-2M5.5 5.5L4 4M15 4l-1.5 1.5" stroke-linecap="round"/></svg> Idée manga</button>
+    <button class="aap-quick" onclick="aapFullQuick('Comment créer un antagoniste inoubliable ?')"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="#e63946" stroke-width="1.8"><circle cx="10" cy="9" r="5"/><path d="M7 7c.5-1 2.5-1 3 0M13 7c.5-1 2.5-1 3 0" stroke-linecap="round"/><path d="M7 12s1 2 3 2 3-2 3-2" stroke-linecap="round"/><path d="M6 5c-1-2 0-4 2-4M14 5c1-2 0-4-2-4" stroke-linecap="round"/></svg> Antagoniste</button>
+    <button class="aap-quick" onclick="aapFullQuick('Écris un synopsis accrocheur pour un shonen dark fantasy')"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="#9b5de5" stroke-width="1.8"><path d="M3 17h14M13 3l4 4-8 8H5v-4l8-8z" stroke-linecap="round" stroke-linejoin="round"/></svg> Synopsis</button>
+    <button class="aap-quick" onclick="aapFullQuick('Quels sont les arcs narratifs les plus efficaces en manga ?')"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="#f4a261" stroke-width="1.8"><path d="M4 4h5v12H4zM11 4h5v12h-5z" stroke-linejoin="round"/><path d="M9 4v12M11 4v12" stroke-linecap="round"/></svg> Arcs</button>
+    <button class="aap-quick" onclick="aapFullQuick('Comment développer un système de magie original ?')"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="#9b5de5" stroke-width="1.8"><path d="M3 17L14 6M14 6l-2-2M14 6l2-2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="4" r="2" stroke="#e63946"/><path d="M6 3v2M5 4h2M14 14v2M13 15h2" stroke-linecap="round"/></svg> Magie</button>
+    <button class="aap-quick" onclick="aapFullQuick('Tips pour écrire des dialogues naturels et percutants')"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="#2a9d8f" stroke-width="1.8"><path d="M3 4h14v10H3z" rx="2" stroke-linejoin="round"/><path d="M7 8h6M7 11h4" stroke-linecap="round"/><path d="M8 14l-2 3" stroke-linecap="round"/></svg> Dialogues</button>
+    <button class="aap-quick" onclick="aapFullQuick('Comment structurer un monde de manga cohérent ?')"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="#4cc9f0" stroke-width="1.8"><circle cx="10" cy="10" r="7"/><path d="M10 3c-2 3-2 11 0 14M10 3c2 3 2 11 0 14M3 10h14" stroke-linecap="round"/></svg> Worldbuilding</button>
   </div>
 
   <!-- Zone messages -->
   <div id="ai-full-msgs" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth">
     <!-- Message de bienvenue -->
     <div style="display:flex;gap:10px;align-items:flex-start">
-      <div style="width:32px;height:32px;background:linear-gradient(135deg,#9b5de5,#7b2fd6);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">✨</div>
+      <div style="width:32px;height:32px;background:linear-gradient(135deg,#9b5de5,#7b2fd6);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="18" height="18"><defs><linearGradient id="rg5" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e63946"/><stop offset="100%" stop-color="#f4a261"/></linearGradient></defs><g fill="url(#rg5)"><rect x="26" y="18" width="8" height="64" rx="2"/><rect x="66" y="18" width="8" height="64" rx="2"/><rect x="16" y="16" width="68" height="10" rx="3"/><rect x="4" y="8" width="92" height="10" rx="3"/><rect x="28" y="32" width="44" height="9" rx="2"/></g></svg></div>
       <div style="background:rgba(155,93,229,.08);border:1px solid rgba(155,93,229,.18);border-radius:4px 14px 14px 14px;padding:12px 15px;max-width:85%;font-size:13px;color:#ccc;line-height:1.7">
         Bonjour ! Je suis votre assistant créatif MangaForge. Je peux vous aider à :<br><br>
-        🖊️ <strong style="color:#ddd">Écrire</strong> des synopsis, titres et descriptions<br>
-        🎭 <strong style="color:#ddd">Développer</strong> vos personnages et univers<br>
-        📖 <strong style="color:#ddd">Structurer</strong> vos arcs narratifs<br>
-        💡 <strong style="color:#ddd">Générer</strong> des idées originales<br><br>
+        <svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="#ddd" stroke-width="1.8"><path d="M15 3l2 2-10 10H5v-2L15 3z" stroke-linejoin="round"/><path d="M13 5l2 2" stroke-linecap="round"/></svg> <strong style="color:#ddd">Écrire</strong> des synopsis, titres et descriptions<br>
+        <svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="#ddd" stroke-width="1.8"><circle cx="7" cy="8" r="4"/><circle cx="13" cy="8" r="4"/><path d="M5 8c0 1.5 1 3 2 3s2-1.5 2-3M11 8c0 1.5 1 3 2 3s2-1.5 2-3" stroke-linecap="round"/></svg> <strong style="color:#ddd">Développer</strong> vos personnages et univers<br>
+        <svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="#ddd" stroke-width="1.8"><rect x="4" y="4" width="12" height="14" rx="2"/><path d="M7 8h6M7 11h6M7 14h4" stroke-linecap="round"/></svg> <strong style="color:#ddd">Structurer</strong> vos arcs narratifs<br>
+        <svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="#ddd" stroke-width="1.8"><circle cx="10" cy="8" r="5"/><path d="M8 15h4M9 17h2" stroke-linecap="round"/></svg> <strong style="color:#ddd">Générer</strong> des idées originales<br><br>
         Utilisez les raccourcis ci-dessus ou posez-moi n'importe quelle question ! 🎌
       </div>
     </div>
@@ -1696,10 +1721,10 @@ input:focus,textarea:focus,select:focus{
         style="flex:1;background:none;border:none;color:#ddd;font-size:13px;outline:none;font-family:'Rajdhani',sans-serif;resize:none;max-height:100px;min-height:22px;line-height:1.5;overflow-y:auto;padding-top:5px"></textarea>
 
       <!-- Bouton micro -->
-      <button id="ai-mic-btn" onclick="toggleAiMic()" title="Dicter un message" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#666;width:32px;height:32px;border-radius:9px;font-size:15px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s">🎤</button>
+      <button id="ai-mic-btn" onclick="toggleAiMic()" title="Dicter un message" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#666;width:32px;height:32px;border-radius:9px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="7" y="2" width="6" height="9" rx="3"/><path d="M4 10a6 6 0 0012 0M10 16v2M8 18h4" stroke-linecap="round"/></svg></button>
 
       <!-- Sélecteur API -->
-      <button id="ai-provider-btn" onclick="toggleAiProvider()" title="Changer d'IA" style="background:rgba(155,93,229,.1);border:1px solid rgba(155,93,229,.2);color:rgba(155,93,229,.7);width:32px;height:32px;border-radius:9px;font-size:10px;font-weight:700;cursor:pointer;flex-shrink:0;font-family:'Rajdhani',sans-serif;transition:all .2s" id="ai-provider-btn">✦</button>
+      <button id="ai-provider-btn" onclick="toggleAiProvider()" title="Changer d'IA" style="background:rgba(155,93,229,.1);border:1px solid rgba(155,93,229,.2);color:rgba(155,93,229,.7);width:32px;height:32px;border-radius:9px;cursor:pointer;flex-shrink:0;transition:all .2s;display:flex;align-items:center;justify-content:center;" id="ai-provider-btn"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3v14M3 10h14" stroke-linecap="round"/><circle cx="10" cy="10" r="3"/></svg></button>
 
       <!-- Bouton envoyer -->
       <button onclick="aiFSend()" id="ai-full-send" style="background:linear-gradient(135deg,#9b5de5,#7b2fd6);border:none;width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;color:#fff;font-size:16px;transition:all .2s;box-shadow:0 4px 14px rgba(155,93,229,.4)">→</button>
