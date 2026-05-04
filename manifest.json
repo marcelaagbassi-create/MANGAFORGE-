@@ -1,58 +1,138 @@
 {
+  "id": "mangaforge-app",
   "name": "MangaForge — La forge des créateurs",
   "short_name": "MangaForge",
   "description": "Lire, créer et partager vos mangas et webtoons. La forge des créateurs africains et du monde entier.",
-  "start_url": "/mangaforge.html",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0a0e1a",
+  "background_color": "#000000",
   "theme_color": "#e63946",
   "lang": "fr",
   "categories": ["entertainment", "social", "books"],
+  "related_applications": [],
+  "prefer_related_applications": false,
+
   "icons": [
     {
-      "src": "icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "src": "icons/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "icon-192.png",
+      "src": "icons/icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icon-512.png",
+      "src": "icons/icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
-  "screenshots": [],
+
+  "screenshots": [
+    {
+      "src": "screenshots/screen1.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Fil d'actualité MangaForge"
+    },
+    {
+      "src": "screenshots/screen2.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Bibliothèque de mangas"
+    }
+  ],
+
   "shortcuts": [
     {
       "name": "Fil d'actualité",
       "short_name": "Fil",
       "description": "Voir le fil d'actualité",
-      "url": "/mangaforge.html#feed",
-      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+      "url": "/?tab=feed",
+      "icons": [
+        {
+          "src": "icons/shortcut-feed.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
     },
     {
-      "name": "Mes Histoires",
+      "name": "Mes histoires",
       "short_name": "Histoires",
-      "description": "Gérer mes histoires",
-      "url": "/mangaforge.html#stories",
-      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+      "description": "Voir mes histoires",
+      "url": "/?tab=stories",
+      "icons": [
+        {
+          "src": "icons/shortcut-stories.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
     },
     {
-      "name": "Studio Créateur",
-      "short_name": "Studio",
-      "description": "Tableau de bord créateur",
-      "url": "/mangaforge.html#studio",
-      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+      "name": "Assistant IA",
+      "short_name": "IA",
+      "description": "Ouvrir l'assistant créatif IA",
+      "url": "/?ai=1",
+      "icons": [
+        {
+          "src": "icons/shortcut-ai.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
     }
-  ],
-  "related_applications": [],
-  "prefer_related_applications": false
+  ]
 }
