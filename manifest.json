@@ -1,138 +1,86 @@
 {
-  "id": "mangaforge-app",
   "name": "MangaForge — La forge des créateurs",
   "short_name": "MangaForge",
-  "description": "Lire, créer et partager vos mangas et webtoons. La forge des créateurs africains et du monde entier.",
-  "start_url": "/",
-  "scope": "/",
+  "description": "Lisez, créez et partagez vos histoires manga sur MangaForge.",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#000000",
+  "background_color": "#0a0e1a",
   "theme_color": "#e63946",
   "lang": "fr",
-  "categories": ["entertainment", "social", "books"],
-  "related_applications": [],
-  "prefer_related_applications": false,
-
+  "categories": ["entertainment", "books", "social"],
   "icons": [
     {
-      "src": "icons/icon-72.png",
+      "src": "icons/icon-72x72.png",
       "sizes": "72x72",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icons/icon-96.png",
+      "src": "icons/icon-96x96.png",
       "sizes": "96x96",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icons/icon-128.png",
+      "src": "icons/icon-128x128.png",
       "sizes": "128x128",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icons/icon-144.png",
+      "src": "icons/icon-144x144.png",
       "sizes": "144x144",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icons/icon-152.png",
+      "src": "icons/icon-152x152.png",
       "sizes": "152x152",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icons/icon-192.png",
+      "src": "icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icons/icon-384.png",
+      "src": "icons/icon-384x384.png",
       "sizes": "384x384",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icons/icon-512.png",
+      "src": "icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icons/icon-maskable-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "icons/icon-maskable-512.png",
+      "src": "icons/icon-maskable-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     }
   ],
-
-  "screenshots": [
-    {
-      "src": "screenshots/screen1.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Fil d'actualité MangaForge"
-    },
-    {
-      "src": "screenshots/screen2.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Bibliothèque de mangas"
-    }
-  ],
-
+  "screenshots": [],
   "shortcuts": [
     {
       "name": "Fil d'actualité",
       "short_name": "Fil",
-      "description": "Voir le fil d'actualité",
-      "url": "/?tab=feed",
-      "icons": [
-        {
-          "src": "icons/shortcut-feed.png",
-          "sizes": "96x96",
-          "type": "image/png"
-        }
-      ]
+      "description": "Voir les dernières publications",
+      "url": "./index.html#feed",
+      "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }]
     },
     {
       "name": "Mes histoires",
       "short_name": "Histoires",
-      "description": "Voir mes histoires",
-      "url": "/?tab=stories",
-      "icons": [
-        {
-          "src": "icons/shortcut-stories.png",
-          "sizes": "96x96",
-          "type": "image/png"
-        }
-      ]
-    },
-    {
-      "name": "Assistant IA",
-      "short_name": "IA",
-      "description": "Ouvrir l'assistant créatif IA",
-      "url": "/?ai=1",
-      "icons": [
-        {
-          "src": "icons/shortcut-ai.png",
-          "sizes": "96x96",
-          "type": "image/png"
-        }
-      ]
+      "description": "Gérer mes histoires manga",
+      "url": "./index.html#stories",
+      "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }]
     }
   ]
 }
