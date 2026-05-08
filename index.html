@@ -134,10 +134,10 @@ setTimeout(() => {
 @keyframes aura-pulse{0%{opacity:.4}100%{opacity:1}}
 @keyframes aura-flicker{0%,100%{opacity:.55;transform:scaleY(1)}50%{opacity:1;transform:scaleY(1.04)}}
 .aura-edge{position:absolute;pointer-events:none}
-.aura-top{top:0;left:0;right:0;height:80px;background:linear-gradient(to bottom,rgba(230,57,70,.95) 0%,transparent 100%);animation:aura-pulse 1s ease-in-out infinite alternate}
-.aura-bottom{bottom:0;left:0;right:0;height:80px;background:linear-gradient(to top,rgba(244,162,97,.9) 0%,transparent 100%);animation:aura-pulse 1s ease-in-out infinite alternate}
-.aura-left{top:0;bottom:0;left:0;width:40px;background:linear-gradient(to right,rgba(230,57,70,.85) 0%,transparent 100%);animation:aura-flicker 1.3s ease-in-out infinite alternate}
-.aura-right{top:0;bottom:0;right:0;width:40px;background:linear-gradient(to left,rgba(244,162,97,.8) 0%,transparent 100%);animation:aura-flicker 1.3s ease-in-out infinite alternate}
+.aura-top{top:0;left:0;right:0;height:80px;background:linear-gradient(to bottom,rgba(230,57,70,.45) 0%,transparent 100%);animation:aura-pulse 1s ease-in-out infinite alternate}
+.aura-bottom{bottom:0;left:0;right:0;height:80px;background:linear-gradient(to top,rgba(244,162,97,.4) 0%,transparent 100%);animation:aura-pulse 1s ease-in-out infinite alternate}
+.aura-left{top:0;bottom:0;left:0;width:40px;background:linear-gradient(to right,rgba(230,57,70,.35) 0%,transparent 100%);animation:aura-flicker 1.3s ease-in-out infinite alternate}
+.aura-right{top:0;bottom:0;right:0;width:40px;background:linear-gradient(to left,rgba(244,162,97,.32) 0%,transparent 100%);animation:aura-flicker 1.3s ease-in-out infinite alternate}
 #ai-aura-overlay.active{display:block!important}
 #tts-btn.tts-active{background:rgba(155,93,229,.45)!important;border-color:rgba(155,93,229,.9)!important;color:#fff!important;box-shadow:0 0 14px rgba(155,93,229,.55);animation:aura-pulse .8s ease-in-out infinite alternate}
 .loader-orb{position:absolute;border-radius:50%;filter:blur(80px);animation:loader-orb 4s ease-in-out infinite;left:50%;top:50%}
@@ -253,8 +253,65 @@ setTimeout(() => {
   --glass-bg:rgba(255,255,255,.04);--glass-border:rgba(255,255,255,.09);
   --shadow:rgba(0,0,0,.5);
 }
-/* THEME CLAIR */
-body.theme-light{
+/* THEME GLASS / BLUR */
+body.theme-glass{
+  --bg:transparent;--bg2:rgba(10,14,26,.3);--bg3:rgba(10,14,26,.2);
+  --border:rgba(255,255,255,.12);--border2:rgba(255,255,255,.2);
+  --text:#fff;--text2:rgba(255,255,255,.85);--muted:rgba(255,255,255,.45);--dim:rgba(255,255,255,.2);
+  --card:rgba(255,255,255,.06);--card2:rgba(255,255,255,.1);
+  --glass-bg:rgba(255,255,255,.06);--glass-border:rgba(255,255,255,.12);
+  --shadow:rgba(0,0,0,.3);
+}
+body.theme-glass::before{
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 0%,rgba(230,57,70,.25),transparent 60%),
+    radial-gradient(ellipse 70% 60% at 0% 100%,rgba(155,93,229,.2),transparent 55%),
+    radial-gradient(ellipse 60% 50% at 100% 50%,rgba(244,162,97,.15),transparent 55%),
+    linear-gradient(135deg,#0a0e1a 0%,#0d1020 50%,#0a0e1a 100%) !important;
+}
+body.theme-glass .glass{
+  background:rgba(255,255,255,.05) !important;
+  backdrop-filter:blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter:blur(24px) saturate(180%) !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  box-shadow:0 8px 32px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.08) !important;
+}
+body.theme-glass header{
+  background:rgba(10,14,26,.25) !important;
+  backdrop-filter:blur(32px) saturate(200%) !important;
+  -webkit-backdrop-filter:blur(32px) saturate(200%) !important;
+  border-bottom:1px solid rgba(255,255,255,.08) !important;
+}
+body.theme-glass nav{
+  background:rgba(10,14,26,.2) !important;
+  backdrop-filter:blur(32px) saturate(180%) !important;
+  -webkit-backdrop-filter:blur(32px) saturate(180%) !important;
+  border-top:1px solid rgba(255,255,255,.08) !important;
+}
+body.theme-glass .mbox{
+  background:rgba(10,14,26,.3) !important;
+  backdrop-filter:blur(28px) !important;
+  -webkit-backdrop-filter:blur(28px) !important;
+  border-color:rgba(255,255,255,.1) !important;
+}
+body.theme-glass .post,body.theme-glass .sc,body.theme-glass .uc,
+body.theme-glass .ci,body.theme-glass .ct,body.theme-glass .ep-item,
+body.theme-glass .mdx-card,body.theme-glass .studio-story-row,body.theme-glass .kpi-card{
+  background:rgba(255,255,255,.05) !important;
+  backdrop-filter:blur(16px) !important;
+  -webkit-backdrop-filter:blur(16px) !important;
+  border-color:rgba(255,255,255,.1) !important;
+}
+body.theme-glass input,body.theme-glass textarea,body.theme-glass select{
+  background:rgba(255,255,255,.06) !important;
+  backdrop-filter:blur(12px) !important;
+  border-color:rgba(255,255,255,.12) !important;
+  color:#fff !important;
+}
+body.theme-glass .prof-wrap{background:rgba(255,255,255,.04) !important;backdrop-filter:blur(20px) !important;}
+body.theme-glass .sec-title{color:#fff}
+body.theme-glass .nb{color:rgba(255,255,255,.4) !important}
+body.theme-glass .nb.active{color:#fff !important}
   --bg:#e8e0d0;--bg2:#dfd6c4;--bg3:#d8ceba;
   --border:rgba(0,0,0,.1);--border2:rgba(0,0,0,.18);
   --text:#1a1208;--text2:#3a2e1e;--muted:#7a6a55;--dim:#b5a888;
@@ -515,8 +572,9 @@ main{padding:22px 20px 115px;position:relative;z-index:1}
 .cov-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(10,14,26,.7))}
 .cov-edit{position:absolute;top:10px;right:10px;background:rgba(10,14,26,.6);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);color:#ccc;padding:5px 11px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Rajdhani',sans-serif}
 .cov-edit:hover{background:rgba(255,255,255,.15)}
-.prof-av-slot{position:absolute;bottom:-36px;left:18px;z-index:10}
-.prof-body{padding:46px 18px 20px;background:var(--glass);border-radius:0 0 16px 16px;border:1px solid var(--border);border-top:none}
+.prof-av-slot{position:absolute;bottom:-42px;left:18px;z-index:20}
+.prof-av-slot .av{box-shadow:0 4px 20px rgba(0,0,0,.5)!important}
+.prof-body{padding:52px 18px 20px;background:var(--glass);border-radius:0 0 16px 16px;border:1px solid var(--border);border-top:none}
 .prof-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
 .prof-name{font-family:'Cinzel',serif;font-size:20px;color:var(--text);font-weight:900}
 .prof-bio{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.6}
@@ -1059,7 +1117,7 @@ input:focus,textarea:focus,select:focus{
     </div>
     <div class="h-right">
       <div class="sw" style="display:flex;align-items:center;gap:0">
-        <span class="sw-ico">🔍</span>
+        <span class="sw-ico"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
         <input type="text" id="srch" placeholder="Rechercher..." oninput="onSearch()"/>
         <div id="notif-bell" onclick="toggleNotifPanel()" title="Notifications" style="margin-left:4px;flex-shrink:0">
           <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
@@ -1238,7 +1296,7 @@ input:focus,textarea:focus,select:focus{
   <div class="glass prof-wrap">
     <div class="prof-cov" id="prof-cov">
       <div class="cov-overlay"></div>
-      <button class="cov-edit" onclick="document.getElementById('cov-inp').click()">🖼 Changer</button>
+      <button class="cov-edit" onclick="document.getElementById('cov-inp').click()"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>Changer</button>
       <input type="file" id="cov-inp" accept="image/*" style="display:none" onchange="uploadCover(event)"/>
       <div class="prof-av-slot">
         <div class="av" id="prof-av" style="width:68px;height:68px;font-size:22px;cursor:pointer;font-weight:900;border:3px solid var(--bg2)" onclick="document.getElementById('av-inp').click()"></div>
@@ -1252,7 +1310,7 @@ input:focus,textarea:focus,select:focus{
           <span class="rb" id="pbadge" style="background:#e63946;margin-top:4px;display:none"></span>
           <p class="prof-bio" id="pbio"></p>
         </div>
-        <button class="btn-ep" onclick="openEditProfile()">✏️ Modifier</button>
+        <button class="btn-ep" onclick="openEditProfile()"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:5px"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Modifier</button>
       </div>
       <div class="prof-stats">
         <div class="sbl"><div class="v" id="myfoll">0</div><div class="l">Followers</div></div>
@@ -1386,6 +1444,12 @@ input:focus,textarea:focus,select:focus{
       <div class="theme-opt" id="theme-light" onclick="setTheme('light')">
         <div class="theme-preview-light"></div>
         <div class="theme-preview-label" style="background:rgba(0,0,0,.04);color:#333">☀️ Clair</div>
+      </div>
+      <div class="theme-opt" id="theme-glass" onclick="setTheme('glass')">
+        <div style="height:48px;background:linear-gradient(135deg,rgba(10,14,26,.4),rgba(155,93,229,.2));backdrop-filter:blur(8px);border-radius:8px;border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center">
+          <div style="width:20px;height:10px;background:rgba(255,255,255,.15);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.25);border-radius:3px"></div>
+        </div>
+        <div class="theme-preview-label" style="background:rgba(255,255,255,.08);color:#ddd;backdrop-filter:blur(8px)">🫧 Glass</div>
       </div>
     </div>
   </div>
@@ -1733,7 +1797,7 @@ input:focus,textarea:focus,select:focus{
       </div>
       <!-- AI suggestions panel -->
       <div class="ai-panel" id="pub-ai-panel" style="display:none">
-        <div class="ai-panel-title">✨ <span>Assistant IA</span></div>
+        <div class="ai-panel-title"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" style="margin-right:6px;vertical-align:middle"><path d="M10 1L11.5 7H17L12.5 10.5L14 17L10 13.5L6 17L7.5 10.5L3 7H8.5Z" fill="url(#ai-title-grad)"/><defs><linearGradient id="ai-title-grad" x1="3" y1="1" x2="17" y2="17" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#c084fc"/><stop offset="100%" stop-color="#9b5de5"/></linearGradient></defs></svg><span>Assistant IA</span></div>
         <div class="ai-output visible" id="pub-ai-output">
           <div class="ai-typing"><span></span><span></span><span></span></div>
         </div>
@@ -1782,12 +1846,22 @@ input:focus,textarea:focus,select:focus{
 
 <!-- ══════════ AI ASSISTANT FLOTTANT ══════════ -->
 <button class="ai-assistant-btn" id="ai-assistant-btn" onclick="openAiFullscreen()" title="Assistant IA MangaForge">
-  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 2L13.09 8.26L19 6L14.74 10.91L21 12L14.74 13.09L19 18L13.09 15.74L12 22L10.91 15.74L5 18L9.26 13.09L3 12L9.26 10.91L5 6L10.91 8.26L12 2Z" fill="url(#ai-grad)" stroke="none"/>
+  <svg viewBox="0 0 36 36" width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Torii simplifié -->
+    <rect x="5" y="8" width="22" height="3.5" rx="1.5" fill="url(#fab-grad)"/>
+    <rect x="8" y="12" width="16" height="2.5" rx="1.2" fill="url(#fab-grad)" opacity=".75"/>
+    <rect x="9" y="11.5" width="2.5" height="11" rx="1.2" fill="url(#fab-grad)"/>
+    <rect x="20.5" y="11.5" width="2.5" height="11" rx="1.2" fill="url(#fab-grad)"/>
+    <!-- Éclair incurvé (isocèle courbe) à droite -->
+    <path d="M27 9 L23 17 L26 17 L22 27 L30 16 L27 16 Z" fill="url(#fab-grad2)" opacity=".9"/>
     <defs>
-      <linearGradient id="ai-grad" x1="3" y1="2" x2="21" y2="22" gradientUnits="userSpaceOnUse">
+      <linearGradient id="fab-grad" x1="5" y1="8" x2="27" y2="28" gradientUnits="userSpaceOnUse">
         <stop offset="0%" stop-color="#c084fc"/>
         <stop offset="100%" stop-color="#9b5de5"/>
+      </linearGradient>
+      <linearGradient id="fab-grad2" x1="22" y1="9" x2="30" y2="27" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#f4a261"/>
+        <stop offset="100%" stop-color="#e63946"/>
       </linearGradient>
     </defs>
   </svg>
@@ -3925,10 +3999,14 @@ setTimeout(resetVeilleTimer,3000);
 // ══════════════════════════════════════════════════════
 function setTheme(t){
   document.body.classList.toggle('theme-light', t==='light');
+  document.body.classList.toggle('theme-glass', t==='glass');
   localStorage.setItem('mf-theme', t);
-  const d=document.getElementById('theme-dark');const l=document.getElementById('theme-light');
+  const d=document.getElementById('theme-dark');
+  const l=document.getElementById('theme-light');
+  const g=document.getElementById('theme-glass');
   if(d)d.classList.toggle('selected', t==='dark');
   if(l)l.classList.toggle('selected', t==='light');
+  if(g)g.classList.toggle('selected', t==='glass');
 }
 function loadTheme(){const saved=localStorage.getItem('mf-theme')||'dark';setTheme(saved);}
 loadTheme();
