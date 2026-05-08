@@ -11,9 +11,9 @@ const CACHE_DYNAMIC = 'mangaforge-dynamic-v1';
 const STATIC_ASSETS = [
   './index.html',
   './manifest.json',
-  './icons/icon-192x192.png',
-  './icons/icon-512x512.png',
-  './icons/icon-maskable-512x512.png',
+  './icon-192x192.png',
+  './icon-512x512.png',
+  './icon-maskable-1024x1024.png',
   'https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap'
 ];
 
