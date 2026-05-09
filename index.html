@@ -141,6 +141,7 @@ setTimeout(() => {
 @keyframes loader-bar{from{width:0}to{width:100%}}
 @keyframes loader-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 /* ── AURA IA plein écran ── */
+@keyframes brand-blink{0%,45%{opacity:0}50%,95%{opacity:1}100%{opacity:0}}
 @keyframes aura-pulse{0%{opacity:.4}100%{opacity:1}}
 @keyframes aura-flicker{0%,100%{opacity:.55;transform:scaleY(1)}50%{opacity:1;transform:scaleY(1.04)}}
 .aura-edge{position:absolute;pointer-events:none}
@@ -356,6 +357,15 @@ body.theme-light .fab-menu-item{color:#1a1208 !important}
 body.theme-light .fab-menu-item:hover{background:rgba(0,0,0,.07) !important}
 body.theme-light .fab-menu-item svg{stroke:#1a1208 !important}
 /* Lecteur texte — noir sur fond crème */
+/* Lecteur texte en thème glass — fond solide pour lisibilité */
+body.theme-glass #text-reader{background:rgba(6,10,22,.97) !important}
+body.theme-glass #text-reader-header{background:rgba(10,14,26,.95) !important;border-bottom-color:rgba(255,255,255,.1) !important}
+body.theme-glass #text-reader-content{background:rgba(6,10,22,.97) !important}
+body.theme-glass #text-reader-body{color:#e8e0d0 !important}
+body.theme-glass #text-reader-body p{color:#e8e0d0 !important}
+body.theme-glass #text-reader-ep-title{color:#f4a261 !important}
+body.theme-glass #text-reader-story-title{color:rgba(255,255,255,.45) !important}
+/* Lecteur texte thème clair */
 body.theme-light #text-reader{background:#ede8dc !important}
 body.theme-light #text-reader-header{background:rgba(232,226,214,.99) !important;border-bottom-color:rgba(0,0,0,.1) !important}
 body.theme-light #text-reader-ep-title{color:#1a1208 !important}
@@ -1306,6 +1316,17 @@ input:focus,textarea:focus,select:focus{
   <div class="glass prof-wrap">
     <div class="prof-cov" id="prof-cov">
       <div class="cov-overlay"></div>
+      <!-- Logo animé sur la bannière -->
+      <div id="cov-brand" style="position:absolute;bottom:10px;right:12px;display:flex;align-items:center;gap:6px;opacity:0;animation:brand-blink 2s ease-in-out infinite;pointer-events:none;z-index:3">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
+          <rect x="2" y="4" width="20" height="3" rx="1.5" fill="rgba(230,57,70,.9)"/>
+          <rect x="4" y="7.5" width="16" height="2" rx="1" fill="rgba(244,162,97,.8)"/>
+          <rect x="5" y="7" width="2.5" height="10" rx="1" fill="rgba(230,57,70,.9)"/>
+          <rect x="16.5" y="7" width="2.5" height="10" rx="1" fill="rgba(230,57,70,.9)"/>
+          <rect x="5" y="12" width="14" height="2" rx="1" fill="rgba(230,57,70,.8)"/>
+        </svg>
+        <span style="font-family:'Cinzel',serif;font-size:9px;font-weight:900;color:rgba(255,255,255,.85);letter-spacing:.12em;text-shadow:0 1px 4px rgba(0,0,0,.8)">MANGAFORGE</span>
+      </div>
       <button class="cov-edit" onclick="document.getElementById('cov-inp').click()"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>Changer</button>
       <input type="file" id="cov-inp" accept="image/*" style="display:none" onchange="uploadCover(event)"/>
       <div class="prof-av-slot">
@@ -2019,8 +2040,46 @@ input:focus,textarea:focus,select:focus{
           <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
         </svg>
       </button>
+      <!-- Sélecteur de voix -->
+      <button onclick="openVoiceSelector()" title="Choisir la voix" style="background:rgba(155,93,229,.1);border:1px solid rgba(155,93,229,.2);color:rgba(155,93,229,.7);width:32px;height:30px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .2s">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0 1 12 0v2"/>
+        </svg>
+      </button>
       <button onclick="trFontSize(-1)" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#888;width:30px;height:30px;border-radius:8px;font-size:13px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700">A-</button>
       <button onclick="trFontSize(1)" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#888;width:30px;height:30px;border-radius:8px;font-size:14px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700">A+</button>
+    </div>
+
+    <!-- Modal sélecteur de voix -->
+    <div id="voice-selector-modal" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);align-items:flex-end;justify-content:center">
+      <div style="background:#0d1020;border:1px solid rgba(155,93,229,.3);border-radius:16px 16px 0 0;width:100%;max-width:600px;padding:20px;max-height:70vh;overflow-y:auto">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <div style="font-family:'Cinzel',serif;font-size:13px;font-weight:900;color:#c084fc">🎙 Choisir la voix</div>
+          <button onclick="closeVoiceSelector()" style="background:none;border:none;color:#555;font-size:20px;cursor:pointer">×</button>
+        </div>
+        <!-- Paramètres voix -->
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px">
+          <div>
+            <label style="font-size:10px;color:#555;letter-spacing:.1em;text-transform:uppercase;font-family:'Rajdhani',sans-serif">Vitesse</label>
+            <input type="range" id="tts-rate" min="0.5" max="2" step="0.1" value="0.92"
+              oninput="document.getElementById('tts-rate-val').textContent=parseFloat(this.value).toFixed(1)+'x'"
+              style="width:100%;accent-color:#9b5de5;margin-top:4px"/>
+            <span id="tts-rate-val" style="font-size:11px;color:#888;font-family:'Rajdhani',sans-serif">0.9x</span>
+          </div>
+          <div>
+            <label style="font-size:10px;color:#555;letter-spacing:.1em;text-transform:uppercase;font-family:'Rajdhani',sans-serif">Tonalité</label>
+            <input type="range" id="tts-pitch" min="0.5" max="2" step="0.1" value="1"
+              oninput="document.getElementById('tts-pitch-val').textContent=parseFloat(this.value).toFixed(1)"
+              style="width:100%;accent-color:#9b5de5;margin-top:4px"/>
+            <span id="tts-pitch-val" style="font-size:11px;color:#888;font-family:'Rajdhani',sans-serif">1.0</span>
+          </div>
+        </div>
+        <!-- Liste des voix disponibles -->
+        <div style="font-size:10px;color:#555;letter-spacing:.1em;text-transform:uppercase;font-family:'Rajdhani',sans-serif;margin-bottom:8px">Voix disponibles</div>
+        <div id="voice-list" style="display:flex;flex-direction:column;gap:6px">
+          <div style="color:#555;font-size:12px;font-family:'Rajdhani',sans-serif">Chargement des voix...</div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -4185,15 +4244,18 @@ function toggleTTS(){
   speechSynthesis.cancel();
   ttsUtterance = new SpeechSynthesisUtterance(text);
 
-  // Chercher une voix française
-  const voices = speechSynthesis.getVoices();
-  const frVoice = voices.find(v => v.lang.startsWith('fr')) ||
-                  voices.find(v => v.lang.startsWith('en'));
-  if(frVoice) ttsUtterance.voice = frVoice;
+  // Utiliser la voix sélectionnée, sinon chercher une voix française
+  if(selectedVoice){
+    ttsUtterance.voice = selectedVoice;
+  } else {
+    const voices = speechSynthesis.getVoices();
+    const frVoice = voices.find(v => v.lang.startsWith('fr')) || voices.find(v => v.lang.startsWith('en'));
+    if(frVoice){ ttsUtterance.voice = frVoice; selectedVoice = frVoice; }
+  }
 
-  ttsUtterance.lang = 'fr-FR';
-  ttsUtterance.rate = 0.92;
-  ttsUtterance.pitch = 1.0;
+  ttsUtterance.lang  = ttsUtterance.voice?.lang || 'fr-FR';
+  ttsUtterance.rate  = parseFloat(document.getElementById('tts-rate')?.value  || '0.92');
+  ttsUtterance.pitch = parseFloat(document.getElementById('tts-pitch')?.value || '1.0');
   ttsUtterance.volume = 1.0;
 
   ttsUtterance.onstart = () => {
@@ -4234,7 +4296,70 @@ function updateTTSBtn(state){
   }
 }
 
-// Arrêter TTS quand on ferme le lecteur
+// ── Sélecteur de voix ──
+let selectedVoice = null;
+
+function openVoiceSelector(){
+  const modal = document.getElementById('voice-selector-modal');
+  modal.style.display = 'flex';
+  populateVoiceList();
+}
+
+function closeVoiceSelector(){
+  document.getElementById('voice-selector-modal').style.display = 'none';
+}
+
+function populateVoiceList(){
+  const list = document.getElementById('voice-list');
+  const voices = speechSynthesis.getVoices();
+  if(!voices.length){
+    setTimeout(populateVoiceList, 300);
+    return;
+  }
+
+  // Grouper : français en premier, puis autres
+  const fr = voices.filter(v => v.lang.startsWith('fr'));
+  const en = voices.filter(v => v.lang.startsWith('en'));
+  const others = voices.filter(v => !v.lang.startsWith('fr') && !v.lang.startsWith('en'));
+  const sorted = [...fr, ...en, ...others];
+
+  list.innerHTML = sorted.map((v, i) => {
+    const isSelected = selectedVoice ? v.name === selectedVoice.name : (i === 0);
+    const flag = v.lang.startsWith('fr') ? '🇫🇷' :
+                 v.lang.startsWith('en') ? '🇬🇧' :
+                 v.lang.startsWith('es') ? '🇪🇸' :
+                 v.lang.startsWith('de') ? '🇩🇪' :
+                 v.lang.startsWith('ja') ? '🇯🇵' : '🌐';
+    return `<button onclick="selectVoice(${i},'${v.name.replace(/'/g,"\\'")}',this)"
+      style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:${isSelected?'rgba(155,93,229,.25)':'rgba(255,255,255,.04)'};
+      border:1px solid ${isSelected?'rgba(155,93,229,.5)':'rgba(255,255,255,.08)'};border-radius:10px;cursor:pointer;width:100%;text-align:left;transition:all .2s">
+      <span style="font-size:16px">${flag}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;color:${isSelected?'#c084fc':'#ddd'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${v.name}</div>
+        <div style="font-size:10px;color:#555;letter-spacing:.06em">${v.lang}${v.localService?' · Local':' · Réseau'}</div>
+      </div>
+      ${isSelected?'<span style="color:#c084fc;font-size:16px">✓</span>':''}
+    </button>`;
+  }).join('');
+
+  // Sélectionner par défaut la première voix française
+  if(!selectedVoice && fr.length) selectedVoice = fr[0];
+  else if(!selectedVoice && sorted.length) selectedVoice = sorted[0];
+}
+
+function selectVoice(idx, name, btn){
+  const voices = speechSynthesis.getVoices();
+  selectedVoice = voices.find(v => v.name === name) || voices[idx];
+  // Mettre à jour l'UI
+  populateVoiceList();
+  // Prévisualiser
+  speechSynthesis.cancel();
+  const test = new SpeechSynthesisUtterance('MangaForge — Voix sélectionnée');
+  test.voice = selectedVoice;
+  test.rate = parseFloat(document.getElementById('tts-rate')?.value || '0.92');
+  test.pitch = parseFloat(document.getElementById('tts-pitch')?.value || '1');
+  speechSynthesis.speak(test);
+}
 function closeTextReader(){
   speechSynthesis?.cancel();
   ttsActive = false; ttsPaused = false;
