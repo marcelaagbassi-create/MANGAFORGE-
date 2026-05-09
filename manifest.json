@@ -12,34 +12,49 @@
   "lang": "fr",
   "categories": ["entertainment", "books", "social"],
   "icons": [
-    { "src": "icon-16x16.png",              "sizes": "16x16",     "type": "image/png", "purpose": "any" },
-    { "src": "icon-32x32.png",              "sizes": "32x32",     "type": "image/png", "purpose": "any" },
-    { "src": "icon-64x64.png",              "sizes": "64x64",     "type": "image/png", "purpose": "any" },
-    { "src": "icon-120x120.png",            "sizes": "120x120",   "type": "image/png", "purpose": "any" },
-    { "src": "icon-180x180.png",            "sizes": "180x180",   "type": "image/png", "purpose": "any" },
-    { "src": "icon-192x192.png",            "sizes": "192x192",   "type": "image/png", "purpose": "any" },
-    { "src": "icon-512x512.png",            "sizes": "512x512",   "type": "image/png", "purpose": "any" },
-    { "src": "icon-1024x1024.png",          "sizes": "1024x1024", "type": "image/png", "purpose": "any" },
-    { "src": "icon-maskable-1024x1024.png", "sizes": "1024x1024", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-1024x1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-1024x1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ],
   "shortcuts": [
     {
       "name": "Fil d'actualité",
       "short_name": "Fil",
       "url": "./index.html#feed",
-      "icons": [{ "src": "shortcut-feed.png", "sizes": "192x192", "type": "image/png" }]
+      "icons": [{ "src": "shortcut-feed.png", "type": "image/png" }]
     },
     {
       "name": "Mes histoires",
       "short_name": "Histoires",
       "url": "./index.html#stories",
-      "icons": [{ "src": "shortcut-stories.png", "sizes": "192x192", "type": "image/png" }]
+      "icons": [{ "src": "shortcut-stories.png", "type": "image/png" }]
     },
     {
       "name": "Assistant IA",
       "short_name": "IA",
       "url": "./index.html#ai",
-      "icons": [{ "src": "shortcut-ai.png", "sizes": "192x192", "type": "image/png" }]
+      "icons": [{ "src": "shortcut-ai.png", "type": "image/png" }]
     }
   ],
   "screenshots": [
