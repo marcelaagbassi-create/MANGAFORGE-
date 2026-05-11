@@ -1,11 +1,11 @@
 // ══════════════════════════════════════════════════════
 //  MANGAFORGE — Service Worker PWA
-//  Version : 1.0.0
+//  Version : 1.4.0  ← incrémenter ici à chaque déploiement
 // ══════════════════════════════════════════════════════
 
-const CACHE_NAME = 'mangaforge-v1';
-const CACHE_STATIC = 'mangaforge-static-v1';
-const CACHE_DYNAMIC = 'mangaforge-dynamic-v1';
+const CACHE_NAME = 'mangaforge-v1.4';
+const CACHE_STATIC = 'mangaforge-static-v1.4';
+const CACHE_DYNAMIC = 'mangaforge-dynamic-v1.4';
 
 // Ressources à mettre en cache au démarrage
 const STATIC_ASSETS = [
@@ -19,36 +19,30 @@ const STATIC_ASSETS = [
 
 // ── INSTALLATION ──
 self.addEventListener('install', event => {
-  console.log('[MangaForge SW] Installation...');
+  console.log('[MangaForge SW] Installation v1.4...');
+  // skipWaiting IMMÉDIATEMENT — force la mise à jour sans attendre
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_STATIC)
-      .then(cache => {
-        console.log('[MangaForge SW] Mise en cache des ressources statiques');
-        // On utilise addAll avec gestion d'erreur pour ne pas bloquer si une ressource échoue
-        return Promise.allSettled(
-          STATIC_ASSETS.map(url =>
-            cache.add(url).catch(err => console.warn('[SW] Cache échoué pour:', url, err))
-          )
-        );
-      })
-      .then(() => self.skipWaiting())
+      .then(cache => Promise.allSettled(
+        STATIC_ASSETS.map(url =>
+          cache.add(url).catch(err => console.warn('[SW] Cache échoué:', url))
+        )
+      ))
   );
 });
 
 // ── ACTIVATION ──
 self.addEventListener('activate', event => {
-  console.log('[MangaForge SW] Activation...');
+  console.log('[MangaForge SW] Activation v1.4 — purge anciens caches...');
   event.waitUntil(
-    caches.keys().then(keys => {
-      return Promise.all(
+    caches.keys().then(keys =>
+      Promise.all(
         keys
           .filter(key => key !== CACHE_STATIC && key !== CACHE_DYNAMIC)
-          .map(key => {
-            console.log('[MangaForge SW] Suppression ancien cache:', key);
-            return caches.delete(key);
-          })
-      );
-    }).then(() => self.clients.claim())
+          .map(key => { console.log('[SW] Suppression:', key); return caches.delete(key); })
+      )
+    ).then(() => self.clients.claim())
   );
 });
 
