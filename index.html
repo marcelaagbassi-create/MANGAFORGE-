@@ -5300,28 +5300,38 @@ function openAddEpisodeFromFab(){
   </div>
 </div>
 
-<!-- Enregistrement Service Worker PWA -->
+<!-- Enregistrement Service Worker PWA v2.0 -->
 <script>
 if('serviceWorker' in navigator){
+  // Forcer la mise à jour — désinscrire les anciens SW
+  navigator.serviceWorker.getRegistrations().then(regs => {
+    regs.forEach(reg => {
+      // Envoyer skipWaiting à tout SW en attente
+      if(reg.waiting) reg.waiting.postMessage({type:'SKIP_WAITING'});
+    });
+  });
+
   window.addEventListener('load', ()=>{
-    navigator.serviceWorker.register('./sw.js')
+    // ?v=2.0 force le navigateur à re-télécharger sw.js
+    navigator.serviceWorker.register('./sw.js?v=2.0')
       .then(reg => {
-        console.log('[MangaForge] SW enregistré:', reg.scope);
-        // Détecter une mise à jour disponible
+        console.log('[MangaForge] SW v2.0 enregistré');
+        // Forcer la vérification de mise à jour immédiatement
+        reg.update();
         reg.addEventListener('updatefound', ()=>{
-          const newWorker = reg.installing;
-          newWorker.addEventListener('statechange', ()=>{
-            if(newWorker.state === 'installed' && navigator.serviceWorker.controller){
-              // Nouvelle version disponible — recharger automatiquement
-              console.log('[MangaForge] Nouvelle version détectée — rechargement...');
+          const nw = reg.installing;
+          nw.addEventListener('statechange', ()=>{
+            if(nw.state === 'installed' && navigator.serviceWorker.controller){
+              console.log('[MangaForge] Nouvelle version — rechargement');
               window.location.reload();
             }
           });
         });
+        // Vérifier mise à jour toutes les 30s
+        setInterval(()=>reg.update(), 30000);
       })
       .catch(err => console.warn('[MangaForge] SW échec:', err));
 
-    // Si le SW prend le contrôle pendant la session → recharger
     navigator.serviceWorker.addEventListener('controllerchange', ()=>{
       window.location.reload();
     });

@@ -1,11 +1,11 @@
 // ══════════════════════════════════════════════════════
 //  MANGAFORGE — Service Worker PWA
-//  Version : 1.4.0  ← incrémenter ici à chaque déploiement
+//  Version : 2.0.0
 // ══════════════════════════════════════════════════════
 
-const CACHE_NAME = 'mangaforge-v1.4';
-const CACHE_STATIC = 'mangaforge-static-v1.4';
-const CACHE_DYNAMIC = 'mangaforge-dynamic-v1.4';
+const CACHE_NAME = 'mangaforge-v2.0';
+const CACHE_STATIC = 'mangaforge-static-v2.0';
+const CACHE_DYNAMIC = 'mangaforge-dynamic-v2.0';
 
 // Ressources à mettre en cache au démarrage
 const STATIC_ASSETS = [
