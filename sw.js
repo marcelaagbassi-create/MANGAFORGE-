@@ -19,14 +19,13 @@ const STATIC_ASSETS = [
 
 // ── INSTALLATION ──
 self.addEventListener('install', event => {
-  console.log('[MangaForge SW] Installation v1.4...');
-  // skipWaiting IMMÉDIATEMENT — force la mise à jour sans attendre
-  self.skipWaiting();
+  console.log('[MangaForge SW] Installation v2.0...');
+  // NE PAS appeler skipWaiting ici — ça causait la boucle de rechargement
   event.waitUntil(
     caches.open(CACHE_STATIC)
       .then(cache => Promise.allSettled(
         STATIC_ASSETS.map(url =>
-          cache.add(url).catch(err => console.warn('[SW] Cache échoué:', url))
+          cache.add(url).catch(() => {})
         )
       ))
   );
@@ -34,16 +33,21 @@ self.addEventListener('install', event => {
 
 // ── ACTIVATION ──
 self.addEventListener('activate', event => {
-  console.log('[MangaForge SW] Activation v1.4 — purge anciens caches...');
+  console.log('[MangaForge SW] Activation v2.0...');
   event.waitUntil(
     caches.keys().then(keys =>
       Promise.all(
         keys
           .filter(key => key !== CACHE_STATIC && key !== CACHE_DYNAMIC)
-          .map(key => { console.log('[SW] Suppression:', key); return caches.delete(key); })
+          .map(key => caches.delete(key))
       )
     ).then(() => self.clients.claim())
   );
+});
+
+// ── Message skipWaiting (déclenché manuellement si besoin) ──
+self.addEventListener('message', event => {
+  if(event.data?.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
 // ── FETCH — Stratégie Network First avec fallback cache ──

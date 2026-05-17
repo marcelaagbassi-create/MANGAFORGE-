@@ -5303,38 +5303,27 @@ function openAddEpisodeFromFab(){
 <!-- Enregistrement Service Worker PWA v2.0 -->
 <script>
 if('serviceWorker' in navigator){
-  // Forcer la mise à jour — désinscrire les anciens SW
-  navigator.serviceWorker.getRegistrations().then(regs => {
-    regs.forEach(reg => {
-      // Envoyer skipWaiting à tout SW en attente
-      if(reg.waiting) reg.waiting.postMessage({type:'SKIP_WAITING'});
-    });
-  });
-
   window.addEventListener('load', ()=>{
-    // ?v=2.0 force le navigateur à re-télécharger sw.js
     navigator.serviceWorker.register('./sw.js?v=2.0')
       .then(reg => {
         console.log('[MangaForge] SW v2.0 enregistré');
-        // Forcer la vérification de mise à jour immédiatement
-        reg.update();
         reg.addEventListener('updatefound', ()=>{
           const nw = reg.installing;
           nw.addEventListener('statechange', ()=>{
-            if(nw.state === 'installed' && navigator.serviceWorker.controller){
-              console.log('[MangaForge] Nouvelle version — rechargement');
-              window.location.reload();
+            // Ne recharger QUE si c'est une vraie nouvelle version
+            // et seulement si pas déjà rechargé récemment
+            if(nw.state === 'activated'){
+              const lastReload = parseInt(sessionStorage.getItem('mf_last_reload')||'0');
+              const now = Date.now();
+              if(now - lastReload > 30000){ // 30s minimum entre reloads
+                sessionStorage.setItem('mf_last_reload', now);
+                window.location.reload();
+              }
             }
           });
         });
-        // Vérifier mise à jour toutes les 30s
-        setInterval(()=>reg.update(), 30000);
       })
       .catch(err => console.warn('[MangaForge] SW échec:', err));
-
-    navigator.serviceWorker.addEventListener('controllerchange', ()=>{
-      window.location.reload();
-    });
   });
 }
 </script>
