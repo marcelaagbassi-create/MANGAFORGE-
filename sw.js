@@ -187,3 +187,37 @@ self.addEventListener('notificationclick', event => {
     clients.openWindow(event.notification.data?.url || './')
   );
 });
+
+// ── Gestion des actions widget ──
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  const url = event.notification.data?.url || './';
+  const action = event.action;
+  if(action === 'dismiss') return;
+  event.waitUntil(
+    clients.matchAll({type:'window', includeUncontrolled:true}).then(cls => {
+      const existing = cls.find(c => c.url.includes('mangaforge'));
+      if(existing){ existing.focus(); existing.postMessage({type:'NAVIGATE', url}); }
+      else clients.openWindow(url);
+    })
+  );
+});
+
+// ── Sync widget en arrière-plan ──
+self.addEventListener('periodicsync', event => {
+  if(event.tag === 'mf-widget-sync'){
+    event.waitUntil(
+      fetch('./widget-data.json')
+        .then(r => r.json())
+        .then(data => {
+          self.registration.showNotification('⛩ MangaForge', {
+            body: `${data.episodes} épisode(s) • ${data.posts} publication(s)`,
+            icon: './icon-192x192.png',
+            badge: './icon-72x72.png',
+            tag: 'mf-widget',
+            silent: true
+          });
+        }).catch(()=>{})
+    );
+  }
+});

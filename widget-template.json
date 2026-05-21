@@ -1,0 +1,70 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "auto",
+          "items": [{
+            "type": "Image",
+            "url": "icon-72x72.png",
+            "size": "Small",
+            "style": "RoundedCorners"
+          }]
+        },
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "⛩ MANGAFORGE",
+              "weight": "Bolder",
+              "size": "Small",
+              "color": "Attention"
+            },
+            {
+              "type": "TextBlock",
+              "text": "${title}",
+              "size": "Medium",
+              "weight": "Bolder",
+              "wrap": true,
+              "maxLines": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "FactSet",
+      "facts": [
+        { "title": "📺", "value": "${episodes} nouvel(s) épisode(s)" },
+        { "title": "💬", "value": "${posts} nouvelle(s) publication(s)" },
+        { "title": "❤️", "value": "${likes} like(s)" }
+      ],
+      "spacing": "Small"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Mis à jour : ${updatedAt}",
+      "size": "Small",
+      "isSubtle": true,
+      "spacing": "Small"
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.OpenUrl",
+      "title": "📖 Ouvrir MangaForge",
+      "url": "https://marcelaagbassi-create.github.io/index.html"
+    }
+  ],
+  "selectAction": {
+    "type": "Action.OpenUrl",
+    "url": "https://marcelaagbassi-create.github.io/index.html"
+  }
+}

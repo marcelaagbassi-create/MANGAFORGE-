@@ -10,7 +10,11 @@
   "background_color": "#0a0e1a",
   "theme_color": "#e63946",
   "lang": "fr",
-  "categories": ["entertainment", "books", "social"],
+  "categories": [
+    "entertainment",
+    "books",
+    "social"
+  ],
   "icons": [
     {
       "src": "icon-192x192.png",
@@ -42,19 +46,34 @@
       "name": "Fil d'actualité",
       "short_name": "Fil",
       "url": "./index.html#feed",
-      "icons": [{ "src": "shortcut-feed.png", "type": "image/png" }]
+      "icons": [
+        {
+          "src": "shortcut-feed.png",
+          "type": "image/png"
+        }
+      ]
     },
     {
       "name": "Mes histoires",
       "short_name": "Histoires",
       "url": "./index.html#stories",
-      "icons": [{ "src": "shortcut-stories.png", "type": "image/png" }]
+      "icons": [
+        {
+          "src": "shortcut-stories.png",
+          "type": "image/png"
+        }
+      ]
     },
     {
       "name": "Assistant IA",
       "short_name": "IA",
       "url": "./index.html#ai",
-      "icons": [{ "src": "shortcut-ai.png", "type": "image/png" }]
+      "icons": [
+        {
+          "src": "shortcut-ai.png",
+          "type": "image/png"
+        }
+      ]
     }
   ],
   "screenshots": [
@@ -69,6 +88,30 @@
       "type": "image/png",
       "form_factor": "narrow",
       "label": "MangaForge — Histoires manga"
+    }
+  ],
+  "widgets": [
+    {
+      "name": "MangaForge Activités",
+      "short_name": "Activités",
+      "description": "Vos activités MangaForge en un coup d'œil",
+      "tag": "mf-widget",
+      "ms_ac_widget": {
+        "templateType": "adaptive-card",
+        "data": "widget-data.json",
+        "template": "widget-template.json"
+      },
+      "icons": [
+        {
+          "src": "icon-192x192.png",
+          "sizes": "192x192"
+        }
+      ],
+      "backgrounds": [
+        "#0a0e1a"
+      ],
+      "auth": false,
+      "update": 300
     }
   ]
 }
