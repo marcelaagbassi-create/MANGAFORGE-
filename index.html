@@ -122,7 +122,6 @@ setTimeout(() => {
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <script src="./widget.js"></script>
 </head>
 <body>
 
@@ -163,65 +162,7 @@ setTimeout(() => {
 @keyframes loader-title-in{from{opacity:0;transform:translateY(18px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes loader-bar{from{width:0}to{width:100%}}
 @keyframes loader-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-/* ── WIDGET ACTIVITÉS ── */
-#mf-widget-panel{
-  position:fixed;bottom:90px;right:14px;z-index:300;
-  background:rgba(10,14,26,.92);backdrop-filter:blur(20px);
-  border:1px solid rgba(230,57,70,.3);border-radius:16px;
-  padding:0;overflow:hidden;
-  box-shadow:0 8px 32px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.04);
-  transform:translateX(120%);transition:transform .35s cubic-bezier(.16,1,.3,1);
-  min-width:220px;max-width:280px;
-}
-#mf-widget-panel.visible{transform:translateX(0)}
-.widget-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:10px 14px;background:rgba(230,57,70,.12);
-  border-bottom:1px solid rgba(230,57,70,.2);
-}
-.widget-title{
-  font-family:'Cinzel',serif;font-size:11px;font-weight:900;
-  color:#e63946;letter-spacing:.08em;
-  display:flex;align-items:center;gap:6px;
-}
-.widget-badge{
-  background:#e63946;color:#fff;
-  font-size:10px;font-weight:900;font-family:'Rajdhani',sans-serif;
-  padding:2px 7px;border-radius:10px;
-}
-.widget-items{padding:8px 0}
-.widget-item{
-  display:flex;align-items:center;gap:10px;
-  padding:8px 14px;cursor:pointer;transition:background .15s;
-}
-.widget-item:hover{background:rgba(255,255,255,.05)}
-.widget-item-icon{font-size:18px;flex-shrink:0}
-.widget-item-text{flex:1;min-width:0}
-.widget-item-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;color:#ddd;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.widget-item-sub{font-size:10px;color:#555;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.widget-empty{padding:16px 14px;text-align:center;font-family:'Rajdhani',sans-serif;font-size:12px;color:#555}
-/* Bouton toggle widget */
-#mf-widget-toggle{
-  position:fixed;bottom:90px;right:14px;z-index:301;
-  width:44px;height:44px;border-radius:50%;
-  background:linear-gradient(135deg,#e63946,#c1121f);
-  border:none;cursor:pointer;
-  box-shadow:0 4px 16px rgba(230,57,70,.4);
-  display:flex;align-items:center;justify-content:center;
-  transition:all .2s;
-}
-#mf-widget-toggle.panel-open{
-  bottom:calc(90px + 20px);
-  background:rgba(10,14,26,.9);
-  border:1px solid rgba(230,57,70,.3);
-}
-#mf-widget-count{
-  position:absolute;top:-4px;right:-4px;
-  background:#fff;color:#e63946;
-  font-size:9px;font-weight:900;font-family:'Rajdhani',sans-serif;
-  padding:2px 5px;border-radius:8px;
-  display:none;
-}
+@keyframes mirrorSweep{0%{background-position:200% center;opacity:0}5%{opacity:1}50%{background-position:-50% center;opacity:1}70%{opacity:0}100%{background-position:-50% center;opacity:0}}
 @keyframes mirrorSweep{0%{background-position:200% center;opacity:0}5%{opacity:1}50%{background-position:-50% center;opacity:1}70%{opacity:0}100%{background-position:-50% center;opacity:0}}
 @keyframes brand-blink{0%,45%{opacity:0}50%,95%{opacity:1}100%{opacity:0}}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
@@ -242,7 +183,7 @@ setTimeout(() => {
 .loader-icon{font-size:56px;animation:loader-float 2.5s ease-in-out infinite;margin-bottom:14px;filter:drop-shadow(0 0 20px rgba(230,57,70,.4))}
 .loader-title{font-family:'Cinzel',serif;font-size:32px;font-weight:900;background:linear-gradient(135deg,#e63946,#f4a261,#e63946);background-size:200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer-text 2s linear infinite;letter-spacing:.08em}
 .loader-sub{font-size:9px;color:rgba(255,255,255,.25);letter-spacing:.35em;text-transform:uppercase;margin-top:6px;font-family:'Rajdhani',sans-serif;font-weight:700}
-.loader-bar-wrap{width:160px;height:2px;background:rgba(255,255,255,.06);border-radius:2px;margin-top:38px;overflow:hidden;position:relative;z-index:1}
+.loader-bar-wrap{width:160px;height:2px;background:#0a0a0a;border-radius:2px;margin-top:38px;overflow:hidden;position:relative;z-index:1}
 .loader-bar-fill{height:100%;width:0;background:linear-gradient(90deg,#e63946,#f4a261);border-radius:2px;animation:loader-bar 1.8s cubic-bezier(.4,0,.2,1) .2s forwards}
 .loader-status{font-family:'Rajdhani',sans-serif;font-size:11px;color:rgba(255,255,255,.2);letter-spacing:.15em;text-transform:uppercase;margin-top:14px;position:relative;z-index:1}
 @keyframes shimmer-text{0%{background-position:0%}100%{background-position:200%}}
@@ -264,29 +205,29 @@ setTimeout(() => {
       <div style="font-size:9px;color:#444;letter-spacing:.3em;text-transform:uppercase;margin-top:5px;font-family:'Rajdhani',sans-serif">La forge des créateurs</div>
     </div>
 
-    <div style="display:flex;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:4px;margin-bottom:22px">
+    <div style="display:flex;background:#0a0a0a;border:1px solid #222;border-radius:10px;padding:4px;margin-bottom:22px">
       <button id="tab-login-btn" onclick="showAuthTab('login')" style="flex:1;padding:9px;border-radius:7px;border:none;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;letter-spacing:.05em;background:linear-gradient(135deg,#e63946,#c1121f);color:#fff;cursor:pointer;transition:all .2s">CONNEXION</button>
       <button id="tab-signup-btn" onclick="showAuthTab('signup')" style="flex:1;padding:9px;border-radius:7px;border:none;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;letter-spacing:.05em;background:transparent;color:#555;cursor:pointer;transition:all .2s">INSCRIPTION</button>
     </div>
 
 
     <!-- Login -->
-    <div id="form-login" style="background:rgba(255,255,255,.04);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:24px">
+    <div id="form-login" style="background:#0a0a0a;border:1px solid #222;border-radius:14px;padding:24px">
       <div style="margin-bottom:13px">
         <label style="font-size:10px;color:#666;letter-spacing:.12em;text-transform:uppercase;font-family:'Rajdhani',sans-serif;font-weight:700;display:block;margin-bottom:5px">Email</label>
-        <input type="email" id="li-email" placeholder="votre@email.com" onkeydown="if(event.key==='Enter')doLogin()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:9px;padding:11px 14px;color:#ddd;font-size:13px;outline:none;font-family:'Rajdhani',sans-serif"/>
+        <input type="email" id="li-email" placeholder="votre@email.com" onkeydown="if(event.key==='Enter')doLogin()" style="width:100%;background:#0a0a0a;border:1px solid #222;border-radius:9px;padding:11px 14px;color:#ddd;font-size:13px;outline:none;font-family:'Rajdhani',sans-serif"/>
       </div>
       <div style="margin-bottom:20px">
         <label style="font-size:10px;color:#666;letter-spacing:.12em;text-transform:uppercase;font-family:'Rajdhani',sans-serif;font-weight:700;display:block;margin-bottom:5px">Mot de passe</label>
-        <input type="password" id="li-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:9px;padding:11px 14px;color:#ddd;font-size:13px;outline:none;font-family:'Rajdhani',sans-serif"/>
+        <input type="password" id="li-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" style="width:100%;background:#0a0a0a;border:1px solid #222;border-radius:9px;padding:11px 14px;color:#ddd;font-size:13px;outline:none;font-family:'Rajdhani',sans-serif"/>
       </div>
       <button onclick="doLogin()" class="btn-pri" style="width:100%;background:linear-gradient(135deg,#e63946,#c1121f);border:none;color:#fff;padding:12px;border-radius:9px;font-size:13px;font-weight:700;letter-spacing:.08em;font-family:'Rajdhani',sans-serif;box-shadow:0 4px 18px rgba(230,57,70,.35);cursor:pointer">SE CONNECTER →</button>
       <div style="display:flex;align-items:center;gap:10px;margin:14px 0">
-        <div style="flex:1;height:1px;background:rgba(255,255,255,.08)"></div>
+        <div style="flex:1;height:1px;background:#111"></div>
         <span style="font-size:10px;color:#444;font-family:'Rajdhani',sans-serif;letter-spacing:.1em">OU</span>
-        <div style="flex:1;height:1px;background:rgba(255,255,255,.08)"></div>
+        <div style="flex:1;height:1px;background:#111"></div>
       </div>
-      <button onclick="doGoogleLogin()" style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#ddd;padding:11px;border-radius:9px;font-size:13px;font-weight:700;letter-spacing:.05em;font-family:'Rajdhani',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,.1)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">
+      <button onclick="doGoogleLogin()" style="width:100%;background:#0a0a0a;border:1px solid #222;color:#ddd;padding:11px;border-radius:9px;font-size:13px;font-weight:700;letter-spacing:.05em;font-family:'Rajdhani',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,.1)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">
         <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
         Continuer avec Google
       </button>
@@ -294,14 +235,14 @@ setTimeout(() => {
     </div>
 
     <!-- Signup -->
-    <div id="form-signup" style="display:none;background:rgba(255,255,255,.04);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:24px">
+    <div id="form-signup" style="display:none;background:#0a0a0a;border:1px solid #222;border-radius:14px;padding:24px">
       <div style="margin-bottom:13px">
         <label style="font-size:10px;color:#666;letter-spacing:.12em;text-transform:uppercase;font-family:'Rajdhani',sans-serif;font-weight:700;display:block;margin-bottom:5px">Pseudo *</label>
-        <input type="text" id="su-name" placeholder="VotrePseudo" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:9px;padding:11px 14px;color:#ddd;font-size:13px;outline:none;font-family:'Rajdhani',sans-serif"/>
+        <input type="text" id="su-name" placeholder="VotrePseudo" style="width:100%;background:#0a0a0a;border:1px solid #222;border-radius:9px;padding:11px 14px;color:#ddd;font-size:13px;outline:none;font-family:'Rajdhani',sans-serif"/>
       </div>
       <div style="margin-bottom:13px">
         <label style="font-size:10px;color:#666;letter-spacing:.12em;text-transform:uppercase;font-family:'Rajdhani',sans-serif;font-weight:700;display:block;margin-bottom:5px">Rôle *</label>
-        <select id="su-role" style="width:100%;background:rgba(12,16,30,.9);border:1px solid rgba(255,255,255,.09);border-radius:9px;padding:11px 14px;color:#ddd;font-size:13px;outline:none;font-family:'Rajdhani',sans-serif">
+        <select id="su-role" style="width:100%;background:rgba(12,16,30,.9);border:1px solid #222;border-radius:9px;padding:11px 14px;color:#ddd;font-size:13px;outline:none;font-family:'Rajdhani',sans-serif">
           <option value="Scénariste">Scénariste</option>
           <option value="Dessinateur">Dessinateur</option>
           <option value="Dessinatrice">Dessinatrice</option>
@@ -310,19 +251,19 @@ setTimeout(() => {
       </div>
       <div style="margin-bottom:13px">
         <label style="font-size:10px;color:#666;letter-spacing:.12em;text-transform:uppercase;font-family:'Rajdhani',sans-serif;font-weight:700;display:block;margin-bottom:5px">Email *</label>
-        <input type="email" id="su-email" placeholder="votre@email.com" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:9px;padding:11px 14px;color:#ddd;font-size:13px;outline:none;font-family:'Rajdhani',sans-serif"/>
+        <input type="email" id="su-email" placeholder="votre@email.com" style="width:100%;background:#0a0a0a;border:1px solid #222;border-radius:9px;padding:11px 14px;color:#ddd;font-size:13px;outline:none;font-family:'Rajdhani',sans-serif"/>
       </div>
       <div style="margin-bottom:20px">
         <label style="font-size:10px;color:#666;letter-spacing:.12em;text-transform:uppercase;font-family:'Rajdhani',sans-serif;font-weight:700;display:block;margin-bottom:5px">Mot de passe * (min. 6 car.)</label>
-        <input type="password" id="su-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doSignup()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:9px;padding:11px 14px;color:#ddd;font-size:13px;outline:none;font-family:'Rajdhani',sans-serif"/>
+        <input type="password" id="su-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doSignup()" style="width:100%;background:#0a0a0a;border:1px solid #222;border-radius:9px;padding:11px 14px;color:#ddd;font-size:13px;outline:none;font-family:'Rajdhani',sans-serif"/>
       </div>
       <button onclick="doSignup()" style="width:100%;background:linear-gradient(135deg,#e63946,#c1121f);border:none;color:#fff;padding:12px;border-radius:9px;font-size:13px;font-weight:700;letter-spacing:.08em;font-family:'Rajdhani',sans-serif;box-shadow:0 4px 18px rgba(230,57,70,.35);cursor:pointer">CRÉER MON COMPTE →</button>
       <div style="display:flex;align-items:center;gap:10px;margin:14px 0">
-        <div style="flex:1;height:1px;background:rgba(255,255,255,.08)"></div>
+        <div style="flex:1;height:1px;background:#111"></div>
         <span style="font-size:10px;color:#444;font-family:'Rajdhani',sans-serif;letter-spacing:.1em">OU</span>
-        <div style="flex:1;height:1px;background:rgba(255,255,255,.08)"></div>
+        <div style="flex:1;height:1px;background:#111"></div>
       </div>
-      <button onclick="doGoogleLogin()" style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#ddd;padding:11px;border-radius:9px;font-size:13px;font-weight:700;letter-spacing:.05em;font-family:'Rajdhani',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,.1)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">
+      <button onclick="doGoogleLogin()" style="width:100%;background:#0a0a0a;border:1px solid #222;color:#ddd;padding:11px;border-radius:9px;font-size:13px;font-weight:700;letter-spacing:.05em;font-family:'Rajdhani',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,.1)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">
         <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
         S'inscrire avec Google
       </button>
@@ -340,7 +281,7 @@ setTimeout(() => {
 /* ── THEME SYSTEM ── */
 :root{
   --red:#e63946;--orange:#f4a261;--teal:#2a9d8f;--purple:#9b5de5;
-  --bg:#0a0e1a;--bg2:#0d1120;--bg3:#111827;
+  --bg:#000000;--bg2:#0a0a0a;--bg3:#111111;
   --border:rgba(255,255,255,.09);--border2:rgba(255,255,255,.16);
   --text:#f0f0f0;--text2:#ccc;--muted:#888;--dim:#3a3a3a;
   --card:rgba(255,255,255,.04);--card2:rgba(255,255,255,.07);
@@ -353,7 +294,7 @@ body.theme-glass{
   --border:rgba(255,255,255,.12);--border2:rgba(255,255,255,.2);
   --text:#fff;--text2:rgba(255,255,255,.85);--muted:rgba(255,255,255,.45);--dim:rgba(255,255,255,.2);
   --card:rgba(255,255,255,.06);--card2:rgba(255,255,255,.1);
-  --glass-bg:rgba(255,255,255,.06);--glass-border:rgba(255,255,255,.12);
+  --glass-bg:#0a0e1a;--glass-border:rgba(255,255,255,.12);
   --shadow:rgba(0,0,0,.3);
 }
 body.theme-glass::before{
@@ -364,51 +305,51 @@ body.theme-glass::before{
     linear-gradient(135deg,#0a0e1a 0%,#0d1020 50%,#0a0e1a 100%) !important;
 }
 body.theme-glass .glass{
-  background:rgba(255,255,255,.05) !important;
-  backdrop-filter:blur(24px) saturate(180%) !important;
-  -webkit-backdrop-filter:blur(24px) saturate(180%) !important;
-  border:1px solid rgba(255,255,255,.12) !important;
-  box-shadow:0 8px 32px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.08) !important;
+  background:#0a0a0a;
+  
+  -webkit-
+  border:1px solid #222 !important;
+  
 }
 body.theme-glass header{
-  background:rgba(10,14,26,.25) !important;
-  backdrop-filter:blur(32px) saturate(200%) !important;
-  -webkit-backdrop-filter:blur(32px) saturate(200%) !important;
-  border-bottom:1px solid rgba(255,255,255,.08) !important;
+  background:#000;
+  
+  -webkit-
+  border-bottom:1px solid #1a1a1a !important;
 }
 body.theme-glass nav{
-  background:rgba(10,14,26,.2) !important;
-  backdrop-filter:blur(32px) saturate(180%) !important;
-  -webkit-backdrop-filter:blur(32px) saturate(180%) !important;
-  border-top:1px solid rgba(255,255,255,.08) !important;
+  background:#0a0a0a;
+  
+  -webkit-
+  border-top:1px solid #1a1a1a !important;
 }
 body.theme-glass .mbox{
-  background:rgba(10,14,26,.3) !important;
-  backdrop-filter:blur(28px) !important;
-  -webkit-backdrop-filter:blur(28px) !important;
-  border-color:rgba(255,255,255,.1) !important;
+  background:#0a0a0a !important;
+  
+  -webkit-
+  border-color:#222 !important;
 }
 body.theme-glass .post,body.theme-glass .sc,body.theme-glass .uc,
 body.theme-glass .ci,body.theme-glass .ct,body.theme-glass .ep-item,
 body.theme-glass .mdx-card,body.theme-glass .studio-story-row,body.theme-glass .kpi-card{
-  background:rgba(255,255,255,.05) !important;
-  backdrop-filter:blur(16px) !important;
-  -webkit-backdrop-filter:blur(16px) !important;
-  border-color:rgba(255,255,255,.1) !important;
+  background:#0a0a0a !important;
+  
+  -webkit-
+  border-color:#222 !important;
 }
 body.theme-glass input,body.theme-glass textarea,body.theme-glass select{
-  background:rgba(255,255,255,.06) !important;
-  backdrop-filter:blur(12px) !important;
-  border-color:rgba(255,255,255,.12) !important;
+  background:#0a0a0a !important;
+  
+  border-color:#222 !important;
   color:#fff !important;
 }
-body.theme-glass .prof-wrap{background:rgba(255,255,255,.04) !important;backdrop-filter:blur(20px) !important;}
+body.theme-glass .prof-wrap{background:#0a0a0a !important;}
 body.theme-glass .sec-title{color:#fff}
 body.theme-glass .nb{color:rgba(255,255,255,.4) !important}
 body.theme-glass .nb.active{color:#fff !important}
 /* THEME CLAIR — BLANC PUR */
 body.theme-light{
-  --bg:#ffffff;--bg2:#f5f5f5;--bg3:#efefef;
+  --bg:#000000;--bg2:#f5f5f5;--bg3:#efefef;
   --border:rgba(0,0,0,.08);--border2:rgba(0,0,0,.15);
   --text:#111111;--text2:#333333;--muted:#777777;--dim:#aaaaaa;
   --card:rgba(0,0,0,.04);--card2:rgba(0,0,0,.07);
@@ -418,29 +359,29 @@ body.theme-light{
 /* THÈME CLAIR — BLANC PUR */
 body.theme-light{background:#fff;color:#111}
 body.theme-light::before{background:none !important}
-body.theme-light header{background:rgba(255,255,255,.97) !important;border-bottom-color:rgba(0,0,0,.07) !important;box-shadow:0 1px 8px rgba(0,0,0,.07) !important}
-body.theme-light .glass{background:#fff !important;border-color:rgba(0,0,0,.07) !important;box-shadow:0 2px 10px rgba(0,0,0,.05) !important}
-body.theme-light nav{background:rgba(255,255,255,.98) !important;border-color:rgba(0,0,0,.07) !important;box-shadow:0 -2px 16px rgba(0,0,0,.07) !important}
-body.theme-light .mbox{background:#fff !important;border-color:rgba(0,0,0,.09) !important}
-body.theme-light input,body.theme-light textarea,body.theme-light select{background:#f4f4f4 !important;border-color:rgba(0,0,0,.11) !important;color:#111 !important}
-body.theme-light .post,body.theme-light .sc,body.theme-light .uc,body.theme-light .ci,body.theme-light .ct,body.theme-light .ep-item,body.theme-light .mdx-card,body.theme-light .studio-story-row,body.theme-light .kpi-card{background:#fff !important;border-color:rgba(0,0,0,.07) !important;box-shadow:0 1px 5px rgba(0,0,0,.05)}
+body.theme-light header{background:#000;border-bottom-color:rgba(0,0,0,.07) !important;box-shadow:0 1px 8px rgba(0,0,0,.07) !important}
+body.theme-light .glass{background:#0a0a0a;border-color:#222 !important;box-shadow:0 2px 10px rgba(0,0,0,.05) !important}
+body.theme-light nav{background:#0a0a0a;border-color:#222 !important;box-shadow:0 -2px 16px rgba(0,0,0,.07) !important}
+body.theme-light .mbox{background:#fff !important;border-color:#222 !important}
+body.theme-light input,body.theme-light textarea,body.theme-light select{background:#f4f4f4 !important;border-color:#222 !important;color:#111 !important}
+body.theme-light .post,body.theme-light .sc,body.theme-light .uc,body.theme-light .ci,body.theme-light .ct,body.theme-light .ep-item,body.theme-light .mdx-card,body.theme-light .studio-story-row,body.theme-light .kpi-card{background:#fff !important;border-color:#222 !important;box-shadow:0 1px 5px rgba(0,0,0,.05)}
 body.theme-light .nb{color:rgba(0,0,0,.35) !important}
 body.theme-light .nb.active{color:#fff !important}
 body.theme-light .sec-title,body.theme-light .settings-row-label{color:#111 !important}
 body.theme-light .sec-sub,body.theme-light .settings-row-sub,body.theme-light .ep-meta,body.theme-light .ep-desc,body.theme-light .post-tm{color:#777 !important}
 body.theme-light .prof-wrap{background:#fff !important}
-body.theme-light #notif-bell{background:#f4f4f4 !important;border-color:rgba(0,0,0,.09) !important}
+body.theme-light #notif-bell{background:#f4f4f4 !important;border-color:#222 !important}
 body.theme-light #notif-bell svg{stroke:rgba(0,0,0,.5) !important}
-body.theme-light #notif-panel{background:#fff !important;border-color:rgba(0,0,0,.09) !important}
-body.theme-light #notif-panel .notif-item{background:#f4f4f4 !important;border-color:rgba(0,0,0,.06) !important}
+body.theme-light #notif-panel{background:#fff !important;border-color:#222 !important}
+body.theme-light #notif-panel .notif-item{background:#f4f4f4 !important;border-color:#222 !important}
 body.theme-light #notif-panel *{color:#111 !important}
-body.theme-light .fab-menu{background:#fff !important;border-color:rgba(0,0,0,.09) !important;box-shadow:0 20px 60px rgba(0,0,0,.12) !important}
+body.theme-light .fab-menu{background:#fff !important;border-color:#222 !important;box-shadow:0 20px 60px rgba(0,0,0,.12) !important}
 body.theme-light .fab-menu-item{color:#111 !important}
 body.theme-light .fab-menu-item:hover{background:#f4f4f4 !important}
 body.theme-light .fab-menu-item svg{stroke:#111 !important}
 /* Lecteur texte en thème glass — fond solide pour lisibilité */
 body.theme-glass #text-reader{background:rgba(6,10,22,.97) !important}
-body.theme-glass #text-reader-header{background:rgba(10,14,26,.95) !important;border-bottom-color:rgba(255,255,255,.1) !important}
+body.theme-glass #text-reader-header{background:#000;border-bottom-color:rgba(255,255,255,.1) !important}
 body.theme-glass #text-reader-content{background:rgba(6,10,22,.97) !important}
 body.theme-glass #text-reader-body{color:#e8e0d0 !important}
 body.theme-glass #text-reader-body p{color:#e8e0d0 !important}
@@ -448,13 +389,13 @@ body.theme-glass #text-reader-ep-title{color:#f4a261 !important}
 body.theme-glass #text-reader-story-title{color:rgba(255,255,255,.45) !important}
 /* Lecteur texte thème clair — blanc pur */
 body.theme-light #text-reader{background:#fff !important}
-body.theme-light #text-reader-header{background:rgba(255,255,255,.99) !important;border-bottom-color:rgba(0,0,0,.08) !important}
+body.theme-light #text-reader-header{background:#000;border-bottom-color:rgba(0,0,0,.08) !important}
 body.theme-light #text-reader-ep-title{color:#111 !important}
 body.theme-light #text-reader-story-title{color:#777 !important}
 body.theme-light #text-reader-body{color:#111 !important}
 body.theme-light #text-reader-body p,body.theme-light #text-reader-body br{color:#111 !important}
 body.theme-light #text-reader-content{background:#fff !important}
-body.theme-light #tr-prev-btn,body.theme-light #tr-next-btn{color:#111 !important;border-color:rgba(0,0,0,.1) !important;background:#f4f4f4 !important}
+body.theme-light #tr-prev-btn,body.theme-light #tr-next-btn{color:#111 !important;border-color:#222 !important;background:#f4f4f4 !important}
 
 html{scroll-behavior:smooth}
 html{max-width:100vw;overflow-x:hidden}
@@ -467,7 +408,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   background:radial-gradient(ellipse 80% 60% at 85% 0%,rgba(230,57,70,.12),transparent 55%),
              radial-gradient(ellipse 65% 55% at -5% 90%,rgba(155,93,229,.1),transparent 55%),
              radial-gradient(ellipse 50% 40% at 50% 50%,rgba(42,157,143,.05),transparent 65%)}
-.glass{background:rgba(255,255,255,.04);backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);border:1px solid rgba(255,255,255,.09);border-radius:14px}
+.glass{background:#0a0a0a;-webkit-border:1px solid #222;border-radius:14px}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes slideDown{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}
 
@@ -475,10 +416,10 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 #app{max-width:920px;margin:0 auto;position:relative;z-index:1}
 
 /* NOTIF */
-#notif{position:fixed;top:70px;right:14px;z-index:600;backdrop-filter:blur(16px);background:rgba(42,157,143,.92);color:#fff;padding:11px 18px;border-radius:10px;font-weight:700;font-size:13px;border:1px solid rgba(255,255,255,.2);box-shadow:0 8px 32px rgba(0,0,0,.5);animation:slideDown .3s ease;display:none;max-width:280px}
+#notif{position:fixed;top:70px;right:14px;z-index:600;background:rgba(42,157,143,.92);color:#fff;padding:11px 18px;border-radius:10px;font-weight:700;font-size:13px;border:1px solid #222;box-shadow:0 8px 32px rgba(0,0,0,.5);animation:slideDown .3s ease;display:none;max-width:280px}
 #notif.err{background:rgba(230,57,70,.92)}
 /* HEADER */
-header{position:sticky;top:0;z-index:50;background:rgba(10,14,26,.82);backdrop-filter:blur(28px) saturate(160%);-webkit-backdrop-filter:blur(28px) saturate(160%);border-bottom:1px solid rgba(255,255,255,.08);padding:0 12px;max-width:100vw;overflow:hidden;box-sizing:border-box}
+header{position:sticky;top:0;z-index:50;background:#000;-webkit-border-bottom:1px solid #1a1a1a;padding:0 12px;max-width:100vw;overflow:hidden;box-sizing:border-box}
 .h-inner{display:flex;align-items:center;justify-content:space-between;height:58px;gap:10px}
 .logo{display:flex;align-items:center;gap:9px;cursor:pointer;user-select:none;flex-shrink:0}
 .logo-icon{font-size:24px}
@@ -486,20 +427,20 @@ header{position:sticky;top:0;z-index:50;background:rgba(10,14,26,.82);backdrop-f
 .logo-sub{font-size:7px;color:var(--dim);letter-spacing:.25em;text-transform:uppercase}
 .h-right{display:flex;gap:7px;align-items:center}
 /* Notif bell DANS le header */
-#notif-bell{position:relative;top:auto;left:auto;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.07);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;box-shadow:none;z-index:auto;flex-shrink:0}
+#notif-bell{position:relative;top:auto;left:auto;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.07);border:1px solid #222;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;box-shadow:none;z-index:auto;flex-shrink:0}
 #notif-bell:hover{background:rgba(255,255,255,.14);transform:scale(1.05)}
 #notif-bell svg{width:16px;height:16px;stroke:rgba(255,255,255,.5);fill:none;stroke-width:1.7;stroke-linecap:round}
 #notif-bell .bell-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:#e63946;border:2px solid rgba(10,14,26,.9);display:none}
 #notif-bell.has-notif .bell-dot{display:block}
-#notif-panel{position:fixed;top:66px;right:14px;left:auto;width:290px;background:rgba(10,14,26,.97);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.1);border-radius:16px;z-index:400;display:none;box-shadow:0 16px 48px rgba(0,0,0,.6);max-height:360px;overflow-y:auto}
+#notif-panel{position:fixed;top:66px;right:14px;left:auto;width:290px;background:rgba(10,14,26,.97);border:1px solid #222;border-radius:16px;z-index:400;display:none;box-shadow:0 16px 48px rgba(0,0,0,.6);max-height:360px;overflow-y:auto}
 #notif-panel.open{display:block;animation:fadeUp .15s ease}
 .sw{position:relative}
-.sw input{background:rgba(255,255,255,.05);backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:22px;padding:7px 14px 7px 30px;color:#ccc;font-size:12px;outline:none;width:130px;transition:border-color .2s,width .2s}
-.sw input:focus{border-color:rgba(255,255,255,.2);width:170px}
+.sw input{background:#0a0a0a;border:1px solid var(--border);border-radius:22px;padding:7px 14px 7px 30px;color:#ccc;font-size:12px;outline:none;width:130px;transition:border-color .2s,width .2s}
+.sw input:focus{border-color:#222;width:170px}
 .sw-ico{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--dim);pointer-events:none}
 .btn-pub{background:linear-gradient(135deg,#e63946,#c1121f);border:none;color:#fff;padding:8px 14px;border-radius:8px;font-size:11px;font-weight:700;letter-spacing:.06em;white-space:nowrap;box-shadow:0 4px 18px rgba(230,57,70,.35);transition:opacity .2s,transform .15s}
 .btn-pub:hover{opacity:.9;transform:translateY(-1px)}
-.btn-logout{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#666;padding:7px 11px;border-radius:7px;font-size:11px;font-weight:700;transition:all .2s}
+.btn-logout{background:#0a0a0a;border:1px solid #222;color:#666;padding:7px 11px;border-radius:7px;font-size:11px;font-weight:700;transition:all .2s}
 .btn-logout:hover{background:rgba(230,57,70,.15);border-color:rgba(230,57,70,.3);color:#e63946}
 
 /* ── PILL NAV FLOTTANTE ── */
@@ -509,14 +450,13 @@ header{position:sticky;top:0;z-index:50;background:rgba(10,14,26,.82);backdrop-f
   width:auto;max-width:calc(100vw - 28px);
 }
 nav{
-  background:rgba(8,11,22,.92);
-  backdrop-filter:blur(32px) saturate(180%);
-  -webkit-backdrop-filter:blur(32px) saturate(180%);
-  border:1px solid rgba(255,255,255,.1);
+  background:#0a0a0a;
+  
+  -webkit-
+  border:1px solid #222;
   border-radius:50px;
   display:flex;gap:2px;padding:5px;
-  box-shadow:0 8px 40px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.04) inset,
-             0 20px 60px rgba(230,57,70,.08);
+  
   align-items:center;
   position:relative;
 }
@@ -566,19 +506,19 @@ nav{
 input[type=text]:focus,input[type=email]:focus,input[type=password]:focus,input[type=url]:focus,textarea:focus{border-color:rgba(230,57,70,.5)!important;box-shadow:0 0 0 3px rgba(230,57,70,.07)}
 .btn-pri{background:linear-gradient(135deg,#e63946,#c1121f);border:none;color:#fff;padding:11px 22px;border-radius:9px;font-size:13px;font-weight:700;letter-spacing:.06em;font-family:'Rajdhani',sans-serif;box-shadow:0 4px 18px rgba(230,57,70,.35);transition:opacity .2s,transform .15s;cursor:pointer}
 .btn-pri:hover{opacity:.9;transform:translateY(-1px)}
-.btn-sec{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--muted);padding:11px 22px;border-radius:9px;font-size:13px;font-weight:700;letter-spacing:.06em;font-family:'Rajdhani',sans-serif;transition:all .2s;cursor:pointer}
+.btn-sec{background:#0a0a0a;border:1px solid #222;color:var(--muted);padding:11px 22px;border-radius:9px;font-size:13px;font-weight:700;letter-spacing:.06em;font-family:'Rajdhani',sans-serif;transition:all .2s;cursor:pointer}
 .btn-sec:hover{background:rgba(255,255,255,.1);color:var(--text)}
 .fld{margin-bottom:14px}
 .fld label{font-size:10px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;font-family:'Rajdhani',sans-serif;font-weight:700;display:block;margin-bottom:5px}
-.fld input,.fld textarea,.fld select{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:9px;padding:11px 14px;color:var(--text);font-size:13px;outline:none;font-family:'Rajdhani',sans-serif;transition:border-color .2s,box-shadow .2s}
+.fld input,.fld textarea,.fld select{width:100%;background:#0a0a0a;border:1px solid var(--border);border-radius:9px;padding:11px 14px;color:var(--text);font-size:13px;outline:none;font-family:'Rajdhani',sans-serif;transition:border-color .2s,box-shadow .2s}
 .fld select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6' stroke='%23666' stroke-width='2' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
 .btn-row{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
-.overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:20px 12px}
+.overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.92);display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:20px 12px}
 .overlay.open{display:flex;animation:fadeIn .2s ease}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.mbox{background:var(--bg2);border:1px solid var(--border);border-radius:20px;width:100%;margin:auto;position:relative;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.04) inset;animation:slideUp .25s ease}
+.mbox{background:var(--bg2);border:1px solid var(--border);border-radius:20px;width:100%;margin:auto;position:relative;overflow:hidden;animation:slideUp .25s ease}
 @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-.mcl{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.08);border:none;color:#888;width:30px;height:30px;border-radius:50%;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:5;transition:all .2s}
+.mcl{position:absolute;top:14px;right:14px;background:#111;border:none;color:#888;width:30px;height:30px;border-radius:50%;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:5;transition:all .2s}
 .mcl:hover{background:rgba(230,57,70,.2);color:#e63946}
 .mhd{padding:22px 22px 0;margin-bottom:16px}
 .mhd h2{font-family:'Cinzel',serif;font-size:18px;color:var(--text);margin-bottom:4px}
@@ -605,7 +545,7 @@ main{padding:22px 14px 115px;position:relative;z-index:1;max-width:100vw;overflo
 
 /* FEED */
 .composer{padding:16px;margin-bottom:16px}
-.composer textarea{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:#ddd;font-size:13px;resize:none;height:78px;outline:none;transition:border-color .2s;line-height:1.55}
+.composer textarea{width:100%;background:#0a0a0a;border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:#ddd;font-size:13px;resize:none;height:78px;outline:none;transition:border-color .2s;line-height:1.55}
 .composer textarea:focus{border-color:rgba(230,57,70,.4)}
 .cfoot{display:flex;justify-content:space-between;align-items:center;margin-top:9px}
 .cchar{font-size:11px;color:var(--dim)}
@@ -619,7 +559,7 @@ main{padding:22px 14px 115px;position:relative;z-index:1;max-width:100vw;overflo
 .post-inf{flex:1}.post-nm{font-weight:800;font-size:15px;color:var(--text)}
 .post-tm{font-size:11px;color:var(--dim);margin-left:6px;font-weight:400}
 .post-txt{color:#d8d0c8;font-size:15px;line-height:1.75;margin-bottom:11px;word-break:break-word;font-weight:500;letter-spacing:.01em}
-.post-ft{display:flex;gap:14px;border-top:1px solid rgba(255,255,255,.05);padding-top:9px;align-items:center}
+.post-ft{display:flex;gap:14px;border-top:1px solid #1a1a1a;padding-top:9px;align-items:center}
 .post-ft button{background:none;border:none;color:#666;font-size:13px;padding:0;display:flex;align-items:center;gap:5px;transition:color .2s;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700}
 .post-ft button:hover{color:#aaa}.post-ft button.liked{color:#e63946}
 .del-btn{margin-left:auto;font-size:11px;color:var(--dim) !important}.del-btn:hover{color:#e63946 !important}
@@ -627,8 +567,8 @@ main{padding:22px 14px 115px;position:relative;z-index:1;max-width:100vw;overflo
 /* STORIES */
 .gbar{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:18px;scrollbar-width:none}
 .gbar::-webkit-scrollbar{display:none}
-.gbtn{background:rgba(255,255,255,.05);backdrop-filter:blur(6px);border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:22px;font-size:11px;font-weight:700;letter-spacing:.06em;transition:all .2s;white-space:nowrap;flex-shrink:0;cursor:pointer}
-.gbtn:hover{border-color:rgba(255,255,255,.2);color:var(--text)}
+.gbtn{background:#0a0a0a;border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:22px;font-size:11px;font-weight:700;letter-spacing:.06em;transition:all .2s;white-space:nowrap;flex-shrink:0;cursor:pointer}
+.gbtn:hover{border-color:#222;color:var(--text)}
 .gbtn.active{background:linear-gradient(135deg,#e63946,#c1121f);border-color:#e63946;color:#fff;box-shadow:0 4px 14px rgba(230,57,70,.3)}
 .sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:14px}
 .sc{border-radius:14px;overflow:hidden;cursor:pointer;position:relative;background:var(--card);border:1px solid var(--border)}
@@ -640,12 +580,12 @@ main{padding:22px 14px 115px;position:relative;z-index:1;max-width:100vw;overflo
 .sc-title{font-family:'Cinzel',serif;font-size:13px;color:var(--text);margin-bottom:5px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .sc-syn{font-size:11px;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:8px}
 .tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px}
-.tag{font-size:9px;padding:2px 7px;border-radius:3px;background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--muted)}
+.tag{font-size:9px;padding:2px 7px;border-radius:3px;background:#0a0a0a;border:1px solid var(--border);color:var(--muted)}
 .sc-ft{display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:1px solid var(--border)}
 .sc-auth{display:flex;align-items:center;gap:5px}
 .sc-meta{display:flex;gap:8px;font-size:11px;color:var(--dim);align-items:center}
 .badge-new{position:absolute;top:10px;right:10px;background:linear-gradient(135deg,#e63946,#f4a261);color:#fff;font-size:8px;font-weight:900;padding:3px 8px;border-radius:4px;letter-spacing:.1em;z-index:3}
-.fav-btn{position:absolute;top:8px;left:8px;background:rgba(10,14,26,.75);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.12);border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;z-index:4;transition:all .2s;cursor:pointer;padding:0}
+.fav-btn{position:absolute;top:8px;left:8px;background:rgba(10,14,26,.75);border:1px solid #222;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;z-index:4;transition:all .2s;cursor:pointer;padding:0}
 .fav-btn:hover{background:rgba(230,57,70,.3);transform:scale(1.12)}
 .fav-btn svg{width:14px;height:14px;stroke:#ccc;fill:none;stroke-width:2;transition:all .2s;pointer-events:none}
 .fav-btn.faved svg{stroke:#e63946;fill:#e63946}
@@ -677,7 +617,7 @@ main{padding:22px 14px 115px;position:relative;z-index:1;max-width:100vw;overflo
 .ci-nm{font-weight:700;font-size:13px;color:var(--text)}
 .ci-type{font-size:9px;padding:2px 8px;border-radius:3px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
 .ci-det{font-size:11px;color:var(--muted);line-height:1.55}
-.btn-ann{width:100%;background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.15);color:var(--muted);padding:13px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Rajdhani',sans-serif;letter-spacing:.06em}
+.btn-ann{width:100%;background:#0a0a0a;border:1px dashed rgba(255,255,255,.15);color:var(--muted);padding:13px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Rajdhani',sans-serif;letter-spacing:.06em}
 .btn-ann:hover{background:rgba(230,57,70,.08);border-color:rgba(230,57,70,.3);color:#e63946}
 .btn-ct{border:none;background:rgba(230,57,70,.12);color:#e63946;padding:6px 14px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Rajdhani',sans-serif;white-space:nowrap;transition:all .2s}
 .btn-ct:hover{background:rgba(230,57,70,.22)}
@@ -687,7 +627,7 @@ main{padding:22px 14px 115px;position:relative;z-index:1;max-width:100vw;overflo
 .prof-cov{height:140px;background:linear-gradient(135deg,rgba(230,57,70,.3),rgba(244,162,97,.2));position:relative;overflow:hidden;border-radius:16px 16px 0 0}
 .prof-cov img.cov-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .cov-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(10,14,26,.7))}
-.cov-edit{position:absolute;top:10px;right:10px;background:rgba(10,14,26,.6);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);color:#ccc;padding:5px 11px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Rajdhani',sans-serif}
+.cov-edit{position:absolute;top:10px;right:10px;background:rgba(10,14,26,.6);border:1px solid #222;color:#ccc;padding:5px 11px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Rajdhani',sans-serif}
 .cov-edit:hover{background:rgba(255,255,255,.15)}
 .prof-av-slot{position:absolute;bottom:-42px;left:18px;z-index:20}
 .prof-av-slot .av{box-shadow:0 4px 20px rgba(0,0,0,.5)!important}
@@ -707,7 +647,7 @@ main{padding:22px 14px 115px;position:relative;z-index:1;max-width:100vw;overflo
 .sm-auth{display:flex;align-items:center;gap:10px;margin-bottom:12px}
 .sm-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
 .sm-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
-.sm-stat{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center}
+.sm-stat{background:#0a0a0a;border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center}
 .sm-stat .v{font-size:22px;font-weight:900;color:var(--text)}
 .sm-stat .l{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
 
@@ -715,12 +655,12 @@ main{padding:22px 14px 115px;position:relative;z-index:1;max-width:100vw;overflo
 .ep-section{margin-bottom:18px}
 .ep-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}
 .ep-ttl{font-weight:800;font-size:12px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase}
-.btn-add-ep{background:rgba(255,255,255,.06);border:1px solid;padding:6px 14px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Rajdhani',sans-serif;transition:all .2s}
+.btn-add-ep{background:#0a0a0a;border:1px solid;padding:6px 14px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Rajdhani',sans-serif;transition:all .2s}
 .ep-list{display:flex;flex-direction:column;gap:9px}
 .ep-item{display:flex;gap:12px;align-items:flex-start;padding:11px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:11px;cursor:pointer;transition:all .2s}
-.ep-item:hover{background:rgba(255,255,255,.06);transform:translateX(3px)}
+.ep-item:hover{background:#0a0a0a;transform:translateX(3px)}
 .ep-thumb{width:52px;height:72px;object-fit:cover;border-radius:7px;flex-shrink:0;border:1px solid var(--border)}
-.ep-thumb-placeholder{width:52px;height:72px;border-radius:7px;flex-shrink:0;background:rgba(255,255,255,.04);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--muted)}
+.ep-thumb-placeholder{width:52px;height:72px;border-radius:7px;flex-shrink:0;background:#0a0a0a;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--muted)}
 .ep-info{flex:1;min-width:0}
 .ep-num{font-size:9px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;margin-bottom:3px}
 .ep-title{font-weight:700;font-size:13px;color:var(--text);margin-bottom:3px}
@@ -729,50 +669,50 @@ main{padding:22px 14px 115px;position:relative;z-index:1;max-width:100vw;overflo
 
 /* EPISODE READER */
 .reader-header{display:flex;align-items:center;gap:13px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border)}
-.btn-back{background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Rajdhani',sans-serif;white-space:nowrap;transition:all .2s}
+.btn-back{background:#0a0a0a;border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Rajdhani',sans-serif;white-space:nowrap;transition:all .2s}
 .btn-back:hover{color:var(--text);background:rgba(255,255,255,.1)}
 .reader-pages{display:flex;flex-direction:column;gap:6px}
 .reader-page{width:100%;display:block;border-radius:8px}
 .reader-mode-toggle{display:flex;gap:6px;margin-bottom:14px}
-.rmt-btn{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--muted);padding:7px 16px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Rajdhani',sans-serif;transition:all .2s}
+.rmt-btn{background:#0a0a0a;border:1px solid var(--border);color:var(--muted);padding:7px 16px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Rajdhani',sans-serif;transition:all .2s}
 .rmt-btn.active{background:rgba(230,57,70,.15);border-color:rgba(230,57,70,.4);color:#e63946}
 .reader-page-wrap{position:relative;margin-bottom:6px}
 .reader-page-wrap:hover .page-cmt-btn{opacity:1}
-.page-cmt-btn{position:absolute;bottom:8px;right:8px;background:rgba(10,14,26,.8);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.12);color:#ccc;padding:5px 10px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;font-family:'Rajdhani',sans-serif;transition:all .2s;opacity:0}
-.page-cmt-popup{position:absolute;bottom:38px;right:8px;background:rgba(10,14,26,.95);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px;width:220px;display:none;z-index:10;box-shadow:0 12px 36px rgba(0,0,0,.6)}
+.page-cmt-btn{position:absolute;bottom:8px;right:8px;background:rgba(10,14,26,.8);border:1px solid #222;color:#ccc;padding:5px 10px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;font-family:'Rajdhani',sans-serif;transition:all .2s;opacity:0}
+.page-cmt-popup{position:absolute;bottom:38px;right:8px;background:#000;border:1px solid #222;border-radius:12px;padding:12px;width:220px;display:none;z-index:10;box-shadow:0 12px 36px rgba(0,0,0,.6)}
 .page-cmt-popup.open{display:block;animation:fadeUp .15s ease}
-.page-cmt-popup input{width:100%;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:7px;padding:7px 11px;color:#ddd;font-size:11px;outline:none;margin-bottom:7px;font-family:'Rajdhani',sans-serif}
+.page-cmt-popup input{width:100%;background:#0a0a0a;border:1px solid var(--border);border-radius:7px;padding:7px 11px;color:#ddd;font-size:11px;outline:none;margin-bottom:7px;font-family:'Rajdhani',sans-serif}
 .page-cmt-emoji{display:flex;gap:6px;margin-bottom:8px}
 .page-cmt-emoji span{cursor:pointer;font-size:18px;transition:transform .15s;display:inline-block}
 .page-cmt-emoji span:hover{transform:scale(1.3)}
 .page-cmt-list{max-height:100px;overflow-y:auto;margin-top:6px}
-.page-cmt-item{font-size:11px;color:#888;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;gap:5px}
+.page-cmt-item{font-size:11px;color:#888;padding:3px 0;border-bottom:1px solid #1a1a1a;display:flex;align-items:center;gap:5px}
 .page-cmt-item .pcmt-au{color:#bbb;font-weight:700;font-size:10px}
 
 /* COMMENTS */
 .cmts-wrap{margin-top:22px;padding-top:18px;border-top:1px solid var(--border)}
 .cmts-ttl{font-weight:800;font-size:12px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px}
 .cmt{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
-.cmt-bub{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:9px 12px}
+.cmt-bub{flex:1;background:#0a0a0a;border:1px solid var(--border);border-radius:10px;padding:9px 12px}
 .cmt-au{font-weight:700;font-size:11px;color:#ddd;margin-bottom:3px}
 .cmt-tm{font-size:10px;color:var(--dim);font-weight:400;margin-left:6px}
 .cmt-tx{font-size:12px;color:var(--muted);line-height:1.5}
 .cmt-form{display:flex;gap:8px;margin-top:12px}
-.cmt-form input{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:9px;padding:9px 14px;color:var(--text);font-size:13px;outline:none;font-family:'Rajdhani',sans-serif;transition:border-color .2s}
+.cmt-form input{flex:1;background:#0a0a0a;border:1px solid var(--border);border-radius:9px;padding:9px 14px;color:var(--text);font-size:13px;outline:none;font-family:'Rajdhani',sans-serif;transition:border-color .2s}
 .btn-cmt{background:var(--red);border:none;color:#fff;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;flex-shrink:0;transition:opacity .2s}
 .btn-cmt:hover{opacity:.85}
 
 /* FORMS */
 .fld{display:flex;flex-direction:column;gap:5px;margin-bottom:13px}
 .fld label{font-size:10px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;font-weight:700;font-family:'Rajdhani',sans-serif}
-.fld input,.fld textarea,.fld select{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:9px;padding:11px 14px;color:var(--text);font-size:13px;outline:none;font-family:'Rajdhani',sans-serif;transition:border-color .2s,box-shadow .2s}
+.fld input,.fld textarea,.fld select{background:#0a0a0a;border:1px solid var(--border);border-radius:9px;padding:11px 14px;color:var(--text);font-size:13px;outline:none;font-family:'Rajdhani',sans-serif;transition:border-color .2s,box-shadow .2s}
 .fld select{background-color:rgba(12,16,30,.9);appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6' stroke='%23666' stroke-width='2' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
 .fld textarea{resize:vertical;min-height:95px;line-height:1.55}
 .fld input[type=file]{padding:8px 12px;color:var(--muted);font-size:12px}
 .fld input[type=file]::file-selector-button{background:rgba(255,255,255,.07);border:1px solid var(--border);color:#ccc;padding:4px 10px;border-radius:5px;cursor:pointer;font-size:11px;margin-right:10px;font-family:'Rajdhani',sans-serif;font-weight:700}
 .img-prev{width:100%;max-height:140px;object-fit:cover;border-radius:9px;margin-top:6px;display:none;border:1px solid var(--border)}
 .btn-row{display:flex;gap:9px;margin-top:14px}
-.btn-sec{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--muted);padding:11px;border-radius:9px;font-size:12px;font-weight:700;transition:all .2s;cursor:pointer;font-family:'Rajdhani',sans-serif}
+.btn-sec{flex:1;background:#0a0a0a;border:1px solid #222;color:var(--muted);padding:11px;border-radius:9px;font-size:12px;font-weight:700;transition:all .2s;cursor:pointer;font-family:'Rajdhani',sans-serif}
 .btn-sec:hover{background:rgba(255,255,255,.1);color:var(--text)}
 .btn-pri{flex:2;background:linear-gradient(135deg,#e63946,#c1121f);border:none;color:#fff;padding:11px;border-radius:9px;font-size:12px;font-weight:700;letter-spacing:.06em;box-shadow:0 4px 16px rgba(230,57,70,.32);transition:opacity .2s,transform .15s;cursor:pointer;font-family:'Rajdhani',sans-serif}
 .btn-pri:hover{opacity:.9;transform:translateY(-1px)}
@@ -786,7 +726,7 @@ main{padding:22px 14px 115px;position:relative;z-index:1;max-width:100vw;overflo
 .um-bio{font-size:12px;color:var(--muted);line-height:1.6;margin-top:5px}
 .um-stats{display:flex;gap:20px;padding:13px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:14px}
 .um-sr{display:flex;align-items:center;justify-content:space-between;padding:10px 13px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-left:3px solid;border-radius:9px;cursor:pointer;transition:background .2s;margin-bottom:8px}
-.um-sr:hover{background:rgba(255,255,255,.06)}
+.um-sr:hover{background:#0a0a0a}
 .um-sr-t{font-weight:700;font-size:13px;color:var(--text)}
 .um-sr-m{font-size:10px;color:var(--muted);margin-top:2px}
 .btn-msg{width:100%;background:linear-gradient(135deg,rgba(155,93,229,.2),rgba(155,93,229,.1));border:1px solid rgba(155,93,229,.3);color:#9b5de5;padding:11px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Rajdhani',sans-serif;letter-spacing:.06em;transition:all .2s}
@@ -796,7 +736,7 @@ main{padding:22px 14px 115px;position:relative;z-index:1;max-width:100vw;overflo
 /* MESSAGES */
 .msg-hist{min-height:160px;max-height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:8px 0;margin-bottom:10px}
 .msg-form{display:flex;gap:8px}
-.msg-form input{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:9px;padding:10px 14px;color:var(--text);font-size:13px;outline:none;font-family:'Rajdhani',sans-serif;transition:border-color .2s}
+.msg-form input{flex:1;background:#0a0a0a;border:1px solid var(--border);border-radius:9px;padding:10px 14px;color:var(--text);font-size:13px;outline:none;font-family:'Rajdhani',sans-serif;transition:border-color .2s}
 .msg-bub{max-width:78%;padding:9px 13px;border-radius:12px;font-size:13px;line-height:1.5;word-break:break-word}
 .msg-me{background:linear-gradient(135deg,rgba(230,57,70,.28),rgba(193,18,31,.18));border:1px solid rgba(230,57,70,.3);color:#f0f0f0}
 .msg-them{background:rgba(255,255,255,.07);color:var(--text);border-radius:12px 12px 12px 3px}
@@ -804,52 +744,52 @@ main{padding:22px 14px 115px;position:relative;z-index:1;max-width:100vw;overflo
 
 /* STUDIO */
 .studio-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.kpi-card{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:14px 10px;text-align:center;transition:transform .2s}
+.kpi-card{background:#0a0a0a;border:1px solid var(--border);border-radius:12px;padding:14px 10px;text-align:center;transition:transform .2s}
 .kpi-card:hover{transform:translateY(-2px)}
 .kpi-v{font-family:'Cinzel',serif;font-size:24px;font-weight:900;background:linear-gradient(135deg,#e63946,#f4a261);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .kpi-l{font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin-top:3px}
 .studio-story-row{display:flex;gap:13px;align-items:flex-start;padding:13px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;transition:background .2s}
-.studio-story-row:hover{background:rgba(255,255,255,.05)}
+.studio-story-row:hover{background:#0a0a0a}
 .studio-story-info{flex:1;min-width:0}
 .studio-story-title{font-weight:900;font-size:13px;margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .studio-story-meta{font-size:11px;color:var(--muted);margin-bottom:8px}
 .studio-story-actions{display:flex;gap:6px;flex-wrap:wrap}
-.btn-studio{background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--muted);padding:5px 10px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;font-family:'Rajdhani',sans-serif;transition:all .2s;white-space:nowrap}
+.btn-studio{background:#0a0a0a;border:1px solid var(--border);color:var(--muted);padding:5px 10px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;font-family:'Rajdhani',sans-serif;transition:all .2s;white-space:nowrap}
 .btn-studio:hover{background:rgba(255,255,255,.1);color:var(--text)}
 .btn-studio.danger{color:#e63946;border-color:rgba(230,57,70,.2)}
 .btn-studio.danger:hover{background:rgba(230,57,70,.12)}
 .draft-badge{background:rgba(244,162,97,.15);border:1px solid rgba(244,162,97,.3);color:#f4a261;font-size:8px;font-weight:900;padding:2px 7px;border-radius:3px;letter-spacing:.1em;text-transform:uppercase}
 
 /* SHARE CARD */
-.share-card-wrap{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px}
+.share-card-wrap{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.85);display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px}
 .share-card-wrap.open{display:flex}
-.share-card-close{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#ccc;padding:10px 22px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Rajdhani',sans-serif;transition:all .2s}
+.share-card-close{background:#111;border:1px solid #222;color:#ccc;padding:10px 22px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Rajdhani',sans-serif;transition:all .2s}
 .share-card-close:hover{background:rgba(255,255,255,.15)}
 
 /* BADGES */
 .badge-earned{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,rgba(244,162,97,.15),rgba(230,57,70,.1));border:1px solid rgba(244,162,97,.3);color:#f4a261;font-size:10px;padding:4px 11px;border-radius:20px;font-weight:700;margin:3px}
 
 /* NOTIF BELL */
-#notif-bell{position:relative;top:auto;left:auto;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;flex-shrink:0}
+#notif-bell{position:relative;top:auto;left:auto;width:32px;height:32px;border-radius:50%;background:#111;border:1px solid #222;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;flex-shrink:0}
 #notif-bell:hover{background:rgba(255,255,255,.15);transform:scale(1.05)}
 #notif-bell svg{width:16px;height:16px;stroke:rgba(255,255,255,.6);fill:none;stroke-width:1.7;stroke-linecap:round}
 #notif-bell .bell-dot{position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:#e63946;border:2px solid #0a0e1a;display:none}
 #notif-bell.has-notif .bell-dot{display:block}
-#notif-panel{position:fixed;top:60px;left:14px;width:290px;background:rgba(10,14,26,.97);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.1);border-radius:16px;z-index:400;display:none;box-shadow:0 16px 48px rgba(0,0,0,.6);max-height:360px;overflow-y:auto}
+#notif-panel{position:fixed;top:60px;left:14px;width:290px;background:rgba(10,14,26,.97);border:1px solid #222;border-radius:16px;z-index:400;display:none;box-shadow:0 16px 48px rgba(0,0,0,.6);max-height:360px;overflow-y:auto}
 #notif-panel.open{display:block;animation:fadeUp .15s ease}
-.notif-item{padding:11px 15px;border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer;transition:background .15s}
-.notif-item:hover{background:rgba(255,255,255,.04)}
+.notif-item{padding:11px 15px;border-bottom:1px solid #1a1a1a;cursor:pointer;transition:background .15s}
+.notif-item:hover{background:#0a0a0a}
 .notif-item-title{font-size:12px;color:#ddd;font-weight:700;margin-bottom:2px}
 .notif-item-sub{font-size:11px;color:#555}
 .notif-item.unread{border-left:2px solid #e63946}
 
 /* MDX */
 .mdx-search{display:flex;gap:9px;margin-bottom:20px}
-.mdx-search input{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:9px;padding:10px 14px;color:#ddd;font-size:13px;outline:none;transition:border-color .2s}
+.mdx-search input{flex:1;background:#0a0a0a;border:1px solid var(--border);border-radius:9px;padding:10px 14px;color:#ddd;font-size:13px;outline:none;transition:border-color .2s}
 .mdx-search input:focus{border-color:rgba(244,162,97,.5)}
 .mdx-search button{background:linear-gradient(135deg,#f4a261,#e76f51);border:none;color:#fff;padding:10px 18px;border-radius:9px;font-size:12px;font-weight:700;box-shadow:0 4px 14px rgba(244,162,97,.3);transition:opacity .2s;white-space:nowrap;cursor:pointer}
 .mdx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:13px}
-.mdx-card{border-radius:12px;overflow:hidden;cursor:pointer;transition:transform .2s,box-shadow .2s;background:rgba(255,255,255,.04);border:1px solid var(--border)}
+.mdx-card{border-radius:12px;overflow:hidden;cursor:pointer;transition:transform .2s,box-shadow .2s;background:#0a0a0a;border:1px solid var(--border)}
 .mdx-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.5)}
 .mdx-cover{width:100%;height:200px;object-fit:cover;display:block}
 .mdx-cover-ph{width:100%;height:200px;display:flex;align-items:center;justify-content:center;font-size:38px;background:linear-gradient(135deg,rgba(244,162,97,.1),rgba(230,57,70,.07))}
@@ -858,7 +798,7 @@ main{padding:22px 14px 115px;position:relative;z-index:1;max-width:100vw;overflo
 .mdx-meta{font-size:10px;color:#555;display:flex;gap:7px;flex-wrap:wrap;align-items:center}
 .mdx-status{font-size:9px;padding:2px 7px;border-radius:3px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
 .mdx-tabs{display:flex;gap:7px;margin-bottom:18px;flex-wrap:wrap}
-.mdx-tab{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:22px;font-size:11px;font-weight:700;letter-spacing:.06em;transition:all .2s;white-space:nowrap;flex-shrink:0;cursor:pointer}
+.mdx-tab{background:#0a0a0a;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:22px;font-size:11px;font-weight:700;letter-spacing:.06em;transition:all .2s;white-space:nowrap;flex-shrink:0;cursor:pointer}
 .mdx-tab.active{background:linear-gradient(135deg,#f4a261,#e76f51);border-color:#f4a261;color:#fff;box-shadow:0 4px 14px rgba(244,162,97,.3)}
 .btn-mdx-read{display:inline-block;background:linear-gradient(135deg,#f4a261,#e76f51);border:none;color:#fff;padding:10px 22px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;transition:opacity .2s;text-decoration:none}
 .btn-mdx-read:hover{opacity:.9}
@@ -873,7 +813,7 @@ main{padding:22px 14px 115px;position:relative;z-index:1;max-width:100vw;overflo
 /* PARAMÈTRES */
 .settings-section{margin-bottom:28px}
 .settings-section-title{font-family:'Cinzel',serif;font-size:15px;color:var(--text);margin-bottom:4px;padding-bottom:10px;border-bottom:1px solid var(--border)}
-.settings-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid #1a1a1a}
 .settings-row:last-child{border-bottom:none}
 .settings-row-label{font-size:14px;font-weight:700;color:var(--text)}
 .settings-row-sub{font-size:11px;color:var(--muted);margin-top:2px}
@@ -924,7 +864,7 @@ main{padding:22px 14px 115px;position:relative;z-index:1;max-width:100vw;overflo
 .fab-plus.open svg{transform:rotate(45deg)}
 .nav-wrapper{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:50;width:auto;max-width:calc(100vw - 28px);display:flex;flex-direction:column;align-items:center}
 nav{position:relative;width:100%}
-.fab-menu{position:absolute;bottom:calc(100% + 12px);left:50%;transform:translateX(-50%);background:rgba(10,14,26,.96);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:10px;display:none;flex-direction:column;gap:5px;min-width:210px;box-shadow:0 20px 60px rgba(0,0,0,.8)}
+.fab-menu{position:absolute;bottom:calc(100% + 12px);left:50%;transform:translateX(-50%);background:#000;border:1px solid #222;border-radius:18px;padding:10px;display:none;flex-direction:column;gap:5px;min-width:210px;box-shadow:0 20px 60px rgba(0,0,0,.8)}
 .fab-menu.open{display:flex;animation:fadeUp .18s ease}
 .fab-menu-item{display:flex;align-items:center;gap:11px;padding:11px 14px;border-radius:11px;cursor:pointer;transition:background .15s;border:none;background:none;color:var(--text);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;width:100%;text-align:left}
 .fab-menu-item:hover{background:rgba(255,255,255,.09)}
@@ -1018,13 +958,11 @@ header.scrolled{background:rgba(10,14,26,.97) !important;box-shadow:0 4px 32px r
 .uc:hover{transform:translateY(-4px);box-shadow:0 16px 36px rgba(0,0,0,.45)}
 
 /* ── Nav bar enhanced ── */
-nav{display:flex;align-items:center;justify-content:center;background:rgba(10,14,26,.88);backdrop-filter:blur(32px) saturate(200%);border:1px solid rgba(255,255,255,.09);border-radius:24px;padding:6px 8px;gap:2px;box-shadow:0 8px 32px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06)}
-.nb{
-  padding:10px 13px;border-radius:18px;border:none;background:none;
+nav{display:flex;align-items:center;justify-content:center;background:#0a0a0a;border:1px solid #222;border-radius:24px;padding:6px 8px;gap:2px;border-radius:18px;border:none;background:none;
   color:rgba(255,255,255,.3);cursor:pointer;transition:all .2s cubic-bezier(.34,1.56,.64,1);
   display:flex;flex-direction:column;align-items:center;gap:3px;position:relative;
 }
-.nb:hover{color:rgba(255,255,255,.7);background:rgba(255,255,255,.06);transform:translateY(-1px)}
+.nb:hover{color:rgba(255,255,255,.7);background:#0a0a0a;transform:translateY(-1px)}
 .nb.active{
   color:#fff;
   background:linear-gradient(135deg,rgba(230,57,70,.2),rgba(244,162,97,.1));
@@ -1051,20 +989,11 @@ svg defs{display:none}
 
 /* ── FAB enhanced ── */
 .fab-plus{transition:transform .22s cubic-bezier(.34,1.56,.64,1),box-shadow .22s ease}
-.fab-plus:hover{transform:scale(1.12) translateY(-2px) !important;box-shadow:0 12px 36px rgba(230,57,70,.7) !important}
-.fab-menu-item{transition:background .15s, transform .15s cubic-bezier(.34,1.56,.64,1)}
-.fab-menu-item:hover{background:rgba(255,255,255,.09) !important;transform:translateX(3px)}
+.fab-plus:hover{transform:scale(1.12) translateY(-2px) !important;transform:translateX(3px)}
 
 /* ── Modals enhanced ── */
 .mbox{animation:modalIn .3s cubic-bezier(.16,1,.3,1) both}
-.overlay{backdrop-filter:blur(14px) !important}
-
-/* ── Like button heartbeat ── */
-.liked-anim{animation:heartBeat .5s cubic-bezier(.34,1.56,.64,1) both}
-
-/* ── Input focus glow ── */
-input:focus,textarea:focus,select:focus{
-  border-color:rgba(230,57,70,.45) !important;
+.overlay{
   box-shadow:0 0 0 3px rgba(230,57,70,.08) !important;
   transition:border-color .2s,box-shadow .2s;
 }
@@ -1073,7 +1002,7 @@ input:focus,textarea:focus,select:focus{
 #notif{
   animation:slideIn .3s cubic-bezier(.16,1,.3,1) !important;
   border-radius:12px !important;
-  backdrop-filter:blur(24px) saturate(200%) !important;
+  
   font-size:12.5px !important;
 }
 
@@ -1098,7 +1027,7 @@ input:focus,textarea:focus,select:focus{
   transition:background .18s,transform .18s cubic-bezier(.34,1.56,.64,1);
   animation:fadeUpIn .3s cubic-bezier(.16,1,.3,1) both;
 }
-.ep-item:hover{background:rgba(255,255,255,.06) !important;transform:translateX(3px)}
+.ep-item:hover{background:#0a0a0a !important;transform:translateX(3px)}
 
 /* ── MDX cards ── */
 .mdx-card{animation:fadeUpIn .35s cubic-bezier(.16,1,.3,1) both}
@@ -1153,7 +1082,7 @@ input:focus,textarea:focus,select:focus{
 .ai-chip{display:inline-flex;align-items:center;gap:5px;background:rgba(155,93,229,.12);border:1px solid rgba(155,93,229,.25);color:rgba(155,93,229,.85);font-size:10px;padding:5px 11px;border-radius:20px;font-weight:700;cursor:pointer;transition:all .18s;white-space:nowrap;font-family:'Rajdhani',sans-serif;letter-spacing:.05em}
 .ai-chip:hover{background:rgba(155,93,229,.22);transform:translateY(-1px);box-shadow:0 4px 14px rgba(155,93,229,.2)}
 .ai-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
-.ai-output{background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:12px 14px;font-size:12px;color:#ccc;line-height:1.7;min-height:52px;position:relative;display:none}
+.ai-output{background:rgba(0,0,0,.25);border:1px solid #222;border-radius:10px;padding:12px 14px;font-size:12px;color:#ccc;line-height:1.7;min-height:52px;position:relative;display:none}
 .ai-output.visible{display:block;animation:fadeUpIn .3s cubic-bezier(.16,1,.3,1)}
 .ai-typing{display:inline-flex;gap:4px;padding:4px 0}
 .ai-typing span{width:5px;height:5px;background:rgba(155,93,229,.6);border-radius:50%;animation:typing-dot .8s ease-in-out infinite}
@@ -1168,17 +1097,17 @@ input:focus,textarea:focus,select:focus{
 /* ── AI Studio Assistant bubble ── */
 .ai-assistant-btn{position:fixed;bottom:100px;right:18px;z-index:45;width:46px;height:46px;background:linear-gradient(135deg,#9b5de5,#7b2fd6);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 20px rgba(155,93,229,.55);transition:transform .22s cubic-bezier(.34,1.56,.64,1),box-shadow .22s;font-size:20px}
 .ai-assistant-btn:hover{transform:scale(1.12) translateY(-2px);box-shadow:0 8px 32px rgba(155,93,229,.7)}
-.ai-assistant-panel{position:fixed;bottom:160px;right:18px;z-index:44;width:300px;background:rgba(10,14,26,.97);backdrop-filter:blur(28px);border:1px solid rgba(155,93,229,.3);border-radius:18px;padding:0;display:none;box-shadow:0 20px 60px rgba(0,0,0,.7),0 0 0 1px rgba(155,93,229,.15)}
+.ai-assistant-panel{position:fixed;bottom:160px;right:18px;z-index:44;width:300px;background:rgba(10,14,26,.97);border:1px solid rgba(155,93,229,.3);border-radius:18px;padding:0;display:none;box-shadow:0 20px 60px rgba(0,0,0,.7),0 0 0 1px rgba(155,93,229,.15)}
 .ai-assistant-panel.open{display:flex;flex-direction:column;animation:modalIn .28s cubic-bezier(.16,1,.3,1) both}
-.aap-header{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:9px}
+.aap-header{padding:14px 16px;border-bottom:1px solid #1a1a1a;display:flex;align-items:center;gap:9px}
 .aap-avatar{width:32px;height:32px;background:linear-gradient(135deg,#9b5de5,#7b2fd6);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
 .aap-name{font-family:'Cinzel',serif;font-size:12px;color:#ddd;font-weight:700}
 .aap-sub{font-size:9px;color:#666;letter-spacing:.1em;text-transform:uppercase}
 .aap-msgs{padding:12px 14px;max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
 .aap-msg-user{background:rgba(230,57,70,.12);border:1px solid rgba(230,57,70,.2);border-radius:12px 12px 2px 12px;padding:9px 12px;font-size:12px;color:#ddd;align-self:flex-end;max-width:85%;line-height:1.5}
 .aap-msg-ai{background:rgba(155,93,229,.08);border:1px solid rgba(155,93,229,.18);border-radius:2px 12px 12px 12px;padding:9px 12px;font-size:12px;color:#ccc;align-self:flex-start;max-width:92%;line-height:1.6}
-.aap-input-row{padding:10px 12px;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:8px;align-items:center}
-.aap-input{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:9px 12px;color:#ddd;font-size:12px;outline:none;font-family:'Rajdhani',sans-serif}
+.aap-input-row{padding:10px 12px;border-top:1px solid #1a1a1a;display:flex;gap:8px;align-items:center}
+.aap-input{flex:1;background:#0a0a0a;border:1px solid #222;border-radius:10px;padding:9px 12px;color:#ddd;font-size:12px;outline:none;font-family:'Rajdhani',sans-serif}
 .aap-send{background:linear-gradient(135deg,#9b5de5,#7b2fd6);border:none;width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;color:#fff;font-size:14px;transition:all .2s}
 .aap-send:hover{transform:scale(1.08);box-shadow:0 4px 12px rgba(155,93,229,.4)}
 .aap-quick-btns{padding:0 12px 10px;display:flex;flex-wrap:wrap;gap:5px}
@@ -1209,7 +1138,7 @@ input:focus,textarea:focus,select:focus{
 
 <!-- PANEL NOTIFICATIONS (fixé sous header) -->
 <div id="notif-panel">
-  <div style="padding:12px 15px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between;align-items:center">
+  <div style="padding:12px 15px;border-bottom:1px solid #1a1a1a;display:flex;justify-content:space-between;align-items:center">
     <span style="font-family:'Cinzel',serif;font-size:13px;color:var(--text)">Notifications</span>
     <button onclick="clearNotifs()" style="background:none;border:none;color:#555;font-size:11px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700">Tout lire</button>
   </div>
@@ -1346,8 +1275,8 @@ input:focus,textarea:focus,select:focus{
 }
 .exp-action-icon{
   width:44px;height:44px;border-radius:50%;
-  background:rgba(255,255,255,.12);backdrop-filter:blur(8px);
-  border:1px solid rgba(255,255,255,.2);
+  background:rgba(255,255,255,.12);
+  border:1px solid #222;
   display:flex;align-items:center;justify-content:center;
   font-size:20px;transition:transform .2s cubic-bezier(.34,1.56,.64,1),background .2s;
 }
@@ -1355,7 +1284,7 @@ input:focus,textarea:focus,select:focus{
 .exp-play-btn{
   position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
   width:64px;height:64px;border-radius:50%;
-  background:rgba(230,57,70,.85);backdrop-filter:blur(6px);
+  background:rgba(230,57,70,.85);
   border:none;cursor:pointer;z-index:4;
   display:flex;align-items:center;justify-content:center;
   box-shadow:0 4px 24px rgba(230,57,70,.5);
@@ -1366,8 +1295,8 @@ input:focus,textarea:focus,select:focus{
 .exp-thumb{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .3s}
 .exp-thumb.hidden{opacity:0;pointer-events:none}
 .exp-cat{
-  background:rgba(255,255,255,.1);backdrop-filter:blur(8px);
-  border:1px solid rgba(255,255,255,.15);border-radius:16px;
+  background:rgba(255,255,255,.1);
+  border:1px solid #222;border-radius:16px;
   color:rgba(255,255,255,.7);font-family:'Rajdhani',sans-serif;
   font-weight:700;font-size:10px;letter-spacing:.06em;
   padding:5px 11px;cursor:pointer;transition:all .2s;
@@ -1528,9 +1457,9 @@ input:focus,textarea:focus,select:focus{
   <div style="margin-top:22px">
     <span class="sec-lbl">🎨 Partager un Work In Progress</span>
     <div class="glass" style="padding:14px">
-      <textarea id="wip-txt" placeholder="Décrivez votre WIP..." style="width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:9px;padding:11px 14px;color:#ddd;font-size:13px;resize:none;height:65px;outline:none;margin-bottom:10px"></textarea>
+      <textarea id="wip-txt" placeholder="Décrivez votre WIP..." style="width:100%;background:#0a0a0a;border:1px solid var(--border);border-radius:9px;padding:11px 14px;color:#ddd;font-size:13px;resize:none;height:65px;outline:none;margin-bottom:10px"></textarea>
       <div style="display:flex;gap:9px;align-items:center">
-        <label style="background:rgba(255,255,255,.06);border:1px solid var(--border);color:#999;padding:7px 13px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap">
+        <label style="background:#0a0a0a;border:1px solid var(--border);color:#999;padding:7px 13px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap">
           🖼 Image WIP<input type="file" id="wip-img" accept="image/*" style="display:none" onchange="prevWipImg(event)"/>
         </label>
         <img id="wip-prev" style="width:44px;height:44px;border-radius:6px;object-fit:cover;display:none;border:1px solid var(--border)"/>
@@ -1545,7 +1474,7 @@ input:focus,textarea:focus,select:focus{
     <div class="glass" style="padding:14px">
       <div style="font-size:12px;color:#888;margin-bottom:10px">Ajoutez un lien Patreon, Ko-fi ou autre pour que vos lecteurs puissent vous soutenir.</div>
       <div style="display:flex;gap:9px">
-        <input type="url" id="support-link" placeholder="https://patreon.com/..." style="flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:9px;padding:9px 14px;color:#ddd;font-size:12px;outline:none"/>
+        <input type="url" id="support-link" placeholder="https://patreon.com/..." style="flex:1;background:#0a0a0a;border:1px solid var(--border);border-radius:9px;padding:9px 14px;color:#ddd;font-size:12px;outline:none"/>
         <button class="btn-post" style="padding:9px 16px;font-size:11px" onclick="saveSupportLink()">Sauver</button>
       </div>
       <div id="support-link-display" style="margin-top:10px;display:none">
@@ -1567,44 +1496,20 @@ input:focus,textarea:focus,select:focus{
     <div class="theme-grid">
       <div class="theme-opt selected" id="theme-dark" onclick="setTheme('dark')">
         <div class="theme-preview-dark"></div>
-        <div class="theme-preview-label" style="background:rgba(255,255,255,.06);color:#ddd">🌙 Sombre</div>
+        <div class="theme-preview-label" style="background:#0a0a0a;color:#ddd">🌙 Sombre</div>
       </div>
       <div class="theme-opt" id="theme-light" onclick="setTheme('light')">
-        <div class="theme-preview-light" style="height:48px;background:#fff;border-radius:8px;border:1px solid rgba(0,0,0,.1);display:flex;align-items:center;justify-content:center;gap:4px">
+        <div class="theme-preview-light" style="height:48px;background:#fff;border-radius:8px;border:1px solid #222;display:flex;align-items:center;justify-content:center;gap:4px">
           <div style="width:28px;height:6px;background:#e63946;border-radius:3px"></div>
-          <div style="width:16px;height:6px;background:#f4f4f4;border:1px solid rgba(0,0,0,.1);border-radius:3px"></div>
+          <div style="width:16px;height:6px;background:#f4f4f4;border:1px solid #222;border-radius:3px"></div>
         </div>
-        <div class="theme-preview-label" style="background:#f4f4f4;color:#111;border:1px solid rgba(0,0,0,.08)">☀️ Blanc</div>
+        <div class="theme-preview-label" style="background:#f4f4f4;color:#111;border:1px solid #222">☀️ Blanc</div>
       </div>
       <div class="theme-opt" id="theme-glass" onclick="setTheme('glass')">
-        <div style="height:48px;background:linear-gradient(135deg,rgba(10,14,26,.4),rgba(155,93,229,.2));backdrop-filter:blur(8px);border-radius:8px;border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center">
-          <div style="width:20px;height:10px;background:rgba(255,255,255,.15);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.25);border-radius:3px"></div>
+        <div style="height:48px;background:linear-gradient(135deg,rgba(10,14,26,.4),rgba(155,93,229,.2));border-radius:8px;border:1px solid #222;display:flex;align-items:center;justify-content:center">
+          <div style="width:20px;height:10px;background:rgba(255,255,255,.15);border:1px solid #222;border-radius:3px"></div>
         </div>
-        <div class="theme-preview-label" style="background:rgba(255,255,255,.08);color:#ddd;backdrop-filter:blur(8px)">🫧 Glass</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Lecture -->
-  <div class="settings-section">
-    <div class="settings-section-title">📖 Lecture</div>
-    <div class="settings-row">
-      <div>
-        <div class="settings-row-label">Taille de police</div>
-        <div class="settings-row-sub">Pour le lecteur de chapitres</div>
-      </div>
-      <div class="font-size-btns">
-        <button class="fsize-btn" id="fs-sm" onclick="setFontSize('sm')" style="font-size:11px">A</button>
-        <button class="fsize-btn active" id="fs-md" onclick="setFontSize('md')" style="font-size:14px">A</button>
-        <button class="fsize-btn" id="fs-lg" onclick="setFontSize('lg')" style="font-size:18px">A</button>
-      </div>
-    </div>
-    <div class="settings-row">
-      <div>
-        <div class="settings-row-label">Mode de lecture par défaut</div>
-        <div class="settings-row-sub">Webtoon ou page par page</div>
-      </div>
-      <select id="reader-mode-pref" onchange="setReaderModePref(this.value)" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:7px 12px;border-radius:8px;font-size:12px;font-family:'Rajdhani',sans-serif;font-weight:700;outline:none">
+        <div class="theme-preview-label" style="background:#111;color:#ddd;border:1px solid var(--border);color:var(--text);padding:7px 12px;border-radius:8px;font-size:12px;font-family:'Rajdhani',sans-serif;font-weight:700;outline:none">
         <option value="scroll">↕ Webtoon</option>
         <option value="page">↔ Manga</option>
       </select>
@@ -1668,7 +1573,7 @@ input:focus,textarea:focus,select:focus{
           <button onclick="document.getElementById('admin-panel').style.display='none';adminTaps=0" style="background:none;border:none;color:rgba(255,255,255,.3);font-size:18px;cursor:pointer">×</button>
         </div>
         <!-- Email du compte connecté -->
-        <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:12px;margin-bottom:12px">
+        <div style="background:#0a0a0a;border-radius:10px;padding:12px;margin-bottom:12px">
           <div style="font-size:9px;color:rgba(255,255,255,.4);letter-spacing:.15em;text-transform:uppercase;margin-bottom:6px">Compte actuellement connecté</div>
           <div style="font-family:'Rajdhani',sans-serif;font-weight:700;color:#f4a261;font-size:14px;word-break:break-all" id="admin-current-email">—</div>
           <div style="font-size:10px;color:rgba(255,255,255,.3);margin-top:4px" id="admin-current-uid">uid : —</div>
@@ -1831,7 +1736,7 @@ input:focus,textarea:focus,select:focus{
       </div>
       <div class="reader-pages" id="rd-pages"></div>
       <div style="margin-top:20px;text-align:center">
-        <button id="rd-prev-btn" onclick="readerNav(-1)" style="background:rgba(255,255,255,.06);border:1px solid var(--border);color:#ccc;padding:9px 22px;border-radius:8px;font-size:12px;font-weight:700;margin-right:8px">← Précédent</button>
+        <button id="rd-prev-btn" onclick="readerNav(-1)" style="background:#0a0a0a;border:1px solid var(--border);color:#ccc;padding:9px 22px;border-radius:8px;font-size:12px;font-weight:700;margin-right:8px">← Précédent</button>
         <button id="rd-next-btn" onclick="readerNav(1)" style="background:linear-gradient(135deg,#e63946,#c1121f);border:none;color:#fff;padding:9px 22px;border-radius:8px;font-size:12px;font-weight:700;box-shadow:0 3px 12px rgba(230,57,70,.3)">Suivant →</button>
       </div>
     </div>
@@ -1851,7 +1756,7 @@ input:focus,textarea:focus,select:focus{
         <label>Type de contenu</label>
         <div style="display:flex;gap:8px;margin-top:6px">
           <button id="ep-type-text-btn" onclick="setEpType('text')" style="flex:1;padding:9px;border-radius:9px;border:2px solid #e63946;background:rgba(230,57,70,.12);color:#e63946;font-weight:700;font-family:'Rajdhani',sans-serif;font-size:12px;cursor:pointer;letter-spacing:.05em;transition:all .2s">✍️ TEXTE</button>
-          <button id="ep-type-img-btn" onclick="setEpType('image')" style="flex:1;padding:9px;border-radius:9px;border:2px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:#666;font-weight:700;font-family:'Rajdhani',sans-serif;font-size:12px;cursor:pointer;letter-spacing:.05em;transition:all .2s">🖼️ IMAGES</button>
+          <button id="ep-type-img-btn" onclick="setEpType('image')" style="flex:1;padding:9px;border-radius:9px;border:2px solid rgba(255,255,255,.1);background:#0a0a0a;color:#666;font-weight:700;font-family:'Rajdhani',sans-serif;font-size:12px;cursor:pointer;letter-spacing:.05em;transition:all .2s">🖼️ IMAGES</button>
         </div>
       </div>
 
@@ -2038,8 +1943,8 @@ input:focus,textarea:focus,select:focus{
 <!-- ══════════ PAGE IA PLEIN ÉCRAN ══════════ -->
 <div id="ai-fullscreen" style="display:none;position:fixed;inset:0;z-index:500;background:#0a0e1a;flex-direction:column">
   <!-- Header IA -->
-  <div style="background:rgba(10,14,26,.95);backdrop-filter:blur(28px);border-bottom:1px solid rgba(155,93,229,.2);padding:0 16px;height:58px;display:flex;align-items:center;gap:12px;flex-shrink:0">
-    <button onclick="closeAiFullscreen()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#aaa;width:34px;height:34px;border-radius:10px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">←</button>
+  <div style="background:#000;border-bottom:1px solid rgba(155,93,229,.2);padding:0 16px;height:58px;display:flex;align-items:center;gap:12px;flex-shrink:0">
+    <button onclick="closeAiFullscreen()" style="background:#0a0a0a;border:1px solid #222;color:#aaa;width:34px;height:34px;border-radius:10px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">←</button>
     <div style="width:36px;height:36px;background:linear-gradient(135deg,#9b5de5,#7b2fd6);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;box-shadow:0 4px 14px rgba(155,93,229,.4)">✨</div>
     <div style="flex:1">
       <div style="font-family:'Cinzel',serif;font-size:13px;color:#ddd;font-weight:700;letter-spacing:.04em">Assistant MangaForge</div>
@@ -2049,7 +1954,7 @@ input:focus,textarea:focus,select:focus{
   </div>
 
   <!-- Boutons rapides -->
-  <div style="padding:10px 14px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.04);background:rgba(0,0,0,.2)">
+  <div style="padding:10px 14px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex-shrink:0;border-bottom:1px solid #1a1a1a;background:rgba(0,0,0,.2)">
     <button class="aap-quick" onclick="aapFullQuick('Donne-moi une idée de manga originale et innovante')">💡 Idée manga</button>
     <button class="aap-quick" onclick="aapFullQuick('Comment créer un antagoniste inoubliable ?')">😈 Antagoniste</button>
     <button class="aap-quick" onclick="aapFullQuick('Écris un synopsis accrocheur pour un shonen dark fantasy')">📝 Synopsis</button>
@@ -2092,13 +1997,13 @@ input:focus,textarea:focus,select:focus{
     <div id="ai-attachments" style="display:none;flex-wrap:wrap;gap:6px;margin-bottom:8px"></div>
 
     <!-- Champ principal -->
-    <div style="display:flex;gap:8px;align-items:flex-end;background:rgba(255,255,255,.04);border:1px solid rgba(155,93,229,.2);border-radius:14px;padding:8px 10px" id="ai-input-box">
+    <div style="display:flex;gap:8px;align-items:flex-end;background:#0a0a0a;border:1px solid rgba(155,93,229,.2);border-radius:14px;padding:8px 10px" id="ai-input-box">
 
       <!-- Bouton + (média) -->
       <button id="ai-plus-btn" onclick="triggerAuraVibrate();toggleAiMediaMenu()" title="Joindre un fichier" style="background:rgba(155,93,229,.15);border:1px solid rgba(155,93,229,.25);color:rgba(155,93,229,.8);width:32px;height:32px;border-radius:9px;font-size:18px;font-weight:300;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;line-height:1">+</button>
 
       <!-- Menu médias (popup) -->
-      <div id="ai-media-menu" style="display:none;position:absolute;bottom:72px;left:12px;background:rgba(10,14,26,.97);backdrop-filter:blur(28px);border:1px solid rgba(155,93,229,.25);border-radius:14px;padding:8px;z-index:100;box-shadow:0 12px 40px rgba(0,0,0,.7);min-width:180px;animation:fadeUpIn .2s cubic-bezier(.16,1,.3,1)">
+      <div id="ai-media-menu" style="display:none;position:absolute;bottom:72px;left:12px;background:rgba(10,14,26,.97);border:1px solid rgba(155,93,229,.25);border-radius:14px;padding:8px;z-index:100;box-shadow:0 12px 40px rgba(0,0,0,.7);min-width:180px;animation:fadeUpIn .2s cubic-bezier(.16,1,.3,1)">
         <button onclick="aiPickMedia('image')" style="width:100%;background:none;border:none;color:#ccc;padding:10px 14px;text-align:left;cursor:pointer;border-radius:9px;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;display:flex;align-items:center;gap:10px;transition:background .15s" onmouseover="this.style.background='rgba(255,255,255,.06)'" onmouseout="this.style.background='none'">🖼️ Photo / Image</button>
         <button onclick="aiPickMedia('video')" style="width:100%;background:none;border:none;color:#ccc;padding:10px 14px;text-align:left;cursor:pointer;border-radius:9px;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;display:flex;align-items:center;gap:10px;transition:background .15s" onmouseover="this.style.background='rgba(255,255,255,.06)'" onmouseout="this.style.background='none'">🎬 Vidéo</button>
         <button onclick="aiPickMedia('camera')" style="width:100%;background:none;border:none;color:#ccc;padding:10px 14px;text-align:left;cursor:pointer;border-radius:9px;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;display:flex;align-items:center;gap:10px;transition:background .15s" onmouseover="this.style.background='rgba(255,255,255,.06)'" onmouseout="this.style.background='none'">📷 Caméra</button>
@@ -2117,7 +2022,7 @@ input:focus,textarea:focus,select:focus{
         style="flex:1;background:none;border:none;color:#ddd;font-size:13px;outline:none;font-family:'Rajdhani',sans-serif;resize:none;max-height:100px;min-height:22px;line-height:1.5;overflow-y:auto;padding-top:5px"></textarea>
 
       <!-- Bouton micro -->
-      <button id="ai-mic-btn" onclick="triggerAuraVibrate();toggleAiMic()" title="Dicter un message" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#666;width:36px;height:36px;border-radius:9px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s">
+      <button id="ai-mic-btn" onclick="triggerAuraVibrate();toggleAiMic()" title="Dicter un message" style="background:#0a0a0a;border:1px solid #222;color:#666;width:36px;height:36px;border-radius:9px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="9" y="2" width="6" height="11" rx="3"/>
           <path d="M5 10a7 7 0 0 0 14 0"/>
@@ -2140,8 +2045,8 @@ input:focus,textarea:focus,select:focus{
 <!-- ══════════ LECTEUR TEXTE ÉPISODE ══════════ -->
 <div id="text-reader" style="display:none;position:fixed;inset:0;z-index:490;background:var(--bg,#0a0e1a);flex-direction:column">
   <!-- Header lecteur -->
-  <div id="text-reader-header" style="background:rgba(10,14,26,.95);backdrop-filter:blur(28px);border-bottom:1px solid rgba(255,255,255,.08);padding:0 14px;height:56px;display:flex;align-items:center;gap:10px;flex-shrink:0;transition:transform .3s">
-    <button onclick="closeTextReader()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#aaa;width:34px;height:34px;border-radius:10px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">←</button>
+  <div id="text-reader-header" style="background:#000;border-bottom:1px solid #1a1a1a;padding:0 14px;height:56px;display:flex;align-items:center;gap:10px;flex-shrink:0;transition:transform .3s">
+    <button onclick="closeTextReader()" style="background:#0a0a0a;border:1px solid #222;color:#aaa;width:34px;height:34px;border-radius:10px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">←</button>
     <div style="flex:1;overflow:hidden">
       <div id="text-reader-ep-title" style="font-family:'Cinzel',serif;font-size:12px;color:#ddd;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
       <div id="text-reader-story-title" style="font-size:10px;color:#555;letter-spacing:.08em;text-transform:uppercase;margin-top:1px"></div>
@@ -2160,21 +2065,21 @@ input:focus,textarea:focus,select:focus{
           <circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0 1 12 0v2"/>
         </svg>
       </button>
-      <button onclick="trFontSize(-1)" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#888;width:30px;height:30px;border-radius:8px;font-size:13px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700">A-</button>
-      <button onclick="trFontSize(1)" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#888;width:30px;height:30px;border-radius:8px;font-size:14px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700">A+</button>
+      <button onclick="trFontSize(-1)" style="background:#0a0a0a;border:1px solid #222;color:#888;width:30px;height:30px;border-radius:8px;font-size:13px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700">A-</button>
+      <button onclick="trFontSize(1)" style="background:#0a0a0a;border:1px solid #222;color:#888;width:30px;height:30px;border-radius:8px;font-size:14px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700">A+</button>
     </div>
 
     <!-- Modal sélecteur de voix -->
-    <div id="voice-selector-modal" onclick="if(event.target===this)closeVoiceSelector()" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);align-items:flex-end;justify-content:center">
-      <div style="background:#0d1020;border:1px solid rgba(155,93,229,.3);border-radius:20px 20px 0 0;width:100%;max-width:680px;padding:16px 16px 32px;max-height:80vh;overflow-y:auto;box-sizing:border-box;animation:slideUp .25s cubic-bezier(.16,1,.3,1)">
+    <div id="voice-selector-modal" onclick="if(event.target===this)closeVoiceSelector()" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.6);align-items:flex-end;justify-content:center">
+      <div style="background:#000;border:1px solid rgba(155,93,229,.3);border-radius:20px 20px 0 0;width:100%;max-width:680px;padding:16px 16px 32px;max-height:80vh;overflow-y:auto;box-sizing:border-box;animation:slideUp .25s cubic-bezier(.16,1,.3,1)">
         <!-- Handle -->
         <div style="width:36px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin:0 auto 16px"></div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
           <div style="font-family:'Cinzel',serif;font-size:13px;font-weight:900;color:#c084fc;letter-spacing:.06em">🎙 Voix de lecture</div>
-          <button onclick="closeVoiceSelector()" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);color:#aaa;width:28px;height:28px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1">×</button>
+          <button onclick="closeVoiceSelector()" style="background:#111;border:1px solid #222;color:#aaa;width:28px;height:28px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1">×</button>
         </div>
         <!-- Sliders -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;background:rgba(255,255,255,.04);border-radius:12px;padding:12px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;background:#0a0a0a;border-radius:12px;padding:12px">
           <div>
             <div style="display:flex;justify-content:space-between;margin-bottom:4px">
               <label style="font-size:10px;color:#666;letter-spacing:.1em;text-transform:uppercase;font-family:'Rajdhani',sans-serif;font-weight:700">Vitesse</label>
@@ -2209,10 +2114,10 @@ input:focus,textarea:focus,select:focus{
   </div>
 
   <!-- Footer navigation épisodes -->
-  <div style="background:rgba(10,14,26,.95);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.07);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
-    <button id="tr-prev-btn" onclick="trNavEp(-1)" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);color:#aaa;padding:8px 16px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Rajdhani',sans-serif;letter-spacing:.05em;transition:all .2s">← PRÉCÉDENT</button>
+  <div style="background:#000;border-top:1px solid #1a1a1a;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+    <button id="tr-prev-btn" onclick="trNavEp(-1)" style="background:#0a0a0a;border:1px solid #222;color:#aaa;padding:8px 16px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Rajdhani',sans-serif;letter-spacing:.05em;transition:all .2s">← PRÉCÉDENT</button>
     <span id="tr-ep-counter" style="font-size:11px;color:#555;font-family:'Rajdhani',sans-serif;letter-spacing:.08em"></span>
-    <button id="tr-next-btn" onclick="trNavEp(1)" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);color:#aaa;padding:8px 16px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Rajdhani',sans-serif;letter-spacing:.05em;transition:all .2s">SUIVANT →</button>
+    <button id="tr-next-btn" onclick="trNavEp(1)" style="background:#0a0a0a;border:1px solid #222;color:#aaa;padding:8px 16px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Rajdhani',sans-serif;letter-spacing:.05em;transition:all .2s">SUIVANT →</button>
   </div>
 </div>
 
@@ -2527,8 +2432,6 @@ window.onAuthReady=async function(user){
   document.getElementById('auth-screen').style.display='none';
   document.getElementById('main-app').style.display='block';
   startListeners();renderProfile();renderGbar();
-  // Démarrer le widget activités
-  initWidget(user);
 };
 
 // ── LISTENERS ──
@@ -3055,7 +2958,7 @@ function loadEpisodes(storyId,color){
               <span>${ago(ep.createdAt)}</span>
             </div>
           </div>
-          ${isOwner?`<div style="position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(255,255,255,.25)">⋮</div>`:''}
+          ${isOwner?`<div style="position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:50%;background:#0a0a0a;display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(255,255,255,.25)">⋮</div>`:''}
         </div>`).join('');
     }
   );
@@ -3078,7 +2981,7 @@ function prevEpPages(e){
   epPageFiles.forEach((f,i)=>{
     const r=new FileReader();
     r.onload=ev=>{
-      prev.insertAdjacentHTML('beforeend',`<div style="text-align:center"><img src="${ev.target.result}" style="width:70px;height:100px;object-fit:cover;border-radius:6px;border:1px solid rgba(255,255,255,.1)"/><div style="font-size:9px;color:var(--dim);margin-top:3px">P.${i+1}</div></div>`);
+      prev.insertAdjacentHTML('beforeend',`<div style="text-align:center"><img src="${ev.target.result}" style="width:70px;height:100px;object-fit:cover;border-radius:6px;border:1px solid #222"/><div style="font-size:9px;color:var(--dim);margin-top:3px">P.${i+1}</div></div>`);
     };r.readAsDataURL(f);
   });
 }
@@ -3093,11 +2996,11 @@ function setEpType(type){
   const imgSec  = document.getElementById('ep-img-section');
   if(type === 'text'){
     textBtn.style.cssText='flex:1;padding:9px;border-radius:9px;border:2px solid #e63946;background:rgba(230,57,70,.12);color:#e63946;font-weight:700;font-family:\'Rajdhani\',sans-serif;font-size:12px;cursor:pointer;letter-spacing:.05em;transition:all .2s';
-    imgBtn.style.cssText ='flex:1;padding:9px;border-radius:9px;border:2px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:#666;font-weight:700;font-family:\'Rajdhani\',sans-serif;font-size:12px;cursor:pointer;letter-spacing:.05em;transition:all .2s';
+    imgBtn.style.cssText ='flex:1;padding:9px;border-radius:9px;border:2px solid rgba(255,255,255,.1);background:#0a0a0a;color:#666;font-weight:700;font-family:\'Rajdhani\',sans-serif;font-size:12px;cursor:pointer;letter-spacing:.05em;transition:all .2s';
     textSec.style.display=''; imgSec.style.display='none';
   } else {
     imgBtn.style.cssText ='flex:1;padding:9px;border-radius:9px;border:2px solid #e63946;background:rgba(230,57,70,.12);color:#e63946;font-weight:700;font-family:\'Rajdhani\',sans-serif;font-size:12px;cursor:pointer;letter-spacing:.05em;transition:all .2s';
-    textBtn.style.cssText='flex:1;padding:9px;border-radius:9px;border:2px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:#666;font-weight:700;font-family:\'Rajdhani\',sans-serif;font-size:12px;cursor:pointer;letter-spacing:.05em;transition:all .2s';
+    textBtn.style.cssText='flex:1;padding:9px;border-radius:9px;border:2px solid rgba(255,255,255,.1);background:#0a0a0a;color:#666;font-weight:700;font-family:\'Rajdhani\',sans-serif;font-size:12px;cursor:pointer;letter-spacing:.05em;transition:all .2s';
     imgSec.style.display=''; textSec.style.display='none';
   }
 }
@@ -3515,7 +3418,7 @@ async function mdxReadChapter(chapterId, title){
     }
     modal.innerHTML = `
       <!-- Header fixe -->
-      <div style="position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(10,14,26,.96);border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0">
+      <div style="position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#000;border-bottom:1px solid #1a1a1a;flex-shrink:0">
         <button onclick="document.getElementById('m-mdx-reader').style.display='none'" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;padding:4px 10px;line-height:1">←</button>
         <div style="font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;color:#f4a261;text-align:center;flex:1;padding:0 8px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${title||'Chapitre'}</div>
         <div style="font-family:'Rajdhani',sans-serif;font-size:11px;color:rgba(255,255,255,.4);white-space:nowrap">${pages.length} pages</div>
@@ -3535,7 +3438,7 @@ async function mdxReadChapter(chapterId, title){
         </div>
       </div>
       <!-- Footer -->
-      <div style="flex-shrink:0;padding:10px 16px;background:rgba(10,14,26,.95);border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center">
+      <div style="flex-shrink:0;padding:10px 16px;background:#000;border-top:1px solid #1a1a1a;display:flex;align-items:center;justify-content:center">
         <span style="font-family:'Rajdhani',sans-serif;font-size:10px;color:rgba(255,255,255,.3);letter-spacing:.1em">⛩ MANGAFORGE • Défilement vertical</span>
       </div>`;
     modal.style.display='flex';
@@ -3640,7 +3543,7 @@ async function mdxOpenDetail(mangaId){
       <img src="${covUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'"/>
       <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(10,14,26,.8))"></div>
       <!-- Bandeau MANGAFORGE masquant la marque MDX -->
-      <div style="position:absolute;top:10px;left:10px;background:rgba(10,14,26,.75);backdrop-filter:blur(8px);border:1px solid rgba(230,57,70,.3);border-radius:8px;padding:5px 12px;display:flex;align-items:center;gap:7px;z-index:2">
+      <div style="position:absolute;top:10px;left:10px;background:rgba(10,14,26,.75);border:1px solid rgba(230,57,70,.3);border-radius:8px;padding:5px 12px;display:flex;align-items:center;gap:7px;z-index:2">
         <span style="font-size:14px">⛩</span>
         <span style="font-family:'Cinzel',serif;font-size:11px;font-weight:900;color:#fff;letter-spacing:.1em">MANGAFORGE</span>
       </div>`;}
@@ -4107,8 +4010,8 @@ function renderAgenda(){
   });
   wrap.innerHTML=Object.entries(byDay).map(([day,items])=>`
     <div style="margin-bottom:18px">
-      <div style="font-size:10px;color:#555;letter-spacing:.15em;text-transform:uppercase;font-weight:700;margin-bottom:9px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.06)">${day}</div>
-      ${items.map(e=>`<div onclick="openStory('${e.storyId}')" style="display:flex;gap:11px;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer">
+      <div style="font-size:10px;color:#555;letter-spacing:.15em;text-transform:uppercase;font-weight:700;margin-bottom:9px;padding-bottom:6px;border-bottom:1px solid #1a1a1a">${day}</div>
+      ${items.map(e=>`<div onclick="openStory('${e.storyId}')" style="display:flex;gap:11px;align-items:center;padding:9px 0;border-bottom:1px solid #1a1a1a;cursor:pointer">
         <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,${e.authorColor||'#555'},${e.authorColor||'#555'}88);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#fff;flex-shrink:0;overflow:hidden">
           ${e.avatar?`<img src="${e.avatar}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'"/>`:((e.author||'?').slice(0,2).toUpperCase())}
         </div>
@@ -4172,7 +4075,7 @@ function showVeilleWarning(){
   const el = document.createElement('div');
   el.id = 'veille-warning';
   el.style.cssText = `position:fixed;bottom:90px;left:50%;transform:translateX(-50%);
-    z-index:500;background:rgba(10,14,26,.95);backdrop-filter:blur(16px);
+    z-index:500;background:#000;
     border:1px solid rgba(230,57,70,.4);border-radius:14px;padding:12px 18px;
     display:flex;align-items:center;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,.5);
     animation:fadeInScale .3s cubic-bezier(.16,1,.3,1);max-width:320px;width:calc(100vw - 40px)`;
@@ -4426,7 +4329,7 @@ async function loadCreatorUsers(){
       const d = doc.data();
       const uid = doc.id;
       const isMe = currentUser?.uid === uid;
-      return `<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;${isMe?'border-color:rgba(155,93,229,.3)':''}">
+      return `<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:#0a0a0a;border:1px solid #222;border-radius:10px;${isMe?'border-color:rgba(155,93,229,.3)':''}">
         <div style="width:32px;height:32px;border-radius:50%;background:${d.color||'#555'};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff;flex-shrink:0">${(d.name||'?')[0].toUpperCase()}</div>
         <div style="flex:1;min-width:0">
           <div style="font-family:'Rajdhani',sans-serif;font-weight:900;font-size:13px;color:${isMe?'#c084fc':'#ddd'}">${esc(d.name||'?')} ${isMe?'<span style="font-size:9px;color:#c084fc">(vous)</span>':''}</div>
@@ -4447,9 +4350,9 @@ async function loadCreatorUsers(){
 async function confirmBanUser(uid, name){
   const confirmed = await new Promise(resolve=>{
     const dlg = document.createElement('div');
-    dlg.style.cssText = 'position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.8);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:20px';
+    dlg.style.cssText = 'position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;padding:20px';
     dlg.innerHTML = `
-      <div style="background:#0d1020;border:1px solid rgba(230,57,70,.4);border-radius:18px;padding:24px 20px;max-width:320px;width:100%;text-align:center">
+      <div style="background:#000;border:1px solid rgba(230,57,70,.4);border-radius:18px;padding:24px 20px;max-width:320px;width:100%;text-align:center">
         <div style="font-size:36px;margin-bottom:12px">🚫</div>
         <div style="font-family:'Cinzel',serif;font-size:14px;font-weight:900;color:#e63946;margin-bottom:8px">Bannir ce compte ?</div>
         <div style="font-size:13px;color:#ddd;font-weight:700;margin-bottom:6px">${esc(name)}</div>
@@ -4457,7 +4360,7 @@ async function confirmBanUser(uid, name){
           Toutes les données de ce compte<br/>(profil, histoires, épisodes, posts)<br/>seront <strong style="color:#e63946">définitivement supprimées</strong>.
         </div>
         <div style="display:flex;gap:10px">
-          <button onclick="this.closest('div[style*=fixed]').remove();window._banResolve(false)" style="flex:1;padding:11px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#888;border-radius:10px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;cursor:pointer">Annuler</button>
+          <button onclick="this.closest('div[style*=fixed]').remove();window._banResolve(false)" style="flex:1;padding:11px;background:#0a0a0a;border:1px solid #222;color:#888;border-radius:10px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;cursor:pointer">Annuler</button>
           <button onclick="this.closest('div[style*=fixed]').remove();window._banResolve(true)" style="flex:1;padding:11px;background:linear-gradient(135deg,#e63946,#c1121f);border:none;color:#fff;border-radius:10px;font-family:'Rajdhani',sans-serif;font-weight:900;font-size:13px;cursor:pointer">BANNIR</button>
         </div>
       </div>`;
@@ -4514,9 +4417,9 @@ async function banUser(uid, name){
 
 function showFirestoreRulesHelp(){
   const dlg = document.createElement('div');
-  dlg.style.cssText = 'position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:16px';
+  dlg.style.cssText = 'position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:16px';
   dlg.innerHTML = `
-    <div style="background:#0d1020;border:1px solid rgba(155,93,229,.3);border-radius:18px;padding:20px;max-width:480px;width:100%;max-height:80vh;overflow-y:auto">
+    <div style="background:#000;border:1px solid rgba(155,93,229,.3);border-radius:18px;padding:20px;max-width:480px;width:100%;max-height:80vh;overflow-y:auto">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
         <div style="font-family:'Cinzel',serif;font-size:13px;color:#c084fc;font-weight:900">⚙️ Règles Firestore</div>
         <button onclick="this.closest('div[style*=fixed]').remove()" style="background:none;border:none;color:#555;font-size:20px;cursor:pointer">×</button>
@@ -4635,18 +4538,18 @@ function showEpContextMenu(e, idx, epId){
     top:${Math.min(rect.top + rect.height/2, window.innerHeight - 180)}px;
     left:${Math.max(rect.left + 20, 16)}px;
     z-index:900;
-    background:#0d1020;
-    border:1px solid rgba(255,255,255,.12);
+    background:#000;
+    border:1px solid #222;
     border-radius:14px;
     padding:6px;
     min-width:200px;
-    box-shadow:0 20px 60px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.05);
+    
     animation:fadeInScale .18s cubic-bezier(.16,1,.3,1);
   `;
 
   menu.innerHTML = `
     <!-- En-tête -->
-    <div style="padding:10px 12px 8px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:4px">
+    <div style="padding:10px 12px 8px;border-bottom:1px solid #1a1a1a;margin-bottom:4px">
       <div style="font-family:'Cinzel',serif;font-size:11px;font-weight:700;color:#f4a261;margin-bottom:2px">ÉPISODE ${idx+1}</div>
       <div style="font-size:12px;color:#888;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px">${esc(ep.title||'Sans titre')}</div>
     </div>
@@ -4660,8 +4563,8 @@ function showEpContextMenu(e, idx, epId){
       Supprimer l'épisode
     </button>
     <!-- Annuler -->
-    <div style="border-top:1px solid rgba(255,255,255,.07);margin-top:4px;padding-top:4px">
-      <button onclick="closeEpContextMenu()" style="display:flex;align-items:center;justify-content:center;width:100%;padding:9px 12px;background:rgba(255,255,255,.04);border:none;color:#555;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;cursor:pointer;border-radius:9px;transition:background .15s" onmouseover="this.style.background='rgba(255,255,255,.08)'" onmouseout="this.style.background='rgba(255,255,255,.04)'">
+    <div style="border-top:1px solid #1a1a1a;margin-top:4px;padding-top:4px">
+      <button onclick="closeEpContextMenu()" style="display:flex;align-items:center;justify-content:center;width:100%;padding:9px 12px;background:#0a0a0a;border:none;color:#555;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;cursor:pointer;border-radius:9px;transition:background .15s" onmouseover="this.style.background='rgba(255,255,255,.08)'" onmouseout="this.style.background='rgba(255,255,255,.04)'">
         Annuler
       </button>
     </div>
@@ -4699,14 +4602,14 @@ async function deleteEpisode(epId, idx){
   // Confirmation visuelle
   const confirmed = await new Promise(resolve=>{
     const dlg = document.createElement('div');
-    dlg.style.cssText = `position:fixed;inset:0;z-index:950;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px`;
+    dlg.style.cssText = `position:fixed;inset:0;z-index:950;background:rgba(0,0,0,.95);display:flex;align-items:center;justify-content:center;padding:20px`;
     dlg.innerHTML = `
-      <div style="background:#0d1020;border:1px solid rgba(230,57,70,.3);border-radius:18px;padding:24px 20px;max-width:320px;width:100%;text-align:center">
+      <div style="background:#000;border:1px solid rgba(230,57,70,.3);border-radius:18px;padding:24px 20px;max-width:320px;width:100%;text-align:center">
         <div style="font-size:36px;margin-bottom:12px">🗑</div>
         <div style="font-family:'Cinzel',serif;font-size:14px;font-weight:900;color:#fff;margin-bottom:8px">Supprimer l'épisode ?</div>
         <div style="font-size:12px;color:#888;margin-bottom:20px;line-height:1.6">"${esc(ep.title||'Sans titre')}"<br/>Cette action est irréversible.</div>
         <div style="display:flex;gap:10px">
-          <button onclick="this.closest('div[style*=fixed]').remove();window._epDelResolve(false)" style="flex:1;padding:11px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#888;border-radius:10px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;cursor:pointer">Annuler</button>
+          <button onclick="this.closest('div[style*=fixed]').remove();window._epDelResolve(false)" style="flex:1;padding:11px;background:#0a0a0a;border:1px solid #222;color:#888;border-radius:10px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;cursor:pointer">Annuler</button>
           <button onclick="this.closest('div[style*=fixed]').remove();window._epDelResolve(true)" style="flex:1;padding:11px;background:linear-gradient(135deg,#e63946,#c1121f);border:none;color:#fff;border-radius:10px;font-family:'Rajdhani',sans-serif;font-weight:900;font-size:13px;cursor:pointer;box-shadow:0 4px 16px rgba(230,57,70,.4)">Supprimer</button>
         </div>
       </div>`;
@@ -4733,97 +4636,6 @@ function editEpisodePrompt(epId, idx){
   notif('✏️ Modification disponible prochainement — utilisez le Studio pour éditer.');
 }
 
-// ══════════════════════════════════════════════════════
-//  WIDGET ACTIVITÉS
-// ══════════════════════════════════════════════════════
-let widgetPanelOpen = false;
-let widgetData = { total: 0, items: [] };
-
-function toggleWidgetPanel(){
-  widgetPanelOpen = !widgetPanelOpen;
-  const panel = document.getElementById('mf-widget-panel');
-  const btn   = document.getElementById('mf-widget-toggle');
-  panel?.classList.toggle('visible', widgetPanelOpen);
-  btn?.classList.toggle('panel-open', widgetPanelOpen);
-  if(widgetPanelOpen) refreshWidget();
-}
-
-async function refreshWidget(){
-  if(!currentUser) return;
-  const content = document.getElementById('widget-content');
-  if(content) content.innerHTML = '<div class="widget-empty">⏳ Actualisation...</div>';
-  try{
-    const items = [];
-    const since24h = Date.now() - 24*60*60*1000;
-
-    // Nouveaux posts depuis 24h (pas les miens)
-    const freshPosts = cachedPosts.filter(p=>{
-      const ts = p.createdAt?.toMillis?.() || (p.createdAt?.seconds||0)*1000;
-      return ts > since24h && p.uid !== currentUser.uid;
-    });
-    const newEp    = freshPosts.filter(p=>p.isEpisodePost);
-    const newPosts = freshPosts.filter(p=>!p.isEpisodePost);
-
-    newEp.slice(0,3).forEach(p=>items.push({
-      icon:'📺', title:p.storyTitle||'Nouvel épisode',
-      sub:`par ${p.userName||'?'}`,
-      action:()=>{ openStory(p.storyId); toggleWidgetPanel(); }
-    }));
-    if(newPosts.length>0) items.push({
-      icon:'💬', title:`${newPosts.length} nouvelle${newPosts.length>1?'s':''} publication${newPosts.length>1?'s':''}`,
-      sub:'Fil d\'actualité',
-      action:()=>{ switchTab('feed',document.querySelector('.nb')); toggleWidgetPanel(); }
-    });
-
-    // Brouillons
-    for(const s of cachedStories.filter(s=>s.authorId===currentUser.uid||s.uid===currentUser.uid)){
-      try{
-        const snap=await FB.getDocs(FB.query(FB.collection(FB.db,'stories',s.id,'episodes'),FB.where('draft','==',true)));
-        if(!snap.empty) items.push({
-          icon:'📝', title:`${snap.size} brouillon${snap.size>1?'s':''} — ${s.title}`,
-          sub:'En attente de publication',
-          action:()=>{ switchTab('studio',null); toggleWidgetPanel(); }
-        });
-      }catch(e){}
-    }
-
-    // Pas d'histoire → suggestion
-    if(cachedStories.filter(s=>s.authorId===currentUser.uid||s.uid===currentUser.uid).length===0)
-      items.push({ icon:'✨', title:'Publiez votre première histoire !', sub:'Le fil vous attend', action:()=>{ openPublishModal(); toggleWidgetPanel(); }});
-
-    widgetData = { total:items.length, items };
-
-    // Badge icône
-    if(window.MFWidget) window.MFWidget.setBadge(newEp.length+newPosts.length);
-    const countEl = document.getElementById('mf-widget-count');
-    const total = newEp.length+newPosts.length;
-    if(countEl){ countEl.textContent=total>9?'9+':total; countEl.style.display=total>0?'block':'none'; }
-
-    if(!content) return;
-    if(items.length===0){
-      content.innerHTML=`<div class="widget-empty"><div style="font-size:28px;margin-bottom:6px">✅</div><div style="color:#888;font-family:'Rajdhani',sans-serif">Tout est à jour !</div></div>`;
-      return;
-    }
-    content.innerHTML = items.map((item,i)=>`
-      <div class="widget-item" onclick="widgetData.items[${i}].action()">
-        <div class="widget-item-icon">${item.icon}</div>
-        <div class="widget-item-text">
-          <div class="widget-item-title">${esc(item.title)}</div>
-          ${item.sub?`<div class="widget-item-sub">${esc(item.sub)}</div>`:''}
-        </div>
-        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#555" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg>
-      </div>`).join('');
-  }catch(e){
-    if(content) content.innerHTML=`<div class="widget-empty" style="color:#e63946">Erreur: ${e.message}</div>`;
-  }
-}
-
-function initWidget(user){
-  if(!user) return;
-  setTimeout(refreshWidget, 3000);
-  setInterval(()=>{ if(!widgetPanelOpen) refreshWidget(); }, 5*60*1000);
-  if(window.MFWidget) window.MFWidget.requestNotificationPermission();
-}
 
 let auraTimer = null;
 
@@ -5082,7 +4894,7 @@ async function loadAdminUsers(){
       const uid = doc.id;
       const isMe = currentUser && uid === currentUser.uid;
       const email = isMe && currentUser.email ? currentUser.email : '— connecte-toi avec ce compte pour voir l\'email';
-      return`<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,${isMe?'.2':'.07'});border-radius:9px;padding:10px 12px${isMe?';border-color:rgba(230,57,70,.4)':''}">
+      return`<div style="background:#0a0a0a;border:1px solid rgba(255,255,255,${isMe?'.2':'.07'});border-radius:9px;padding:10px 12px${isMe?';border-color:rgba(230,57,70,.4)':''}">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
           <div style="width:28px;height:28px;border-radius:50%;background:${d.color||'#555'};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#fff;flex-shrink:0">${(d.name||'?')[0].toUpperCase()}</div>
           <div style="flex:1;min-width:0">
@@ -5410,38 +5222,12 @@ function openAddEpisodeFromFab(){
   <div style="position:absolute;bottom:0;right:0;width:120px;height:120px;background:radial-gradient(circle at 100% 100%,rgba(230,57,70,.7),transparent 70%);pointer-events:none"></div>
 </div>
 
-<!-- ── WIDGET ACTIVITÉS ── -->
-<button id="mf-widget-toggle" onclick="toggleWidgetPanel()" title="Activités">
-  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round">
-    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-  </svg>
-  <span id="mf-widget-count"></span>
-</button>
-
-<div id="mf-widget-panel">
-  <div class="widget-header">
-    <div class="widget-title">
-      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
-      ACTIVITÉS
-    </div>
-    <button onclick="toggleWidgetPanel()" style="background:none;border:none;color:#555;font-size:16px;cursor:pointer;line-height:1">×</button>
-  </div>
-  <div id="widget-content" class="widget-items">
-    <div class="widget-empty">⏳ Chargement...</div>
-  </div>
-  <div style="padding:8px 14px;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:6px">
-    <button onclick="switchTab('feed',document.querySelector('.nb'));toggleWidgetPanel()" style="flex:1;background:linear-gradient(135deg,#e63946,#c1121f);border:none;color:#fff;padding:7px;border-radius:8px;font-family:'Rajdhani',sans-serif;font-weight:900;font-size:10px;letter-spacing:.06em;cursor:pointer">VOIR LE FIL</button>
-    <button onclick="refreshWidget()" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:#888;padding:7px 10px;border-radius:8px;font-size:12px;cursor:pointer" title="Actualiser">↻</button>
-  </div>
-</div>
-
 <!-- ── PANEL CRÉATEUR (body level) ── -->
 <div id="m-creator-panel" class="overlay">
   <div class="mbox" style="max-width:480px;padding:24px;margin-top:40px">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
       <div style="font-family:'Cinzel',serif;font-size:14px;font-weight:900;color:#c084fc;letter-spacing:.08em">⚔️ PANEL CRÉATEUR</div>
-      <button onclick="closeM('m-creator-panel')" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);color:#aaa;width:30px;height:30px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">×</button>
+      <button onclick="closeM('m-creator-panel')" style="background:#111;border:1px solid #222;color:#aaa;width:30px;height:30px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">×</button>
     </div>
     <!-- Saisie code -->
     <div id="cp-lock">
@@ -5451,7 +5237,7 @@ function openAddEpisodeFromFab(){
         <div style="font-size:11px;color:#555;font-family:'Rajdhani',sans-serif;line-height:1.6">Entrez votre code créateur pour accéder<br/>aux outils d'administration</div>
       </div>
       <input type="password" id="cp-code-inp" placeholder="••••••••••••" maxlength="20"
-        style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(155,93,229,.3);border-radius:10px;padding:14px 16px;color:#fff;font-size:18px;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:.25em;text-align:center;outline:none;box-sizing:border-box;margin-bottom:12px;transition:border-color .2s"
+        style="width:100%;background:#0a0a0a;border:1px solid rgba(155,93,229,.3);border-radius:10px;padding:14px 16px;color:#fff;font-size:18px;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:.25em;text-align:center;outline:none;box-sizing:border-box;margin-bottom:12px;transition:border-color .2s"
         onkeydown="if(event.key==='Enter')verifyCreatorCode()"/>
       <button onclick="verifyCreatorCode()" style="width:100%;background:linear-gradient(135deg,#9b5de5,#7b2d8b);border:none;color:#fff;padding:13px;border-radius:10px;font-family:'Rajdhani',sans-serif;font-weight:900;font-size:13px;letter-spacing:.1em;cursor:pointer;box-shadow:0 4px 16px rgba(155,93,229,.35)">ACCÉDER →</button>
       <p id="cp-err" style="color:#e63946;font-size:11px;text-align:center;margin-top:10px;display:none;font-family:'Rajdhani',sans-serif"></p>
@@ -5470,7 +5256,7 @@ function openAddEpisodeFromFab(){
         <button onclick="loadCreatorUsers()" style="margin-top:10px;width:100%;background:rgba(155,93,229,.1);border:1px solid rgba(155,93,229,.2);color:#c084fc;padding:9px;border-radius:8px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:11px;letter-spacing:.08em;cursor:pointer">🔄 ACTUALISER LA LISTE</button>
       </div>
       <!-- Nettoyage -->
-      <div style="border-top:1px solid rgba(255,255,255,.07);padding-top:14px">
+      <div style="border-top:1px solid #1a1a1a;padding-top:14px">
         <div style="font-size:10px;color:#e63946;letter-spacing:.15em;text-transform:uppercase;font-family:'Rajdhani',sans-serif;font-weight:700;margin-bottom:6px">🗑 Nettoyage du fil</div>
         <div style="font-size:11px;color:#555;font-family:'Rajdhani',sans-serif;margin-bottom:8px">Supprime les posts dont l'histoire a été effacée</div>
         <button onclick="cleanOrphanPosts()" style="width:100%;background:rgba(230,57,70,.1);border:1px solid rgba(230,57,70,.2);color:#e63946;padding:10px;border-radius:9px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;letter-spacing:.06em;cursor:pointer">NETTOYER LES POSTS ORPHELINS</button>
