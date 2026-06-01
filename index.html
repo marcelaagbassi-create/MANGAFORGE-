@@ -452,71 +452,78 @@ body.device-tablet .post{padding:18px}
 ══════════════════════════════════════ */
 body.device-desktop *,body.device-tv *{cursor:none !important}
 
+/* ── Curseur souris Desktop uniquement ── */
 #mf-cursor{
-  position:fixed;
-  width:18px;height:18px;
-  border:2px solid #e63946;
-  border-radius:50%;
-  pointer-events:none;
-  z-index:99999;
+  position:fixed;width:18px;height:18px;
+  border:2px solid #e63946;border-radius:50%;
+  pointer-events:none;z-index:99999;
   transform:translate(-50%,-50%);
-  transition:transform .08s ease,width .15s ease,height .15s ease,background .15s ease,border-color .15s ease;
-  mix-blend-mode:normal;
+  transition:width .12s,height .12s,background .12s;
   display:none;
 }
 #mf-cursor-dot{
-  position:fixed;
-  width:5px;height:5px;
-  background:#e63946;
-  border-radius:50%;
-  pointer-events:none;
-  z-index:99999;
+  position:fixed;width:5px;height:5px;
+  background:#e63946;border-radius:50%;
+  pointer-events:none;z-index:99999;
   transform:translate(-50%,-50%);
-  transition:transform .04s ease;
   display:none;
 }
 #mf-cursor.active{display:block}
 #mf-cursor-dot.active{display:block}
-#mf-cursor.hover{
-  width:36px;height:36px;
-  background:rgba(230,57,70,.12);
-  border-color:#f4a261;
-}
-#mf-cursor.click{
-  width:12px;height:12px;
-  background:rgba(230,57,70,.4);
+#mf-cursor.hover{width:34px;height:34px;background:rgba(230,57,70,.1);border-color:#f4a261}
+#mf-cursor.click{width:12px;height:12px;background:rgba(230,57,70,.4)}
+
+/* ══ TV : PAS de curseur souris, navigation YouTube-style ══ */
+body.device-tv #mf-cursor,
+body.device-tv #mf-cursor-dot{ display:none !important; }
+body.device-tv *{ cursor:none !important; }
+
+/* ── TV FOCUS : zoom + highlight comme YouTube ── */
+body.device-tv *:focus{ outline:none !important; box-shadow:none !important; }
+
+/* Cartes / posts focalisés → zoom + bordure rouge */
+body.device-tv .post:focus,
+body.device-tv .sc:focus,
+body.device-tv .mdx-card:focus,
+body.device-tv .ep-item:focus,
+body.device-tv .uc:focus,
+body.device-tv .ci:focus,
+body.device-tv .ct:focus{
+  outline:none !important;
+  transform:scale(1.04) !important;
+  box-shadow:0 0 0 3px #e63946, 0 12px 40px rgba(0,0,0,.7) !important;
+  z-index:10;position:relative;
+  transition:transform .1s cubic-bezier(.2,0,.3,1), box-shadow .1s !important;
 }
 
-/* ── TV Cursor spécifique ── */
-body.device-tv #mf-cursor{
-  width:28px;height:28px;
-  border:3px solid #e63946;
-  box-shadow:0 0 18px rgba(230,57,70,.5);
-}
-body.device-tv #mf-cursor-dot{
-  width:8px;height:8px;
-  background:#f4a261;
-  box-shadow:0 0 10px rgba(244,162,97,.7);
-}
-body.device-tv #mf-cursor.hover{
-  width:54px;height:54px;
-  background:rgba(230,57,70,.15);
-  box-shadow:0 0 28px rgba(230,57,70,.4);
-}
-
-/* Focus ring clavier/télécommande TV — instantané et visible */
-body.device-tv *:focus,
-body.device-desktop *:focus-visible{
-  outline:3px solid #e63946 !important;
-  outline-offset:4px !important;
-  border-radius:8px !important;
-  box-shadow:0 0 0 6px rgba(230,57,70,.25) !important;
+/* Boutons nav focalisés → surbrillance rouge */
+body.device-tv button:focus,
+body.device-tv .nb:focus,
+body.device-tv .btn-pub:focus,
+body.device-tv .btn-pri:focus,
+body.device-tv .btn-sec:focus,
+body.device-tv .fab-menu-item:focus{
+  outline:none !important;
+  background:rgba(230,57,70,.25) !important;
+  box-shadow:0 0 0 3px #e63946 !important;
+  transform:scale(1.07) !important;
   transition:none !important;
 }
-body.device-tv *:focus-within > *,
-body.device-tv button:focus,
-body.device-tv .nb:focus{
-  background:rgba(230,57,70,.15) !important;
+
+/* Inputs focalisés */
+body.device-tv input:focus,
+body.device-tv textarea:focus,
+body.device-tv select:focus{
+  outline:none !important;
+  border-color:#e63946 !important;
+  box-shadow:0 0 0 3px rgba(230,57,70,.4) !important;
+}
+
+/* Desktop focus visible discret */
+body.device-desktop *:focus-visible{
+  outline:2px solid rgba(230,57,70,.7) !important;
+  outline-offset:3px !important;
+  border-radius:6px !important;
 }
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:4px}
 input,textarea,select{font-family:'Rajdhani',sans-serif}
@@ -5418,10 +5425,10 @@ function openAddEpisodeFromFab(){
     document.body.classList.add('device-' + mode);
     current = mode;
 
-    // Activer/désactiver le curseur custom
+    // Curseur custom UNIQUEMENT en mode desktop (pas TV)
     var cur = document.getElementById('mf-cursor');
     var dot = document.getElementById('mf-cursor-dot');
-    if(mode === 'desktop' || mode === 'tv'){
+    if(mode === 'desktop'){
       if(cur) cur.classList.add('active');
       if(dot) dot.classList.add('active');
     } else {
@@ -5494,14 +5501,25 @@ function openAddEpisodeFromFab(){
   // ── Navigation TV par télécommande (focus spatial instantané) ──
   function initTVNavigation(){
 
-    // Rend tous les éléments interactifs focusables
+    // Rendre les cartes focusables au chargement
+    function makeFocusable(){
+      document.querySelectorAll('.post, .sc, .mdx-card, .ep-item, .uc, .ci, .ct').forEach(function(el){
+        if(!el.getAttribute('tabindex')) el.setAttribute('tabindex','0');
+      });
+    }
+
+    // Récupérer tous les éléments focusables visibles
     function getFocusables(){
+      makeFocusable();
       return Array.from(document.querySelectorAll(
-        'button:not([disabled]):not([style*="display:none"]), a[href], input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        'button:not([disabled]), a[href], input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"]), .post, .sc, .mdx-card, .ep-item, .nb'
       )).filter(function(el){
         var r = el.getBoundingClientRect();
         var style = window.getComputedStyle(el);
-        return r.width > 0 && r.height > 0 && style.visibility !== 'hidden' && style.display !== 'none';
+        return r.width > 0 && r.height > 0
+          && style.visibility !== 'hidden'
+          && style.display !== 'none'
+          && style.opacity !== '0';
       });
     }
 
@@ -5565,7 +5583,16 @@ function openAddEpisodeFromFab(){
         case 'Enter':
         case ' ':
           var el = document.activeElement;
-          if(el && el !== document.body){ e.preventDefault(); el.click(); }
+          if(el && el !== document.body){
+            e.preventDefault();
+            // Zoom flash au click (feedback visuel YouTube)
+            el.style.transition = 'transform .08s';
+            el.style.transform = 'scale(0.96)';
+            setTimeout(function(){
+              el.style.transform = '';
+              el.click();
+            }, 80);
+          }
           break;
         case 'Backspace':
         case 'Escape':
