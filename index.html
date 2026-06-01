@@ -212,7 +212,7 @@ setTimeout(() => {
 
 
     <!-- Login -->
-    <div id="form-login" style="background:#0a0a0a;border:1px solid #222;border-radius:14px;padding:24px">
+    <div id="form-login" style="background:#161920;border:1px solid rgba(255,255,255,.13);border-radius:14px;padding:24px">
       <div style="margin-bottom:13px">
         <label style="font-size:10px;color:#666;letter-spacing:.12em;text-transform:uppercase;font-family:'Rajdhani',sans-serif;font-weight:700;display:block;margin-bottom:5px">Email</label>
         <input type="email" id="li-email" placeholder="votre@email.com" onkeydown="if(event.key==='Enter')doLogin()" style="width:100%;background:#0a0a0a;border:1px solid #222;border-radius:9px;padding:11px 14px;color:#ddd;font-size:13px;outline:none;font-family:'Rajdhani',sans-serif"/>
@@ -235,7 +235,7 @@ setTimeout(() => {
     </div>
 
     <!-- Signup -->
-    <div id="form-signup" style="display:none;background:#0a0a0a;border:1px solid #222;border-radius:14px;padding:24px">
+    <div id="form-signup" style="display:none;background:#161920;border:1px solid rgba(255,255,255,.13);border-radius:14px;padding:24px">
       <div style="margin-bottom:13px">
         <label style="font-size:10px;color:#666;letter-spacing:.12em;text-transform:uppercase;font-family:'Rajdhani',sans-serif;font-weight:700;display:block;margin-bottom:5px">Pseudo *</label>
         <input type="text" id="su-name" placeholder="VotrePseudo" style="width:100%;background:#0a0a0a;border:1px solid #222;border-radius:9px;padding:11px 14px;color:#ddd;font-size:13px;outline:none;font-family:'Rajdhani',sans-serif"/>
@@ -281,11 +281,11 @@ setTimeout(() => {
 /* ── THEME SYSTEM ── */
 :root{
   --red:#e63946;--orange:#f4a261;--teal:#2a9d8f;--purple:#9b5de5;
-  --bg:#000000;--bg2:#0a0a0a;--bg3:#111111;
-  --border:rgba(255,255,255,.09);--border2:rgba(255,255,255,.16);
-  --text:#f0f0f0;--text2:#ccc;--muted:#888;--dim:#3a3a3a;
-  --card:rgba(255,255,255,.04);--card2:rgba(255,255,255,.07);
-  --glass-bg:rgba(255,255,255,.04);--glass-border:rgba(255,255,255,.09);
+  --bg:#0f1117;--bg2:#161920;--bg3:#1d2028;
+  --border:rgba(255,255,255,.13);--border2:rgba(255,255,255,.22);
+  --text:#eaeef5;--text2:#c8cdd8;--muted:#8a94a6;--dim:#3d4455;
+  --card:rgba(255,255,255,.06);--card2:rgba(255,255,255,.10);
+  --glass-bg:rgba(255,255,255,.06);--glass-border:rgba(255,255,255,.13);
   --shadow:rgba(0,0,0,.5);
 }
   background:#0a0a0a;
@@ -309,48 +309,7 @@ setTimeout(() => {
   border-color:#222 !important;
   color:#fff !important;
 }
-/* THEME CLAIR — BLANC PUR */
-body.theme-light{
-  --bg:#000000;--bg2:#f5f5f5;--bg3:#efefef;
-  --border:rgba(0,0,0,.08);--border2:rgba(0,0,0,.15);
-  --text:#111111;--text2:#333333;--muted:#777777;--dim:#aaaaaa;
-  --card:rgba(0,0,0,.04);--card2:rgba(0,0,0,.07);
-  --glass-bg:rgba(255,255,255,.9);--glass-border:rgba(0,0,0,.08);
-  --shadow:rgba(0,0,0,.12);
-}
-/* THÈME CLAIR — BLANC PUR */
-body.theme-light{background:#fff;color:#111}
-body.theme-light::before{background:none !important}
-body.theme-light header{background:#000;border-bottom-color:rgba(0,0,0,.07) !important;box-shadow:0 1px 8px rgba(0,0,0,.07) !important}
-body.theme-light .glass{background:#0a0a0a;border-color:#222 !important;box-shadow:0 2px 10px rgba(0,0,0,.05) !important}
-body.theme-light nav{background:#0a0a0a;border-color:#222 !important;box-shadow:0 -2px 16px rgba(0,0,0,.07) !important}
-body.theme-light .mbox{background:#fff !important;border-color:#222 !important}
-body.theme-light input,body.theme-light textarea,body.theme-light select{background:#f4f4f4 !important;border-color:#222 !important;color:#111 !important}
-body.theme-light .post,body.theme-light .sc,body.theme-light .uc,body.theme-light .ci,body.theme-light .ct,body.theme-light .ep-item,body.theme-light .mdx-card,body.theme-light .studio-story-row,body.theme-light .kpi-card{background:#fff !important;border-color:#222 !important;box-shadow:0 1px 5px rgba(0,0,0,.05)}
-body.theme-light .nb{color:rgba(0,0,0,.35) !important}
-body.theme-light .nb.active{color:#fff !important}
-body.theme-light .sec-title,body.theme-light .settings-row-label{color:#111 !important}
-body.theme-light .sec-sub,body.theme-light .settings-row-sub,body.theme-light .ep-meta,body.theme-light .ep-desc,body.theme-light .post-tm{color:#777 !important}
-body.theme-light .prof-wrap{background:#fff !important}
-body.theme-light #notif-bell{background:#f4f4f4 !important;border-color:#222 !important}
-body.theme-light #notif-bell svg{stroke:rgba(0,0,0,.5) !important}
-body.theme-light #notif-panel{background:#fff !important;border-color:#222 !important}
-body.theme-light #notif-panel .notif-item{background:#f4f4f4 !important;border-color:#222 !important}
-body.theme-light #notif-panel *{color:#111 !important}
-body.theme-light .fab-menu{background:#fff !important;border-color:#222 !important;box-shadow:0 20px 60px rgba(0,0,0,.12) !important}
-body.theme-light .fab-menu-item{color:#111 !important}
-body.theme-light .fab-menu-item:hover{background:#f4f4f4 !important}
-body.theme-light .fab-menu-item svg{stroke:#111 !important}
-/* Lecteur texte en thème glass — fond solide pour lisibilité */
-/* Lecteur texte thème clair — blanc pur */
-body.theme-light #text-reader{background:#fff !important}
-body.theme-light #text-reader-header{background:#000;border-bottom-color:rgba(0,0,0,.08) !important}
-body.theme-light #text-reader-ep-title{color:#111 !important}
-body.theme-light #text-reader-story-title{color:#777 !important}
-body.theme-light #text-reader-body{color:#111 !important}
-body.theme-light #text-reader-body p,body.theme-light #text-reader-body br{color:#111 !important}
-body.theme-light #text-reader-content{background:#fff !important}
-body.theme-light #tr-prev-btn,body.theme-light #tr-next-btn{color:#111 !important;border-color:#222 !important;background:#f4f4f4 !important}
+
 
 html{scroll-behavior:smooth}
 html{max-width:100vw;overflow-x:hidden}
@@ -545,11 +504,19 @@ body.device-tv #mf-cursor.hover{
   box-shadow:0 0 28px rgba(230,57,70,.4);
 }
 
-/* Focus ring clavier/télécommande TV */
-body.device-tv *:focus{
-  outline:3px solid rgba(230,57,70,.8) !important;
-  outline-offset:3px !important;
-  border-radius:8px;
+/* Focus ring clavier/télécommande TV — instantané et visible */
+body.device-tv *:focus,
+body.device-desktop *:focus-visible{
+  outline:3px solid #e63946 !important;
+  outline-offset:4px !important;
+  border-radius:8px !important;
+  box-shadow:0 0 0 6px rgba(230,57,70,.25) !important;
+  transition:none !important;
+}
+body.device-tv *:focus-within > *,
+body.device-tv button:focus,
+body.device-tv .nb:focus{
+  background:rgba(230,57,70,.15) !important;
 }
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:4px}
 input,textarea,select{font-family:'Rajdhani',sans-serif}
@@ -559,7 +526,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   background:radial-gradient(ellipse 80% 60% at 85% 0%,rgba(230,57,70,.12),transparent 55%),
              radial-gradient(ellipse 65% 55% at -5% 90%,rgba(155,93,229,.1),transparent 55%),
              radial-gradient(ellipse 50% 40% at 50% 50%,rgba(42,157,143,.05),transparent 65%)}
-.glass{background:#0a0a0a;-webkit-border:1px solid #222;border-radius:14px}
+.glass{background:#161920;border:1px solid rgba(255,255,255,.13);border-radius:14px}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes slideDown{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}
 
@@ -570,7 +537,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 #notif{position:fixed;top:70px;right:14px;z-index:600;background:rgba(42,157,143,.92);color:#fff;padding:11px 18px;border-radius:10px;font-weight:700;font-size:13px;border:1px solid #222;box-shadow:0 8px 32px rgba(0,0,0,.5);animation:slideDown .3s ease;display:none;max-width:280px}
 #notif.err{background:rgba(230,57,70,.92)}
 /* HEADER */
-header{position:sticky;top:0;z-index:50;background:#000;-webkit-border-bottom:1px solid #1a1a1a;padding:0 12px;max-width:100vw;overflow:hidden;box-sizing:border-box}
+header{position:sticky;top:0;z-index:50;background:#0f1117;-webkit-border-bottom:1px solid #1a1a1a;padding:0 12px;max-width:100vw;overflow:hidden;box-sizing:border-box}
 .h-inner{display:flex;align-items:center;justify-content:space-between;height:58px;gap:10px}
 .logo{display:flex;align-items:center;gap:9px;cursor:pointer;user-select:none;flex-shrink:0}
 .logo-icon{font-size:24px}
@@ -597,8 +564,8 @@ header{position:sticky;top:0;z-index:50;background:#000;-webkit-border-bottom:1p
 /* ── PILL NAV FLOTTANTE ── */
 .nav-wrapper{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:400;display:flex;flex-direction:column;align-items:center;width:auto;max-width:calc(100vw - 16px)}
 nav{
-  background:#0a0a0a;
-  border:1px solid #222;
+  background:#161920;
+  border:1px solid rgba(255,255,255,.15);
   border-radius:50px;
   display:flex;gap:1px;padding:4px;
   align-items:center;
@@ -1642,14 +1609,7 @@ svg defs{display:none}
     <div class="theme-grid">
       <div class="theme-opt selected" id="theme-dark" onclick="setTheme('dark')">
         <div class="theme-preview-dark"></div>
-        <div class="theme-preview-label" style="background:#0a0a0a;color:#ddd">🌙 Sombre</div>
-      </div>
-      <div class="theme-opt" id="theme-light" onclick="setTheme('light')">
-        <div class="theme-preview-light" style="height:48px;background:#fff;border-radius:8px;border:1px solid #222;display:flex;align-items:center;justify-content:center;gap:4px">
-          <div style="width:28px;height:6px;background:#e63946;border-radius:3px"></div>
-          <div style="width:16px;height:6px;background:#f4f4f4;border:1px solid #222;border-radius:3px"></div>
-        </div>
-        <div class="theme-preview-label" style="background:#f4f4f4;color:#111;border:1px solid #222">☀️ Blanc</div>
+        <div class="theme-preview-label" style="background:#161920;color:#eaeef5">🌙 Sombre</div>
       </div>
 </div>
         <div class="theme-preview-label" style="background:#111;color:#ddd;border:1px solid var(--border);color:var(--text);padding:7px 12px;border-radius:8px;font-size:12px;font-family:'Rajdhani',sans-serif;font-weight:700;outline:none">
@@ -4296,7 +4256,7 @@ setTimeout(resetVeilleTimer,3000);
 //  THEME SYSTEM
 // ══════════════════════════════════════════════════════
 function setTheme(t){
-  document.body.classList.toggle('theme-light', t==='light');
+  document.body.classList.remove('theme-light');
   
   localStorage.setItem('mf-theme', t);
   const d=document.getElementById('theme-dark');
@@ -5531,58 +5491,95 @@ function openAddEpisodeFromFab(){
     }
   });
 
-  // ── Navigation TV par télécommande (touches directionnelles) ──
+  // ── Navigation TV par télécommande (focus spatial instantané) ──
   function initTVNavigation(){
-    var focusables = [];
-    var focusIdx = 0;
 
-    function refreshFocusables(){
-      focusables = Array.from(document.querySelectorAll(
-        'button:not([disabled]), a, input, textarea, select, [tabindex]:not([tabindex="-1"])'
+    // Rend tous les éléments interactifs focusables
+    function getFocusables(){
+      return Array.from(document.querySelectorAll(
+        'button:not([disabled]):not([style*="display:none"]), a[href], input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
       )).filter(function(el){
         var r = el.getBoundingClientRect();
-        return r.width > 0 && r.height > 0;
+        var style = window.getComputedStyle(el);
+        return r.width > 0 && r.height > 0 && style.visibility !== 'hidden' && style.display !== 'none';
       });
+    }
+
+    // Focus spatial : trouve le plus proche dans la direction voulue
+    function spatialFocus(direction){
+      var focusables = getFocusables();
+      if(!focusables.length) return;
+
+      var active = document.activeElement;
+      var ar = active ? active.getBoundingClientRect() : null;
+      var cx = ar ? ar.left + ar.width/2  : window.innerWidth/2;
+      var cy = ar ? ar.top  + ar.height/2 : window.innerHeight/2;
+
+      var best = null, bestScore = Infinity;
+
+      focusables.forEach(function(el){
+        if(el === active) return;
+        var r = el.getBoundingClientRect();
+        var ex = r.left + r.width/2;
+        var ey = r.top  + r.height/2;
+        var dx = ex - cx;
+        var dy = ey - cy;
+        var inDir = false;
+
+        if(direction==='down'  && dy >  20) inDir = true;
+        if(direction==='up'    && dy < -20) inDir = true;
+        if(direction==='right' && dx >  20) inDir = true;
+        if(direction==='left'  && dx < -20) inDir = true;
+
+        if(!inDir) return;
+
+        // Score : distance pondérée — pénalise l'écart perpendiculaire
+        var primary   = (direction==='down'||direction==='up')    ? Math.abs(dy) : Math.abs(dx);
+        var secondary = (direction==='down'||direction==='up')    ? Math.abs(dx) : Math.abs(dy);
+        var score = primary + secondary * 3;
+
+        if(score < bestScore){ bestScore = score; best = el; }
+      });
+
+      // Si rien en direction spatiale → wrap au premier/dernier
+      if(!best){
+        var idx = focusables.indexOf(active);
+        if(direction==='down'||direction==='right') best = focusables[(idx+1)%focusables.length];
+        else best = focusables[(idx-1+focusables.length)%focusables.length];
+      }
+
+      if(best){
+        best.focus();
+        best.scrollIntoView({block:'nearest', behavior:'smooth'});
+      }
     }
 
     document.addEventListener('keydown', function(e){
       if(current !== 'tv' && current !== 'desktop') return;
-      refreshFocusables();
-      if(!focusables.length) return;
-
-      var cur_el = document.activeElement;
-      var idx = focusables.indexOf(cur_el);
-      if(idx === -1) idx = 0;
 
       switch(e.key){
-        case 'ArrowDown':
-        case 'ArrowRight':
-          e.preventDefault();
-          idx = (idx + 1) % focusables.length;
-          focusables[idx].focus();
-          focusables[idx].scrollIntoView({block:'nearest',behavior:'smooth'});
-          break;
-        case 'ArrowUp':
-        case 'ArrowLeft':
-          e.preventDefault();
-          idx = (idx - 1 + focusables.length) % focusables.length;
-          focusables[idx].focus();
-          focusables[idx].scrollIntoView({block:'nearest',behavior:'smooth'});
-          break;
+        case 'ArrowDown':  e.preventDefault(); spatialFocus('down');  break;
+        case 'ArrowUp':    e.preventDefault(); spatialFocus('up');    break;
+        case 'ArrowRight': e.preventDefault(); spatialFocus('right'); break;
+        case 'ArrowLeft':  e.preventDefault(); spatialFocus('left');  break;
         case 'Enter':
         case ' ':
-          if(cur_el && cur_el !== document.body){
-            e.preventDefault();
-            cur_el.click();
-          }
+          var el = document.activeElement;
+          if(el && el !== document.body){ e.preventDefault(); el.click(); }
           break;
         case 'Backspace':
         case 'Escape':
-          e.preventDefault();
-          history.back();
-          break;
+          e.preventDefault(); history.back(); break;
       }
     });
+
+    // Focus initial au chargement (mode TV)
+    setTimeout(function(){
+      if(current === 'tv'){
+        var focusables = getFocusables();
+        if(focusables.length) focusables[0].focus();
+      }
+    }, 800);
   }
 
   initTVNavigation();
