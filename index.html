@@ -457,6 +457,100 @@ body.device-tv .btn-pub{font-size:15px;padding:12px 22px}
 body.device-tv #notif-panel{left:300px;top:80px;right:auto;width:360px}
 body.device-tv *{cursor:default}
 body.device-tv button,body.device-tv a{cursor:pointer}
+
+/* ══════════════════════════════════════
+   MODE TABLETTE (768px – 1199px)
+══════════════════════════════════════ */
+body.device-tablet #app{max-width:860px;margin:0 auto}
+body.device-tablet header{padding:0 20px}
+body.device-tablet main{padding:20px 24px 110px}
+body.device-tablet .nav-wrapper{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+  z-index:400;
+}
+body.device-tablet nav{
+  display:flex;flex-direction:row;
+  background:#0a0a0a;border:1px solid #222;border-radius:50px;
+  padding:6px;gap:2px;
+}
+body.device-tablet .nb{
+  flex-direction:column;padding:9px 14px;border-radius:44px;
+}
+body.device-tablet .nb .lbl{display:block;font-size:8px;letter-spacing:.05em;font-weight:800}
+body.device-tablet .nb svg{width:20px;height:20px}
+body.device-tablet .nb.active::after{
+  content:'';position:absolute;bottom:3px;left:50%;transform:translateX(-50%);
+  width:16px;height:2px;background:linear-gradient(90deg,#e63946,#f4a261);
+  border-radius:2px;
+}
+body.device-tablet .logo-name{font-size:18px}
+body.device-tablet .sec-title{font-size:24px}
+body.device-tablet .sgrid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+body.device-tablet .post{padding:18px}
+
+/* ══════════════════════════════════════
+   CURSEUR PERSONNALISÉ — Desktop & TV
+══════════════════════════════════════ */
+body.device-desktop *,body.device-tv *{cursor:none !important}
+
+#mf-cursor{
+  position:fixed;
+  width:18px;height:18px;
+  border:2px solid #e63946;
+  border-radius:50%;
+  pointer-events:none;
+  z-index:99999;
+  transform:translate(-50%,-50%);
+  transition:transform .08s ease,width .15s ease,height .15s ease,background .15s ease,border-color .15s ease;
+  mix-blend-mode:normal;
+  display:none;
+}
+#mf-cursor-dot{
+  position:fixed;
+  width:5px;height:5px;
+  background:#e63946;
+  border-radius:50%;
+  pointer-events:none;
+  z-index:99999;
+  transform:translate(-50%,-50%);
+  transition:transform .04s ease;
+  display:none;
+}
+#mf-cursor.active{display:block}
+#mf-cursor-dot.active{display:block}
+#mf-cursor.hover{
+  width:36px;height:36px;
+  background:rgba(230,57,70,.12);
+  border-color:#f4a261;
+}
+#mf-cursor.click{
+  width:12px;height:12px;
+  background:rgba(230,57,70,.4);
+}
+
+/* ── TV Cursor spécifique ── */
+body.device-tv #mf-cursor{
+  width:28px;height:28px;
+  border:3px solid #e63946;
+  box-shadow:0 0 18px rgba(230,57,70,.5);
+}
+body.device-tv #mf-cursor-dot{
+  width:8px;height:8px;
+  background:#f4a261;
+  box-shadow:0 0 10px rgba(244,162,97,.7);
+}
+body.device-tv #mf-cursor.hover{
+  width:54px;height:54px;
+  background:rgba(230,57,70,.15);
+  box-shadow:0 0 28px rgba(230,57,70,.4);
+}
+
+/* Focus ring clavier/télécommande TV */
+body.device-tv *:focus{
+  outline:3px solid rgba(230,57,70,.8) !important;
+  outline-offset:3px !important;
+  border-radius:8px;
+}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:4px}
 input,textarea,select{font-family:'Rajdhani',sans-serif}
 input::placeholder,textarea::placeholder{color:var(--dim)}
@@ -4968,7 +5062,7 @@ async function loadAdminUsers(){
 // ══════════════════════════════════════════════════════
 //  IA — SERVEUR RENDER (Mistral + Gemini)
 // ══════════════════════════════════════════════════════
-const AI_SERVER_URL = 'https://mangaforge-ai-server.onrender.com';
+const AI_SERVER_URL = 'https://mangaforge-server.onrender.com';
 let aiProvider = 'mistral';
 
 function toggleAiProvider(){
@@ -5325,25 +5419,33 @@ function openAddEpisodeFromFab(){
   </div>
 </div>
 
+<!-- ══════════ CURSEUR PERSONNALISÉ ══════════ -->
+<div id="mf-cursor"></div>
+<div id="mf-cursor-dot"></div>
+
 <!-- ══════════ DEVICE MODE BADGE ══════════ -->
 <div id="device-mode-badge"></div>
 
 <!-- ══════════ DÉTECTION AUTOMATIQUE D'APPAREIL ══════════ -->
 <script>
 (function(){
+
   // ── Détection du type d'appareil ──
   function detectDevice(){
     var w = window.innerWidth;
     var ua = navigator.userAgent.toLowerCase();
     var isTV = /smart-tv|smarttv|googletv|appletv|hbbtv|pov_tv|netcast|viera|nettv|philips|roku|opera tv|tizen|webos|tv safari/i.test(ua) || w >= 1800;
-    var isMobile = /android|iphone|ipod|blackberry|iemobile|opera mini/i.test(ua) || (w < 768 && !/ipad/.test(ua));
+    var isMobile = (/android|iphone|ipod|blackberry|iemobile|opera mini/i.test(ua) && !/ipad/.test(ua)) || (w < 600);
+    var isTablet = (/ipad|tablet|kindle|playbook/i.test(ua)) || (w >= 600 && w < 1200 && 'ontouchstart' in window);
     if(isTV) return 'tv';
     if(isMobile) return 'mobile';
+    if(isTablet) return 'tablet';
     return 'desktop';
   }
 
   var modeLabels = {
     mobile:  '📱 Mode Mobile',
+    tablet:  '📟 Mode Tablette',
     desktop: '💻 Mode Desktop',
     tv:      '📺 Mode TV'
   };
@@ -5352,9 +5454,28 @@ function openAddEpisodeFromFab(){
 
   function applyMode(mode){
     if(mode === current) return;
-    document.body.classList.remove('device-mobile','device-desktop','device-tv');
+    document.body.classList.remove('device-mobile','device-tablet','device-desktop','device-tv');
     document.body.classList.add('device-' + mode);
     current = mode;
+
+    // Activer/désactiver le curseur custom
+    var cur = document.getElementById('mf-cursor');
+    var dot = document.getElementById('mf-cursor-dot');
+    if(mode === 'desktop' || mode === 'tv'){
+      if(cur) cur.classList.add('active');
+      if(dot) dot.classList.add('active');
+    } else {
+      if(cur) cur.classList.remove('active');
+      if(dot) dot.classList.remove('active');
+    }
+
+    // Ajuster margin du main selon sidebar
+    var main = document.querySelector('main');
+    if(main){
+      if(mode === 'desktop') main.style.marginLeft = '220px';
+      else if(mode === 'tv')  main.style.marginLeft = '280px';
+      else                    main.style.marginLeft = '0';
+    }
 
     // Badge temporaire
     var badge = document.getElementById('device-mode-badge');
@@ -5365,30 +5486,118 @@ function openAddEpisodeFromFab(){
       badge._timer = setTimeout(function(){ badge.classList.remove('show'); }, 3000);
     }
 
-    // Ajuster le padding du main selon la sidebar
-    var main = document.querySelector('main');
-    if(main){
-      if(mode === 'desktop') main.style.marginLeft = '220px';
-      else if(mode === 'tv')  main.style.marginLeft = '280px';
-      else                    main.style.marginLeft = '0';
+    console.log('[MangaForge] Mode :', mode);
+  }
+
+  // ── Curseur personnalisé ──
+  var curX=0, curY=0, dotX=0, dotY=0;
+  var cur = null, dot = null;
+
+  document.addEventListener('mousemove', function(e){
+    curX = e.clientX; curY = e.clientY;
+    cur = cur || document.getElementById('mf-cursor');
+    dot = dot || document.getElementById('mf-cursor-dot');
+    if(cur && cur.classList.contains('active')){
+      cur.style.left = curX + 'px';
+      cur.style.top  = curY + 'px';
+    }
+    if(dot && dot.classList.contains('active')){
+      // Dot suit avec léger retard via RAF
+      requestAnimationFrame(function(){
+        dot.style.left = curX + 'px';
+        dot.style.top  = curY + 'px';
+      });
+    }
+  });
+
+  document.addEventListener('mousedown', function(){
+    cur = cur || document.getElementById('mf-cursor');
+    if(cur) cur.classList.add('click');
+  });
+  document.addEventListener('mouseup', function(){
+    cur = cur || document.getElementById('mf-cursor');
+    if(cur) cur.classList.remove('click');
+  });
+
+  // Hover sur éléments interactifs
+  document.addEventListener('mouseover', function(e){
+    cur = cur || document.getElementById('mf-cursor');
+    if(!cur) return;
+    var t = e.target;
+    if(t.tagName==='BUTTON'||t.tagName==='A'||t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.closest('button')||t.closest('a')||t.classList.contains('nb')||t.classList.contains('post')||t.classList.contains('sc')){
+      cur.classList.add('hover');
+    } else {
+      cur.classList.remove('hover');
+    }
+  });
+
+  // ── Navigation TV par télécommande (touches directionnelles) ──
+  function initTVNavigation(){
+    var focusables = [];
+    var focusIdx = 0;
+
+    function refreshFocusables(){
+      focusables = Array.from(document.querySelectorAll(
+        'button:not([disabled]), a, input, textarea, select, [tabindex]:not([tabindex="-1"])'
+      )).filter(function(el){
+        var r = el.getBoundingClientRect();
+        return r.width > 0 && r.height > 0;
+      });
     }
 
-    console.log('[MangaForge] Mode appareil :', mode);
+    document.addEventListener('keydown', function(e){
+      if(current !== 'tv' && current !== 'desktop') return;
+      refreshFocusables();
+      if(!focusables.length) return;
+
+      var cur_el = document.activeElement;
+      var idx = focusables.indexOf(cur_el);
+      if(idx === -1) idx = 0;
+
+      switch(e.key){
+        case 'ArrowDown':
+        case 'ArrowRight':
+          e.preventDefault();
+          idx = (idx + 1) % focusables.length;
+          focusables[idx].focus();
+          focusables[idx].scrollIntoView({block:'nearest',behavior:'smooth'});
+          break;
+        case 'ArrowUp':
+        case 'ArrowLeft':
+          e.preventDefault();
+          idx = (idx - 1 + focusables.length) % focusables.length;
+          focusables[idx].focus();
+          focusables[idx].scrollIntoView({block:'nearest',behavior:'smooth'});
+          break;
+        case 'Enter':
+        case ' ':
+          if(cur_el && cur_el !== document.body){
+            e.preventDefault();
+            cur_el.click();
+          }
+          break;
+        case 'Backspace':
+        case 'Escape':
+          e.preventDefault();
+          history.back();
+          break;
+      }
+    });
   }
+
+  initTVNavigation();
 
   // ── Appliquer au chargement ──
   function init(){
     applyMode(detectDevice());
   }
 
-  // ── Ré-évaluer au redimensionnement (utile en DevTools) ──
   var resizeTimer;
   window.addEventListener('resize', function(){
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(function(){ applyMode(detectDevice()); }, 200);
   });
 
-  // Lancer après le DOM
   if(document.readyState === 'loading'){
     document.addEventListener('DOMContentLoaded', init);
   } else {
