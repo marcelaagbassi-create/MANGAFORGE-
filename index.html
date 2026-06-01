@@ -475,7 +475,16 @@ body.device-desktop *{cursor:none !important}
 /* ══ TV : PAS de curseur souris, navigation YouTube-style ══ */
 body.device-tv #mf-cursor,
 body.device-tv #mf-cursor-dot{ display:none !important; }
-body.device-tv *{ cursor:none !important; }
+/* Cacher le curseur système sur TV — toutes les spécificités */
+body.device-tv,
+body.device-tv *,
+body.device-tv *::before,
+body.device-tv *::after,
+html body.device-tv a,
+html body.device-tv button,
+html body.device-tv input,
+html body.device-tv [onclick],
+html body.device-tv [tabindex]{ cursor:none !important; }
 
 /* ── TV FOCUS : zoom + highlight comme YouTube ── */
 body.device-tv *:focus{ outline:none !important; box-shadow:none !important; }
@@ -5445,6 +5454,43 @@ function openAddEpisodeFromFab(){
       if(dot) dot.classList.remove('active');
     }
 
+    // ── MODE TV : cacher le curseur système COMPLÈTEMENT ──
+    var tvStyleTag = document.getElementById('tv-cursor-style');
+    if(mode === 'tv'){
+      if(!tvStyleTag){
+        tvStyleTag = document.createElement('style');
+        tvStyleTag.id = 'tv-cursor-style';
+        // cursor:none sur ABSOLUMENT tout — priorité maximale
+        tvStyleTag.textContent = [
+          'html, html body, html body *, html body *::before, html body *::after {',
+          '  cursor: none !important;',
+          '}',
+          // Même les éléments inline et les pseudo-éléments
+          'a, button, input, select, textarea, label, [onclick], [tabindex] {',
+          '  cursor: none !important;',
+          '}'
+        ].join('\n');
+        document.head.appendChild(tvStyleTag);
+      }
+      // Tenter pointer lock pour bloquer le curseur système
+      var lockTarget = document.getElementById('app') || document.body;
+      if(lockTarget.requestPointerLock){
+        // On demande le lock au premier clic utilisateur
+        document.addEventListener('click', function tryLock(){
+          if(current === 'tv' && document.pointerLockElement !== lockTarget){
+            lockTarget.requestPointerLock().catch(function(){});
+          }
+        }, {once: false});
+      }
+    } else {
+      // Retirer le style TV si on change de mode
+      if(tvStyleTag) tvStyleTag.remove();
+      // Libérer le pointer lock si actif
+      if(document.pointerLockElement && document.exitPointerLock){
+        document.exitPointerLock();
+      }
+    }
+
     // Ajuster margin du main selon sidebar
     var main = document.querySelector('main');
     if(main){
@@ -5470,8 +5516,12 @@ function openAddEpisodeFromFab(){
   var cur = null, dot = null;
 
   document.addEventListener('mousemove', function(e){
-    // Curseur custom uniquement en mode Desktop, jamais sur TV
-    if(current === 'tv' || current === 'mobile' || current === 'tablet') return;
+    // Curseur custom uniquement en mode Desktop, jamais sur TV/mobile/tablette
+    if(current === 'tv' || current === 'mobile' || current === 'tablet') {
+      // Bloquer la propagation des events souris sur TV
+      e.stopPropagation();
+      return;
+    }
     curX = e.clientX; curY = e.clientY;
     cur = cur || document.getElementById('mf-cursor');
     dot = dot || document.getElementById('mf-cursor-dot');
