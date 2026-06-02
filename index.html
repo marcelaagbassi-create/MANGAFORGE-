@@ -3214,14 +3214,34 @@ async function submitEpisode(){
         createdAt:FB.serverTimestamp()
       });
     } else if(currentEpType === 'html'){
-      // ── Épisode HTML ──
+      // ── Épisode HTML — stocké directement dans Firestore ──
       if(!epHtmlFile){notif('Sélectionnez un fichier HTML.',true);setBtn('ep-submit-btn',false,'PUBLIER L\'ÉPISODE');return;}
       const desc = document.getElementById('ep-desc-html-inp')?.value.trim()||'';
-      notif('Upload du fichier HTML...');
-      const htmlUrl = await uploadFile(epHtmlFile, 'episodes_html');
+      notif('Lecture du fichier HTML...');
+      // Lire le fichier localement comme texte
+      const htmlContent = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = e => resolve(e.target.result);
+        reader.onerror = () => reject(new Error('Impossible de lire le fichier HTML'));
+        reader.readAsText(epHtmlFile, 'UTF-8');
+      });
+      if(!htmlContent || htmlContent.length < 10){
+        notif('Le fichier HTML semble vide.',true);
+        setBtn('ep-submit-btn',false,'PUBLIER L\'ÉPISODE');
+        return;
+      }
+      // Firestore limite à ~1MB par document — avertir si trop grand
+      if(htmlContent.length > 900000){
+        notif('⚠️ Fichier HTML trop volumineux (max ~900Ko). Réduisez la taille.',true);
+        setBtn('ep-submit-btn',false,'PUBLIER L\'ÉPISODE');
+        return;
+      }
       const isDraft3 = !!window._draftMode;
       await FB.addDoc(FB.collection(FB.db,'stories',openSid,'episodes'),{
-        title, description:desc, htmlUrl, pages:[], thumbUrl:'', type:'html', draft: isDraft3,
+        title, description:desc,
+        htmlContent,          // contenu HTML complet stocké en Firestore
+        htmlUrl:'',           // pas d'URL externe
+        pages:[], thumbUrl:'', type:'html', draft: isDraft3,
         emoji:'🌐', authorId:currentUser.uid,
         createdAt:FB.serverTimestamp()
       });
@@ -3325,10 +3345,22 @@ function openHtmlReader(ep, storyTitle){
   document.getElementById('html-ep-title').textContent = ep.title || 'Épisode';
   document.getElementById('html-ep-story').textContent = storyTitle;
 
-  // Charger le HTML dans l'iframe via URL Firebase Storage
   const frame = document.getElementById('html-ep-frame');
-  frame.src = ep.htmlUrl;
   window._htmlReaderZoom = 1;
+
+  // Charger le contenu HTML stocké en Firestore via Blob URL
+  if(ep.htmlContent){
+    // Libérer l'ancienne blob URL si elle existe
+    if(window._htmlBlobUrl){ URL.revokeObjectURL(window._htmlBlobUrl); }
+    const blob = new Blob([ep.htmlContent], {type:'text/html;charset=utf-8'});
+    window._htmlBlobUrl = URL.createObjectURL(blob);
+    frame.src = window._htmlBlobUrl;
+  } else if(ep.htmlUrl){
+    // Fallback : URL externe (ancien système)
+    frame.src = ep.htmlUrl;
+  } else {
+    frame.srcdoc = '<div style="color:#888;padding:40px;font-family:sans-serif">Contenu HTML indisponible.</div>';
+  }
 
   viewer.style.display = 'flex';
   document.body.style.overflow = 'hidden';
@@ -3338,8 +3370,13 @@ function closeHtmlReader(){
   const viewer = document.getElementById('html-ep-viewer');
   if(viewer){
     const frame = document.getElementById('html-ep-frame');
-    if(frame) frame.src = 'about:blank';
+    if(frame){ frame.src = 'about:blank'; }
     viewer.style.display = 'none';
+  }
+  // Libérer la mémoire de la blob URL
+  if(window._htmlBlobUrl){
+    URL.revokeObjectURL(window._htmlBlobUrl);
+    window._htmlBlobUrl = null;
   }
   document.body.style.overflow = '';
 }
