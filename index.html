@@ -262,6 +262,67 @@ setTimeout(() => {
   z-index:1;
 }
 
+
+/* ══ Shimmer IA — icône + nom pendant la réflexion ══ */
+@keyframes aiShimmerText{
+  0%  { background-position: -200% center }
+  100%{ background-position:  200% center }
+}
+@keyframes aiIconPulse{
+  0%,100%{ box-shadow: 0 4px 14px rgba(155,93,229,.4) }
+  50%     { box-shadow: 0 4px 28px rgba(155,93,229,.9), 0 0 40px rgba(155,93,229,.4) }
+}
+.ai-thinking-active #ai-header-icon{
+  animation: aiIconPulse 1.2s ease-in-out infinite !important;
+}
+.ai-thinking-active #ai-header-name{
+  background: linear-gradient(90deg,
+    #9b5de5 0%, #c084fc 30%, #fff 50%, #c084fc 70%, #9b5de5 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: aiShimmerText 1.4s linear infinite;
+}
+.ai-thinking-active #ai-header-sub{
+  background: linear-gradient(90deg,
+    rgba(155,93,229,.5) 0%, rgba(255,255,255,.9) 50%, rgba(155,93,229,.5) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: aiShimmerText 1s linear infinite;
+}
+
+/* États IA */
+#ai-status-bar{
+  font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;
+  padding:3px 10px;border-radius:20px;
+  display:none;align-items:center;gap:5px;
+  background:rgba(155,93,229,.12);border:1px solid rgba(155,93,229,.25);
+  color:rgba(155,93,229,.9);
+}
+#ai-status-bar.show{display:flex}
+#ai-status-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:#9b5de5;
+  animation:aiDotBlink .8s ease-in-out infinite;
+}
+@keyframes aiDotBlink{0%,100%{opacity:1}50%{opacity:.2}}
+
+
+/* ── Générateur d'images IA ── */
+.img-style-btn{
+  padding:5px 11px;border-radius:20px;border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.04);color:#888;
+  font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;
+  letter-spacing:.06em;cursor:pointer;transition:all .2s;
+}
+.img-style-btn.active,.img-style-btn:hover{
+  background:rgba(155,93,229,.18);border-color:rgba(155,93,229,.4);color:#c084fc;
+}
+
 </style>
 
 <!-- ══════════ AUTH ══════════ -->
@@ -480,6 +541,14 @@ body.device-tv .nb .lbl{display:block;font-size:16px;letter-spacing:.05em;font-w
 body.device-tv .nb svg{width:26px;height:26px;flex-shrink:0}
 body.device-tv .nb.active::after{display:none}
 body.device-tv .fab-plus{width:100%;border-radius:16px;margin-top:12px;height:58px}
+body.device-tv .tv-qr-btn{
+  width:100%;margin-top:8px;padding:14px 20px;border-radius:16px;
+  background:rgba(244,162,97,.1);border:1px solid rgba(244,162,97,.25);
+  color:#f4a261;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:14px;
+  letter-spacing:.06em;cursor:pointer;display:flex;align-items:center;gap:12px;
+  transition:all .2s;
+}
+body.device-tv .tv-qr-btn:hover{background:rgba(244,162,97,.2)}
 body.device-tv .fab-menu{position:absolute;left:calc(100% + 10px);top:0;transform:none;bottom:auto}
 body.device-tv .logo-name{font-size:28px}
 body.device-tv .logo-icon{font-size:32px}
@@ -2132,6 +2201,65 @@ svg defs{display:none}
   <div class="veille-hint">Touchez l'écran pour revenir</div>
 </div>
 
+<!-- ══════════ GÉNÉRATEUR D'IMAGES IA ══════════ -->
+<div id="m-ai-imggen" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.95);flex-direction:column;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#0d0f1a;border:1px solid rgba(155,93,229,.25);border-radius:20px;padding:24px 20px;max-width:420px;width:100%">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+      <div style="width:34px;height:34px;background:linear-gradient(135deg,#9b5de5,#7b2fd6);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px">🎨</div>
+      <div>
+        <div style="font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:#ddd">Générateur d'Images IA</div>
+        <div style="font-size:9px;color:rgba(155,93,229,.7);letter-spacing:.12em;font-family:'Rajdhani',sans-serif;font-weight:700">COUVERTURES · BD · CASES MANGA</div>
+      </div>
+      <button onclick="document.getElementById('m-ai-imggen').style.display='none'" style="margin-left:auto;background:none;border:none;color:#555;font-size:20px;cursor:pointer">×</button>
+    </div>
+
+    <!-- Sélecteur de style -->
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
+      <button class="img-style-btn active" data-style="manga" onclick="selectImgStyle(this,'manga')">🗾 Manga</button>
+      <button class="img-style-btn" data-style="anime"  onclick="selectImgStyle(this,'anime')">✨ Anime</button>
+      <button class="img-style-btn" data-style="comic"  onclick="selectImgStyle(this,'comic')">💥 BD</button>
+      <button class="img-style-btn" data-style="cover"  onclick="selectImgStyle(this,'cover')">📕 Couverture</button>
+      <button class="img-style-btn" data-style="realistic" onclick="selectImgStyle(this,'realistic')">📷 Réaliste</button>
+      <button class="img-style-btn" data-style="panel"  onclick="selectImgStyle(this,'panel')">🎞️ Cases</button>
+    </div>
+
+    <textarea id="ai-img-prompt" placeholder="Décrivez l'image : personnage, scène, ambiance, couleurs..."
+      style="width:100%;box-sizing:border-box;background:#0f1117;border:1px solid #2a2d3a;border-radius:10px;color:#eaeef5;
+             padding:10px 12px;font-size:13px;font-family:'Rajdhani',sans-serif;resize:none;min-height:80px;outline:none;margin-bottom:12px"></textarea>
+
+    <!-- Résolution -->
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <select id="ai-img-size" style="flex:1;background:#0f1117;border:1px solid #2a2d3a;color:#ccc;border-radius:8px;padding:8px 10px;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700">
+        <option value="512x768">512×768 — Portrait</option>
+        <option value="768x512">768×512 — Paysage</option>
+        <option value="512x512" selected>512×512 — Carré</option>
+        <option value="1024x768">1024×768 — Large</option>
+      </select>
+      <button onclick="generateAiImage()" id="ai-img-gen-btn" style="
+        background:linear-gradient(135deg,#9b5de5,#7b2fd6);border:none;
+        color:#fff;padding:8px 18px;border-radius:10px;
+        font-family:'Rajdhani',sans-serif;font-weight:900;font-size:13px;
+        letter-spacing:.05em;cursor:pointer;box-shadow:0 4px 14px rgba(155,93,229,.4);
+        white-space:nowrap;">
+        ✨ GÉNÉRER
+      </button>
+    </div>
+
+    <!-- Zone résultat -->
+    <div id="ai-img-result" style="display:none;text-align:center">
+      <div id="ai-img-loading" style="padding:30px;color:rgba(155,93,229,.7);font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:.08em">
+        <div class="ai-typing" style="justify-content:center;margin-bottom:8px"><span></span><span></span><span></span></div>
+        Génération en cours...
+      </div>
+      <img id="ai-img-output" style="display:none;max-width:100%;border-radius:12px;border:1px solid rgba(155,93,229,.2)" alt="Image générée"/>
+      <div id="ai-img-actions" style="display:none;margin-top:10px;display:none;gap:8px;justify-content:center">
+        <button onclick="aiImgDownload()" style="background:rgba(155,93,229,.15);border:1px solid rgba(155,93,229,.3);color:#9b5de5;padding:7px 14px;border-radius:8px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:11px;cursor:pointer">⬇ TÉLÉCHARGER</button>
+        <button onclick="aiImgUseCover()" style="background:rgba(230,57,70,.15);border:1px solid rgba(230,57,70,.3);color:#e63946;padding:7px 14px;border-radius:8px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:11px;cursor:pointer">📕 COMME COUVERTURE</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ══════════ AI ASSISTANT FLOTTANT ══════════ -->
 <button class="ai-assistant-btn" id="ai-assistant-btn" onclick="openAiFullscreen()" title="Assistant IA MangaForge">
   <svg viewBox="0 0 36 36" width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -2183,12 +2311,14 @@ svg defs{display:none}
   <!-- Header IA -->
   <div style="background:#000;border-bottom:1px solid rgba(155,93,229,.2);padding:0 16px;height:58px;display:flex;align-items:center;gap:12px;flex-shrink:0">
     <button onclick="closeAiFullscreen()" style="background:#0a0a0a;border:1px solid #222;color:#aaa;width:34px;height:34px;border-radius:10px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">←</button>
-    <div style="width:36px;height:36px;background:linear-gradient(135deg,#9b5de5,#7b2fd6);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;box-shadow:0 4px 14px rgba(155,93,229,.4)">✨</div>
-    <div style="flex:1">
-      <div style="font-family:'Cinzel',serif;font-size:13px;color:#ddd;font-weight:700;letter-spacing:.04em">Assistant MangaForge</div>
-      <div style="font-size:9px;color:rgba(155,93,229,.7);letter-spacing:.15em;text-transform:uppercase;font-family:'Rajdhani',sans-serif;font-weight:700">IA • Aide créative</div>
+    <div id="ai-header-icon" style="width:36px;height:36px;background:linear-gradient(135deg,#9b5de5,#7b2fd6);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;box-shadow:0 4px 14px rgba(155,93,229,.4)">✨</div>
+    <div style="flex:1;min-width:0">
+      <div id="ai-header-name" style="font-family:'Cinzel',serif;font-size:13px;color:#ddd;font-weight:700;letter-spacing:.04em">Assistant MangaForge</div>
+      <div id="ai-header-sub" style="font-size:9px;color:rgba(155,93,229,.7);letter-spacing:.15em;text-transform:uppercase;font-family:'Rajdhani',sans-serif;font-weight:700">IA • Aide créative</div>
     </div>
-    <button onclick="clearAiChat()" title="Effacer la discussion" style="background:none;border:none;color:#444;font-size:11px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:.06em;padding:6px 10px;border-radius:7px;transition:all .2s" onmouseover="this.style.color='#888'" onmouseout="this.style.color='#444'">EFFACER</button>
+    <div id="ai-status-bar"><div id="ai-status-dot"></div><span id="ai-status-text">Réfléchit</span></div>
+    <button onclick="showAiHistory()" title="Historique" style="background:none;border:none;color:#444;font-size:16px;cursor:pointer;padding:6px 8px;border-radius:7px;transition:all .2s" onmouseover="this.style.color='#888'" onmouseout="this.style.color='#444'">🕐</button>
+    <button onclick="clearAiChat()" title="Effacer" style="background:none;border:none;color:#444;font-size:11px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:.06em;padding:6px 10px;border-radius:7px;transition:all .2s" onmouseover="this.style.color='#888'" onmouseout="this.style.color='#444'">EFFACER</button>
   </div>
 
   <!-- Boutons rapides -->
@@ -2200,6 +2330,7 @@ svg defs{display:none}
     <button class="aap-quick" onclick="aapFullQuick('Comment développer un système de magie original ?')">🔮 Magie</button>
     <button class="aap-quick" onclick="aapFullQuick('Tips pour écrire des dialogues naturels et percutants')">💬 Dialogues</button>
     <button class="aap-quick" onclick="aapFullQuick('Comment structurer un monde de manga cohérent ?')">🌍 Worldbuilding</button>
+    <button class="aap-quick" onclick="openAiImageGen()">🎨 Générer image</button>
   </div>
 
   <!-- Zone messages -->
@@ -2597,28 +2728,140 @@ function aiFAddMsg(text, isUser){
   msgs.scrollTop=msgs.scrollHeight;
   return isUser?div.lastElementChild:document.getElementById(id);
 }
-async function aiFSend(){
-  const inp=document.getElementById('ai-full-input');
-  let text=inp.value.trim();
-  if(!text && !(typeof aiAttachments!=='undefined' && aiAttachments.length)) return;
-  // Ajouter info pièces jointes
-  if(typeof aiAttachments!=='undefined' && aiAttachments.length){
-    const names=aiAttachments.map(a=>a.name).join(', ');
-    text=text?`${text}\n[Fichiers joints : ${names}]`:`[Fichiers joints : ${names}]`;
-    aiAttachments=[];renderAiAttachments();
+// Historique des conversations IA
+let aiHistory = [];
+try{ aiHistory = JSON.parse(localStorage.getItem('mf-ai-history')||'[]'); }catch(e){}
+let aiConvMessages = [];
+
+function aiSetStatus(state){
+  const fs  = document.getElementById('ai-fullscreen');
+  const bar = document.getElementById('ai-status-bar');
+  const txt = document.getElementById('ai-status-text');
+  const map = {thinking:'Réfléchit...',generating:'Génère...',searching:'Recherche...',drawing:'Dessine...',writing:'Écrit...'};
+  if(!state || state==='idle' || !map[state]){
+    bar && bar.classList.remove('show');
+    fs  && fs.classList.remove('ai-thinking-active');
+  } else {
+    if(txt) txt.textContent = map[state];
+    bar && bar.classList.add('show');
+    fs  && fs.classList.add('ai-thinking-active');
   }
-  inp.value='';inp.style.height='22px';
-  aiFAddMsg(text,true);
-  const typEl=aiFAddMsg('<div class="ai-typing"><span></span><span></span><span></span></div>',false);
+}
+
+function saveAiConversation(userMsg, aiMsg){
+  const conv = { date: Date.now(), user: userMsg, ai: aiMsg.substring(0,300) };
+  aiHistory.unshift(conv);
+  if(aiHistory.length > 50) aiHistory = aiHistory.slice(0,50);
+  try{ localStorage.setItem('mf-ai-history', JSON.stringify(aiHistory)); }catch(e){}
+}
+
+function showAiHistory(){
+  const existing = document.getElementById('ai-history-panel');
+  if(existing){ existing.remove(); return; }
+  const panel = document.createElement('div');
+  panel.id = 'ai-history-panel';
+  panel.style.cssText = 'position:absolute;top:58px;right:0;left:0;z-index:600;background:#0d0f1a;border-bottom:1px solid rgba(155,93,229,.2);padding:14px 16px;max-height:50vh;overflow-y:auto';
+  if(!aiHistory.length){
+    panel.innerHTML = '<div style="text-align:center;color:#444;font-size:12px;padding:20px">Aucun historique pour l\'instant.</div>';
+  } else {
+    panel.innerHTML = '<div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:rgba(155,93,229,.7);margin-bottom:10px">🕐 HISTORIQUE</div>' +
+      aiHistory.map((h,i)=>`
+        <div onclick="aiLoadHistory(${i})" style="padding:10px;margin-bottom:6px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;cursor:pointer" onmouseover="this.style.background='rgba(155,93,229,.1)'" onmouseout="this.style.background='rgba(255,255,255,.03)'">
+          <div style="font-size:12px;color:#ccc;font-weight:700;margin-bottom:3px">${esc(h.user.substring(0,60))}${h.user.length>60?'...':''}</div>
+          <div style="font-size:10px;color:#555">${new Date(h.date).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
+        </div>`).join('');
+  }
+  document.getElementById('ai-fullscreen').appendChild(panel);
+}
+
+function aiLoadHistory(idx){
+  const h = aiHistory[idx];
+  if(!h) return;
+  document.getElementById('ai-history-panel')?.remove();
+  const inp = document.getElementById('ai-full-input');
+  if(inp){ inp.value = h.user; inp.focus(); }
+}
+
+function aiPublishStory(jsonStr){
   try{
-    const ctx=cachedStories?.filter(s=>s.uid===currentUser?.uid).map(s=>`"${s.title}" (${s.genre})`).join(', ');
-    const sys=`Tu es un assistant créatif expert en manga et storytelling sur MangaForge. Tu parles en français.${ctx?` L'utilisateur a créé: ${ctx}.`:''} Sois inspirant, précis, utilise des emojis 🎌📖✨.`;
-    const result=await callClaude(text,sys);
-    typEl.innerHTML=result.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong style="color:#ddd">$1</strong>');
-  }catch(e){typEl.innerHTML=`⚠️ ${e.message||'Erreur IA.'}`;}
-  document.getElementById('ai-full-msgs').scrollTop=9999;
+    const d = JSON.parse(jsonStr);
+    closeAiFullscreen();
+    setTimeout(()=>{
+      openM('m-publish');
+      const titleEl = document.getElementById('p-title');
+      const synEl   = document.getElementById('p-syn');
+      const tagsEl  = document.getElementById('p-tags');
+      const genreEl = document.getElementById('p-genre');
+      if(titleEl) titleEl.value = d.title   || '';
+      if(synEl)   synEl.value   = d.synopsis || '';
+      if(tagsEl)  tagsEl.value  = d.tags     || '';
+      if(genreEl && d.genre){
+        Array.from(genreEl.options).forEach(opt=>{
+          if(opt.value.toLowerCase().includes((d.genre||'').toLowerCase()))
+            genreEl.value = opt.value;
+        });
+      }
+      notif('📖 Histoire prête à publier ! Ajoutez une couverture et publiez.');
+    }, 300);
+  }catch(e){ notif('Erreur: '+e.message, true); }
+}
+
+async function aiFSend(){
+  const inp = document.getElementById('ai-full-input');
+  let text  = inp.value.trim();
+  if(!text && !(typeof aiAttachments!=='undefined' && aiAttachments.length)) return;
+  if(typeof aiAttachments!=='undefined' && aiAttachments.length){
+    const names = aiAttachments.map(a=>a.name).join(', ');
+    text = text ? `${text}\n[Fichiers joints : ${names}]` : `[Fichiers joints : ${names}]`;
+    aiAttachments=[]; renderAiAttachments();
+  }
+  inp.value=''; inp.style.height='22px';
+  aiFAddMsg(text, true);
+  aiConvMessages.push({role:'user', content:text});
+
+  // Détecter le type de requête
+  const tl = text.toLowerCase();
+  let status = 'thinking';
+  if(/génère|crée|écris|rédige|invente/i.test(tl)) status='generating';
+  if(/dessine|dessin|illustr|image|couverture|case/i.test(tl)) status='drawing';
+  if(/cherche|recherche|trouve/i.test(tl)) status='searching';
+  if(/histoire|récit|chapitre|épisode|synopsis/i.test(tl)) status='writing';
+  aiSetStatus(status);
+
+  const typEl = aiFAddMsg('<div class="ai-typing"><span></span><span></span><span></span></div>', false);
+  try{
+    const ctx = cachedStories?.filter(s=>s.uid===currentUser?.uid).map(s=>`"${s.title}" (${s.genre})`).join(', ');
+    const sys = `Tu es un assistant créatif expert en manga et storytelling sur MangaForge. Tu parles en français.${ctx?` L'utilisateur a créé: ${ctx}.`:''} Sois inspirant, précis, utilise des emojis. Quand tu génères une histoire complète ou un synopsis développé, ajoute OBLIGATOIREMENT à la fin un bloc: |||STORY|||{"title":"TITRE","genre":"Genre","synopsis":"Synopsis complet","tags":"tag1, tag2"}|||END|||`;
+    const result = await callClaude(text, sys);
+
+    // Détecter bloc histoire
+    let display = result;
+    const sm = result.match(/\|\|\|STORY\|\|\|([\s\S]*?)\|\|\|END\|\|\|/);
+    if(sm){
+      try{
+        const d = JSON.parse(sm[1]);
+        display = result.replace(/\|\|\|STORY\|\|\|[\s\S]*?\|\|\|END\|\|\|/, '');
+        const safeJson = JSON.stringify(JSON.stringify(d));
+        display += `<div style="margin-top:14px;padding:12px 14px;background:rgba(230,57,70,.08);border:1px solid rgba(230,57,70,.3);border-radius:12px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:#e63946;margin-bottom:8px">📖 HISTOIRE GÉNÉRÉE</div>
+          <div style="font-size:14px;font-weight:700;color:#eaeef5;margin-bottom:3px">${d.title||''}</div>
+          <div style="font-size:11px;color:#888;margin-bottom:10px">${d.genre||''}</div>
+          <button onclick="aiPublishStory(${safeJson})" style="background:linear-gradient(135deg,#e63946,#c1121f);border:none;color:#fff;padding:9px 18px;border-radius:9px;font-family:'Rajdhani',sans-serif;font-weight:900;font-size:12px;letter-spacing:.06em;cursor:pointer;box-shadow:0 4px 14px rgba(230,57,70,.35)">📤 PUBLIER CETTE HISTOIRE →</button>
+        </div>`;
+      }catch(e2){}
+    }
+
+    typEl.innerHTML = display.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong style="color:#ddd">$1</strong>');
+    aiConvMessages.push({role:'assistant', content:result});
+    saveAiConversation(text, result);
+  }catch(e){
+    typEl.innerHTML = `<span style="color:#e63946">⚠️ ${e.message||'Erreur IA.'}</span>`;
+  }
+  aiSetStatus('idle');
+  document.getElementById('ai-full-msgs').scrollTop = 9999;
 }
 function aapFullQuick(text){document.getElementById('ai-full-input').value=text;aiFSend();}
+
 
 // ── LECTEUR TEXTE ÉPISODES ──
 let trCurrentEps=[], trCurrentIdx=0, trFSize=15;
@@ -2937,7 +3180,7 @@ function expShare(vid, title){
   if(navigator.share){
     navigator.share({title, url}).catch(()=>{});
   } else {
-    navigator.clipboard?.writeText(url).then(()=>notif('Lien copié !')).catch(()=>notif('Lien : '+url));
+    navigator.clipboard?.writeText(url).then(()=>notif('Lien copie !')).catch(()=>notif('Lien : '+url));
   }
 }
 
@@ -5902,6 +6145,10 @@ function openAddEpisodeFromFab(){
     }
 
     console.log('[MangaForge] Mode :', mode);
+
+    // Bouton QR connexion TV
+    var qrBtn = document.getElementById('tv-qr-nav-btn');
+    if(qrBtn) qrBtn.style.display = (mode==='tv') ? 'flex' : 'none';
   }
 
   // ── Curseur personnalisé ──
@@ -6109,6 +6356,129 @@ if('serviceWorker' in navigator){
       .catch(err => console.warn('[MangaForge] SW échec:', err));
   });
 }
+
+// ── GÉNÉRATEUR D'IMAGES IA (Pollinations.ai) ──
+let aiImgCurrentStyle = 'manga';
+let aiImgCurrentUrl = '';
+
+function openAiImageGen(){
+  document.getElementById('m-ai-imggen').style.display='flex';
+}
+function selectImgStyle(btn, style){
+  document.querySelectorAll('.img-style-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  aiImgCurrentStyle = style;
+}
+
+async function generateAiImage(){
+  const prompt = document.getElementById('ai-img-prompt').value.trim();
+  if(!prompt){ notif('Décrivez une image à générer.', true); return; }
+
+  const stylePrompts = {
+    manga:     'manga style, black and white ink, detailed lineart, japanese manga illustration',
+    anime:     'anime style, vibrant colors, detailed anime art, high quality illustration',
+    comic:     'comic book style, bold outlines, dynamic composition, western comic art',
+    cover:     'manga book cover, cinematic composition, dramatic lighting, professional illustration',
+    realistic: 'photorealistic, ultra detailed, 8k, cinematic lighting, hyperrealistic',
+    panel:     'manga panels layout, sequential art, multiple scenes, manga page composition'
+  };
+
+  const sizeMap = {
+    '512x768': {w:512,h:768}, '768x512': {w:768,h:512},
+    '512x512': {w:512,h:512}, '1024x768': {w:1024,h:768}
+  };
+  const sizeStr = document.getElementById('ai-img-size').value;
+  const {w,h} = sizeMap[sizeStr] || {w:512,h:512};
+
+  const fullPrompt = `${prompt}, ${stylePrompts[aiImgCurrentStyle]||''}`;
+  const encodedPrompt = encodeURIComponent(fullPrompt);
+
+  // Afficher zone résultat + loading
+  const resultDiv = document.getElementById('ai-img-result');
+  const loadDiv   = document.getElementById('ai-img-loading');
+  const imgEl     = document.getElementById('ai-img-output');
+  const actDiv    = document.getElementById('ai-img-actions');
+  const btn       = document.getElementById('ai-img-gen-btn');
+
+  resultDiv.style.display = 'block';
+  loadDiv.style.display   = 'block';
+  imgEl.style.display     = 'none';
+  actDiv.style.display    = 'none';
+  btn.disabled = true;
+  btn.textContent = '⏳ GÉNÉRATION...';
+
+  // Utiliser Pollinations.ai (gratuit, sans clé)
+  const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${w}&height=${h}&seed=${Math.floor(Math.random()*99999)}&nologo=true&enhance=true`;
+
+  try{
+    await new Promise((resolve, reject)=>{
+      const testImg = new Image();
+      testImg.onload = resolve;
+      testImg.onerror = reject;
+      testImg.src = imageUrl;
+      setTimeout(()=>reject(new Error('Timeout')), 30000);
+    });
+    aiImgCurrentUrl = imageUrl;
+    imgEl.src = imageUrl;
+    imgEl.style.display = 'block';
+    loadDiv.style.display = 'none';
+    actDiv.style.display = 'flex';
+  }catch(err){
+    loadDiv.innerHTML = '<span style="color:#e63946">⚠️ Génération échouée. Réessayez.</span>';
+  }
+  btn.disabled = false;
+  btn.textContent = '✨ GÉNÉRER';
+}
+
+function aiImgDownload(){
+  if(!aiImgCurrentUrl) return;
+  const a = document.createElement('a');
+  a.href = aiImgCurrentUrl;
+  a.download = 'mangaforge-ai-' + Date.now() + '.jpg';
+  a.target = '_blank';
+  a.click();
+}
+
+function aiImgUseCover(){
+  if(!aiImgCurrentUrl) return;
+  document.getElementById('m-ai-imggen').style.display='none';
+  // Pré-remplir la couverture dans le formulaire de publication
+  setTimeout(()=>{
+    openM('m-publish');
+    const prev = document.getElementById('p-cov-prev');
+    if(prev){ prev.src = aiImgCurrentUrl; prev.style.display='block'; }
+    notif('Image IA ajoutee comme couverture !');
+  }, 300);
+}
+
+// ── CONNEXION TV PAR QR CODE ──
+let _tvQrUrl = '';
+function copyTvQrLink(){
+  if(_tvQrUrl) navigator.clipboard?.writeText(_tvQrUrl).then(()=>notif('Lien copié !'));
+}
+function showTvQRLogin(){
+  const dlg = document.createElement('div');
+  dlg.id = 'tv-qr-dlg';
+  dlg.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center';
+  const loginUrl = window.location.href.split('?')[0] + '?tv_login=1';
+  _tvQrUrl = loginUrl;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(loginUrl)}&bgcolor=0f1117&color=f4a261&margin=2`;
+  dlg.innerHTML = `
+    <div style="background:#0f1117;border:1px solid rgba(244,162,97,.3);border-radius:22px;padding:32px 28px;text-align:center;max-width:340px;width:100%">
+      <div style="font-family:'Cinzel',serif;font-size:16px;font-weight:900;color:#f4a261;margin-bottom:6px">📺 Connexion TV</div>
+      <div style="font-size:12px;color:#666;margin-bottom:20px;font-family:'Rajdhani',sans-serif;letter-spacing:.05em">Scannez avec votre téléphone pour vous connecter</div>
+      <div style="background:#0a0a0a;border-radius:14px;padding:14px;display:inline-block;margin-bottom:16px;border:1px solid rgba(244,162,97,.2)">
+        <img src="${qrUrl}" width="180" height="180" style="display:block;border-radius:8px" alt="QR Code"/>
+      </div>
+      <div style="font-size:11px;color:#555;margin-bottom:16px;word-break:break-all;font-family:'Rajdhani',sans-serif">${loginUrl}</div>
+      <div style="display:flex;gap:10px;justify-content:center">
+        <button onclick="copyTvQrLink()" style="background:rgba(244,162,97,.1);border:1px solid rgba(244,162,97,.3);color:#f4a261;padding:9px 16px;border-radius:10px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;cursor:pointer">📋 COPIER LE LIEN</button>
+        <button onclick="document.getElementById('tv-qr-dlg').remove()" style="background:#1d2028;border:1px solid #333;color:#888;padding:9px 16px;border-radius:10px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;cursor:pointer">FERMER</button>
+      </div>
+    </div>`;
+  document.body.appendChild(dlg);
+}
+
 </script>
 </body>
 </html>
