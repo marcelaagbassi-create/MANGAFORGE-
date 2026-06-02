@@ -2782,28 +2782,60 @@ function aiLoadHistory(idx){
   if(inp){ inp.value = h.user; inp.focus(); }
 }
 
-function aiPublishStory(jsonStr){
-  try{
-    const d = JSON.parse(jsonStr);
-    closeAiFullscreen();
-    setTimeout(()=>{
-      openM('m-publish');
-      const titleEl = document.getElementById('p-title');
-      const synEl   = document.getElementById('p-syn');
-      const tagsEl  = document.getElementById('p-tags');
-      const genreEl = document.getElementById('p-genre');
-      if(titleEl) titleEl.value = d.title   || '';
-      if(synEl)   synEl.value   = d.synopsis || '';
-      if(tagsEl)  tagsEl.value  = d.tags     || '';
-      if(genreEl && d.genre){
-        Array.from(genreEl.options).forEach(opt=>{
-          if(opt.value.toLowerCase().includes((d.genre||'').toLowerCase()))
-            genreEl.value = opt.value;
-        });
-      }
-      notif('📖 Histoire prête à publier ! Ajoutez une couverture et publiez.');
-    }, 300);
-  }catch(e){ notif('Erreur: '+e.message, true); }
+// Couverture sélectionnée par l'utilisateur
+let _aiSelectedCoverUrl = '';
+
+function aiSelectCover(url, storyKey){
+  _aiSelectedCoverUrl = url;
+  // Highlight la carte sélectionnée
+  document.querySelectorAll('.ai-cover-opt').forEach(el=>{
+    el.style.border = '2px solid transparent';
+    el.style.transform = 'scale(1)';
+  });
+  event.currentTarget.style.border = '2px solid #e63946';
+  event.currentTarget.style.transform = 'scale(1.05)';
+  // Afficher confirmation
+  const conf = document.getElementById('cover-selected-' + storyKey);
+  if(conf) conf.style.display = 'block';
+}
+
+function aiPublishStory(storyKey){
+  // Récupérer les données depuis window
+  const d = window[storyKey];
+  if(!d){ notif('Donnees introuvables, reessayez.', true); return; }
+
+  closeAiFullscreen();
+  setTimeout(()=>{
+    openM('m-publish');
+    const titleEl = document.getElementById('p-title');
+    const synEl   = document.getElementById('p-syn');
+    const tagsEl  = document.getElementById('p-tags');
+    const genreEl = document.getElementById('p-genre');
+    const prevEl  = document.getElementById('p-cov-prev');
+
+    if(titleEl) titleEl.value = d.title    || '';
+    if(synEl)   synEl.value   = d.synopsis || '';
+    if(tagsEl)  tagsEl.value  = d.tags     || '';
+
+    if(genreEl && d.genre){
+      Array.from(genreEl.options).forEach(opt=>{
+        if(opt.value.toLowerCase().includes((d.genre||'').toLowerCase().split(',')[0].trim()))
+          genreEl.value = opt.value;
+      });
+    }
+
+    // Injecter la couverture sélectionnée
+    if(_aiSelectedCoverUrl && prevEl){
+      prevEl.src = _aiSelectedCoverUrl;
+      prevEl.style.display = 'block';
+      // Stocker l'URL pour l'upload au moment de la soumission
+      window._aiCoverUrlToUpload = _aiSelectedCoverUrl;
+      notif('Histoire + couverture IA pretes a publier !');
+    } else {
+      notif('Histoire prete ! Ajoutez une couverture si souhaite.');
+    }
+    _aiSelectedCoverUrl = '';
+  }, 300);
 }
 
 async function aiFSend(){
@@ -2841,14 +2873,48 @@ async function aiFSend(){
       try{
         const d = JSON.parse(sm[1]);
         display = result.replace(/\|\|\|STORY\|\|\|[\s\S]*?\|\|\|END\|\|\|/, '');
-        const safeJson = JSON.stringify(JSON.stringify(d));
-        display += `<div style="margin-top:14px;padding:12px 14px;background:rgba(230,57,70,.08);border:1px solid rgba(230,57,70,.3);border-radius:12px">
-          <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:#e63946;margin-bottom:8px">📖 HISTOIRE GÉNÉRÉE</div>
-          <div style="font-size:14px;font-weight:700;color:#eaeef5;margin-bottom:3px">${d.title||''}</div>
-          <div style="font-size:11px;color:#888;margin-bottom:10px">${d.genre||''}</div>
-          <button onclick="aiPublishStory(${safeJson})" style="background:linear-gradient(135deg,#e63946,#c1121f);border:none;color:#fff;padding:9px 18px;border-radius:9px;font-family:'Rajdhani',sans-serif;font-weight:900;font-size:12px;letter-spacing:.06em;cursor:pointer;box-shadow:0 4px 14px rgba(230,57,70,.35)">📤 PUBLIER CETTE HISTOIRE →</button>
+        // Stocker dans window pour éviter les quotes dans onclick
+        const storyKey = 'aiStory_' + Date.now();
+        window[storyKey] = d;
+
+        // Générer 3 suggestions de couverture IA
+        const coverPrompts = [
+          encodeURIComponent(`manga cover art, ${d.title}, ${d.genre}, dramatic lighting, japanese manga style, detailed`),
+          encodeURIComponent(`anime illustration, ${d.title}, ${d.genre}, cinematic, vibrant colors, professional manga cover`),
+          encodeURIComponent(`manga book cover, ${d.title}, dark fantasy atmosphere, epic composition, high quality illustration`)
+        ];
+        const seed1 = Math.floor(Math.random()*99999);
+        const seed2 = seed1 + 1337;
+        const seed3 = seed1 + 42;
+        const coverUrls = [
+          `https://image.pollinations.ai/prompt/${coverPrompts[0]}?width=300&height=420&seed=${seed1}&nologo=true`,
+          `https://image.pollinations.ai/prompt/${coverPrompts[1]}?width=300&height=420&seed=${seed2}&nologo=true`,
+          `https://image.pollinations.ai/prompt/${coverPrompts[2]}?width=300&height=420&seed=${seed3}&nologo=true`
+        ];
+
+        display += `<div style="margin-top:14px;padding:14px;background:rgba(230,57,70,.06);border:1px solid rgba(230,57,70,.25);border-radius:14px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:#e63946;margin-bottom:6px">📖 HISTOIRE GÉNÉRÉE</div>
+          <div style="font-size:15px;font-weight:700;color:#eaeef5;margin-bottom:2px">${d.title||''}</div>
+          <div style="font-size:11px;color:#888;margin-bottom:12px">${d.genre||''}</div>
+
+          <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:#9b5de5;margin-bottom:8px">🎨 COUVERTURES SUGGÉRÉES — Choisissez-en une</div>
+          <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px">
+            ${coverUrls.map((url,i)=>`
+              <div onclick="aiSelectCover('${url}','${storyKey}')" style="flex-shrink:0;width:90px;cursor:pointer;border-radius:8px;overflow:hidden;border:2px solid transparent;transition:all .2s" class="ai-cover-opt" data-key="${storyKey}" data-idx="${i}">
+                <img src="${url}" width="90" height="126" style="display:block;width:90px;height:126px;object-fit:cover;background:#1d2028" loading="lazy" onerror="this.parentElement.style.display='none'"/>
+              </div>
+            `).join('')}
+            <div onclick="openAiImageGen()" style="flex-shrink:0;width:90px;height:126px;border-radius:8px;border:2px dashed rgba(155,93,229,.3);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;gap:4px;color:rgba(155,93,229,.7);transition:all .2s" onmouseover="this.style.borderColor='rgba(155,93,229,.7)'" onmouseout="this.style.borderColor='rgba(155,93,229,.3)'">
+              <span style="font-size:20px">🎨</span>
+              <span style="font-size:9px;font-weight:700;letter-spacing:.06em;text-align:center">CRÉER LA MIENNE</span>
+            </div>
+          </div>
+
+          <div id="cover-selected-${storyKey}" style="display:none;margin-bottom:10px;font-size:11px;color:#4caf50;font-weight:700">✅ Couverture sélectionnée</div>
+
+          <button onclick="aiPublishStory('${storyKey}')" style="width:100%;background:linear-gradient(135deg,#e63946,#c1121f);border:none;color:#fff;padding:11px;border-radius:10px;font-family:'Rajdhani',sans-serif;font-weight:900;font-size:13px;letter-spacing:.06em;cursor:pointer;box-shadow:0 4px 14px rgba(230,57,70,.35)">📤 PUBLIER CETTE HISTOIRE →</button>
         </div>`;
-      }catch(e2){}
+      }catch(e2){ console.error('Story parse error:', e2); }
     }
 
     typEl.innerHTML = display.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong style="color:#ddd">$1</strong>');
