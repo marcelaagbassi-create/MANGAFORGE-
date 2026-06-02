@@ -194,6 +194,74 @@ setTimeout(() => {
 #html-ep-viewer{display:none}
 #html-ep-bar button:hover{opacity:.85}
 #html-ep-frame{display:block}
+
+/* ══════════════════════════════════════
+   SHIMMER — Effet miroir défilant
+══════════════════════════════════════ */
+@keyframes shimmer{
+  0%  { background-position:-600px 0 }
+  100%{ background-position: 600px 0 }
+}
+@keyframes shimmerPulse{
+  0%,100%{ opacity:.4 }
+  50%     { opacity:.75 }
+}
+
+/* Shimmer sur toutes les cartes au survol */
+.post,.sc,.ep-item,.ci,.uc,.ct,.mdx-card,.sgrid > *{
+  position:relative;overflow:hidden;
+}
+.post::after,.sc::after,.ep-item::after,.ci::after,.uc::after,.ct::after,.mdx-card::after{
+  content:'';
+  position:absolute;inset:0;
+  background:linear-gradient(
+    105deg,
+    transparent 35%,
+    rgba(255,255,255,.06) 50%,
+    transparent 65%
+  );
+  background-size:600px 100%;
+  background-repeat:no-repeat;
+  background-position:-600px 0;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .3s;
+}
+.post:hover::after,.sc:hover::after,.ep-item:hover::after,
+.ci:hover::after,.uc:hover::after,.ct:hover::after,.mdx-card:hover::after{
+  opacity:1;
+  animation:shimmer 1.2s ease infinite;
+}
+
+/* Skeleton loading shimmer */
+.skeleton{
+  border-radius:10px;
+  background:linear-gradient(
+    90deg,
+    #161920 25%,
+    #1d2028 50%,
+    #161920 75%
+  );
+  background-size:400px 100%;
+  animation:shimmer 1.4s ease infinite;
+}
+
+/* ══ MODE VEILLE — shimmer statique sur image plein écran ══ */
+#slideshow-overlay::after{
+  content:'';
+  position:absolute;inset:0;
+  background:linear-gradient(
+    135deg,
+    transparent 30%,
+    rgba(255,255,255,.04) 50%,
+    transparent 70%
+  );
+  background-size:200% 200%;
+  animation:shimmerPulse 3s ease-in-out infinite;
+  pointer-events:none;
+  z-index:1;
+}
+
 </style>
 
 <!-- ══════════ AUTH ══════════ -->
@@ -996,6 +1064,27 @@ main{padding:22px 14px calc(140px + env(safe-area-inset-bottom,0px));position:re
 .veille-slide{position:absolute;inset:0;opacity:0;transition:opacity 1.4s ease}
 .veille-slide.visible{opacity:1}
 .veille-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:0}
+
+/* Shimmer miroir statique sur l'image du mode veille */
+.veille-slide::after{
+  content:'';
+  position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(
+    120deg,
+    transparent 20%,
+    rgba(255,255,255,.03) 38%,
+    rgba(255,255,255,.09) 50%,
+    rgba(255,255,255,.03) 62%,
+    transparent 80%
+  );
+  background-size:200% 200%;
+  animation:veilleShimmer 6s ease-in-out infinite;
+}
+@keyframes veilleShimmer{
+  0%  { background-position:200% 0 }
+  50% { background-position:0% 100% }
+  100%{ background-position:200% 0 }
+}
 .veille-bg-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.35) 0%,rgba(0,0,0,.1) 40%,rgba(0,0,0,.55) 80%,rgba(0,0,0,.8) 100%);z-index:1}
 .veille-meta{position:absolute;bottom:clamp(60px,10vh,100px);left:0;right:0;text-align:center;z-index:2}
 .veille-title{font-family:'Cinzel',serif;font-size:clamp(14px,3vw,26px);color:#fff;margin-bottom:6px;text-shadow:0 2px 16px rgba(0,0,0,.9);font-weight:900}
@@ -4941,13 +5030,13 @@ function showEpContextMenu(e, idx, epId){
     </div>
   `;
 
+  // Overlay de fond pour fermer en cliquant ailleurs
+  const overlay = document.createElement('div');
+  overlay.id = 'ep-ctx-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:899;background:rgba(0,0,0,.5)';
+  overlay.onclick = closeEpContextMenu;
+  document.body.appendChild(overlay);
   document.body.appendChild(menu);
-
-  // Fermer si on clique ailleurs
-  setTimeout(()=>{
-    document.addEventListener('touchstart', closeEpContextMenu, {once:true, passive:true});
-    document.addEventListener('click', closeEpContextMenu, {once:true});
-  }, 100);
 
   // Surligner la card
   if(card){
@@ -4959,7 +5048,8 @@ function showEpContextMenu(e, idx, epId){
 function closeEpContextMenu(){
   const menu = document.getElementById('ep-ctx-menu');
   if(menu) menu.remove();
-  // Réinitialiser la card surlignée
+  const ov = document.getElementById('ep-ctx-overlay');
+  if(ov) ov.remove();
   document.querySelectorAll('.ep-item').forEach(c=>{
     c.style.background='';
     c.style.borderColor='';
@@ -5008,8 +5098,61 @@ async function deleteEpisode(epId, idx){
 function editEpisodePrompt(epId, idx){
   const ep = currentEpisodes[idx];
   if(!ep) return;
-  // Pour l'instant : ouvrir un prompt pour modifier le titre
-  notif('✏️ Modification disponible prochainement — utilisez le Studio pour éditer.');
+
+  // Modal d'édition rapide
+  const dlg = document.createElement('div');
+  dlg.id = 'ep-edit-dlg';
+  dlg.style.cssText = 'position:fixed;inset:0;z-index:950;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;padding:20px';
+  dlg.innerHTML = `
+    <div style="background:#13151f;border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:24px 20px;max-width:360px;width:100%">
+      <div style="font-family:'Cinzel',serif;font-size:14px;font-weight:900;color:#f4a261;margin-bottom:4px">✏️ Modifier l'épisode</div>
+      <div style="font-size:11px;color:#555;margin-bottom:16px;letter-spacing:.06em">ÉPISODE ${idx+1}</div>
+
+      <label style="font-size:11px;color:#888;letter-spacing:.08em;font-weight:700;font-family:'Rajdhani',sans-serif">TITRE</label>
+      <input id="ep-edit-title" value="${esc(ep.title||'')}"
+        style="width:100%;box-sizing:border-box;background:#0f1117;border:1px solid #2a2d3a;border-radius:10px;color:#eaeef5;padding:10px 12px;font-size:14px;font-family:'Rajdhani',sans-serif;margin-top:5px;margin-bottom:12px;outline:none"/>
+
+      <label style="font-size:11px;color:#888;letter-spacing:.08em;font-weight:700;font-family:'Rajdhani',sans-serif">DESCRIPTION</label>
+      <textarea id="ep-edit-desc" style="width:100%;box-sizing:border-box;background:#0f1117;border:1px solid #2a2d3a;border-radius:10px;color:#eaeef5;padding:10px 12px;font-size:13px;font-family:'Rajdhani',sans-serif;margin-top:5px;margin-bottom:18px;outline:none;resize:none;min-height:70px">${esc(ep.description||'')}</textarea>
+
+      <div style="display:flex;gap:10px">
+        <button onclick="document.getElementById('ep-edit-dlg').remove()"
+          style="flex:1;padding:11px;background:#1d2028;border:1px solid #2a2d3a;color:#888;border-radius:10px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;cursor:pointer">
+          Annuler
+        </button>
+        <button onclick="saveEpisodeEdit('${epId}',${idx})"
+          style="flex:1;padding:11px;background:linear-gradient(135deg,#f4a261,#e07a30);border:none;color:#fff;border-radius:10px;font-family:'Rajdhani',sans-serif;font-weight:900;font-size:13px;cursor:pointer;box-shadow:0 4px 14px rgba(244,162,97,.3)">
+          ✓ ENREGISTRER
+        </button>
+      </div>
+    </div>`;
+  document.body.appendChild(dlg);
+  setTimeout(()=>document.getElementById('ep-edit-title').focus(), 100);
+}
+
+async function saveEpisodeEdit(epId, idx){
+  const titleEl = document.getElementById('ep-edit-title');
+  const descEl  = document.getElementById('ep-edit-desc');
+  if(!titleEl) return;
+  const newTitle = titleEl.value.trim();
+  const newDesc  = descEl ? descEl.value.trim() : '';
+  if(!newTitle){ notif('Le titre ne peut pas être vide.', true); return; }
+  try{
+    await FB.updateDoc(FB.doc(FB.db,'stories',openSid,'episodes',epId),{
+      title: newTitle,
+      description: newDesc
+    });
+    // Mettre à jour localement
+    if(currentEpisodes[idx]){
+      currentEpisodes[idx].title = newTitle;
+      currentEpisodes[idx].description = newDesc;
+    }
+    document.getElementById('ep-edit-dlg')?.remove();
+    notif('✅ Épisode mis à jour !');
+    openStory(openSid); // recharger
+  }catch(err){
+    notif('Erreur : ' + err.message, true);
+  }
 }
 
 
