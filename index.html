@@ -187,6 +187,13 @@ setTimeout(() => {
 .loader-bar-fill{height:100%;width:0;background:linear-gradient(90deg,#e63946,#f4a261);border-radius:2px;animation:loader-bar 1.8s cubic-bezier(.4,0,.2,1) .2s forwards}
 .loader-status{font-family:'Rajdhani',sans-serif;font-size:11px;color:rgba(255,255,255,.2);letter-spacing:.15em;text-transform:uppercase;margin-top:14px;position:relative;z-index:1}
 @keyframes shimmer-text{0%{background-position:0%}100%{background-position:200%}}
+@keyframes navIndicator{from{opacity:0;transform:translateX(-50%) scaleX(0)}to{opacity:1;transform:translateX(-50%) scaleX(1)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* ── HTML Episode Viewer ── */
+#html-ep-viewer{display:none}
+#html-ep-bar button:hover{opacity:.85}
+#html-ep-frame{display:block}
 </style>
 
 <!-- ══════════ AUTH ══════════ -->
@@ -1884,7 +1891,8 @@ svg defs{display:none}
         <label>Type de contenu</label>
         <div style="display:flex;gap:8px;margin-top:6px">
           <button id="ep-type-text-btn" onclick="setEpType('text')" style="flex:1;padding:9px;border-radius:9px;border:2px solid #e63946;background:rgba(230,57,70,.12);color:#e63946;font-weight:700;font-family:'Rajdhani',sans-serif;font-size:12px;cursor:pointer;letter-spacing:.05em;transition:all .2s">✍️ TEXTE</button>
-          <button id="ep-type-img-btn" onclick="setEpType('image')" style="flex:1;padding:9px;border-radius:9px;border:2px solid rgba(255,255,255,.1);background:#0a0a0a;color:#666;font-weight:700;font-family:'Rajdhani',sans-serif;font-size:12px;cursor:pointer;letter-spacing:.05em;transition:all .2s">🖼️ IMAGES</button>
+          <button id="ep-type-img-btn" onclick="setEpType('image')" style="flex:1;padding:9px;border-radius:9px;border:2px solid rgba(255,255,255,.1);background:#161920;color:#666;font-weight:700;font-family:'Rajdhani',sans-serif;font-size:12px;cursor:pointer;letter-spacing:.05em;transition:all .2s">🖼️ IMAGES</button>
+          <button id="ep-type-html-btn" onclick="setEpType('html')" style="flex:1;padding:9px;border-radius:9px;border:2px solid rgba(255,255,255,.1);background:#161920;color:#666;font-weight:700;font-family:'Rajdhani',sans-serif;font-size:12px;cursor:pointer;letter-spacing:.05em;transition:all .2s">🌐 HTML</button>
         </div>
       </div>
 
@@ -1902,6 +1910,19 @@ svg defs{display:none}
         <p style="font-size:11px;color:var(--dim);margin-top:5px">Sélectionnez plusieurs images dans l'ordre des pages</p>
         <div id="ep-pages-preview" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px"></div>
         <div class="fld" style="margin-top:10px"><label>Description (optionnel)</label><textarea id="ep-desc-img-inp" placeholder="Résumé de cet épisode..." style="min-height:60px"></textarea></div>
+      </div>
+
+      <!-- Contenu HTML -->
+      <div id="ep-html-section" class="fld" style="display:none">
+        <label>Fichier HTML de l'épisode *</label>
+        <div id="ep-html-dropzone" onclick="document.getElementById('ep-html-inp').click()"
+          style="border:2px dashed rgba(255,255,255,.15);border-radius:12px;padding:28px 16px;text-align:center;cursor:pointer;transition:border-color .2s;background:#0f1117">
+          <div style="font-size:28px;margin-bottom:8px">🌐</div>
+          <div id="ep-html-name" style="font-size:13px;font-weight:700;color:#888;letter-spacing:.05em">Cliquez ou glissez votre fichier .html</div>
+          <div style="font-size:11px;color:#444;margin-top:4px">Fichier HTML unique — sera rendu tel quel</div>
+        </div>
+        <input type="file" id="ep-html-inp" accept=".html,.htm" style="display:none" onchange="prevEpHtml(event)"/>
+        <div class="fld" style="margin-top:10px"><label>Description (optionnel)</label><textarea id="ep-desc-html-inp" placeholder="Résumé de cet épisode..." style="min-height:60px"></textarea></div>
       </div>
 
       <div class="btn-row">
@@ -3076,13 +3097,18 @@ function loadEpisodes(storyId,color){
           ontouchcancel="epLongPressEnd()"
           oncontextmenu="epContextMenu(event,${i},'${ep.id}',${isOwner});return false"
           style="position:relative">
-          ${ep.thumbUrl?`<img class="ep-thumb" src="${ep.thumbUrl}" alt="" loading="lazy" onerror="this.src=PLACEHOLDER"/>`:`<img class="ep-thumb" src="${PLACEHOLDER}" alt="" style="opacity:.5"/>`}
+          ${ep.type==='html'?`<div class="ep-thumb" style="background:linear-gradient(135deg,#0f1117,#1d2028);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;border-radius:8px;border:1px solid rgba(230,57,70,.2)"><span style="font-size:22px">🌐</span><span style="font-size:8px;color:#e63946;font-weight:700;letter-spacing:.1em">HTML</span></div>`:ep.thumbUrl?`<img class="ep-thumb" src="${ep.thumbUrl}" alt="" loading="lazy" onerror="this.src=PLACEHOLDER"/>`:`<img class="ep-thumb" src="${PLACEHOLDER}" alt="" style="opacity:.5"/>`}
           <div class="ep-info">
             <div class="ep-num" style="color:${color}">ÉPISODE ${i+1}${ep.draft?' · <span style="color:#f4a261;font-size:9px">BROUILLON</span>':''}</div>
             <div class="ep-title">${esc(ep.title||'Sans titre')}</div>
             ${ep.description?`<div class="ep-desc">${esc(ep.description)}</div>`:''}
             <div class="ep-meta">
-              <span>📄 ${(ep.pages||[]).length} page(s)</span>
+              ${ep.type==='html'
+                ? '<span style="color:#e63946;font-weight:700;font-size:10px;letter-spacing:.06em">🌐 HTML</span>'
+                : ep.type==='text'
+                  ? '<span>📝 Récit</span>'
+                  : `<span>📄 \${(ep.pages||[]).length} page(s)</span>`
+              }
               <span>${ago(ep.createdAt)}</span>
             </div>
           </div>
@@ -3097,7 +3123,15 @@ function openAddEpisode(){
   document.getElementById('ep-desc-inp').value='';
   document.getElementById('ep-pages-inp').value='';
   document.getElementById('ep-pages-preview').innerHTML='';
+  const htmlInp = document.getElementById('ep-html-inp');
+  if(htmlInp) htmlInp.value='';
+  const htmlName = document.getElementById('ep-html-name');
+  if(htmlName){ htmlName.textContent='Cliquez ou glissez votre fichier .html'; htmlName.style.color='#888'; }
+  const htmlZone = document.getElementById('ep-html-dropzone');
+  if(htmlZone) htmlZone.style.borderColor='rgba(255,255,255,.15)';
   epPageFiles=[];
+  epHtmlFile=null;
+  setEpType('text');
   closeM('m-story');
   openM('m-addepisode');
 }
@@ -3118,18 +3152,30 @@ function prevEpPages(e){
 let currentEpType = 'text';
 function setEpType(type){
   currentEpType = type;
-  const textBtn = document.getElementById('ep-type-text-btn');
-  const imgBtn  = document.getElementById('ep-type-img-btn');
-  const textSec = document.getElementById('ep-text-section');
-  const imgSec  = document.getElementById('ep-img-section');
-  if(type === 'text'){
-    textBtn.style.cssText='flex:1;padding:9px;border-radius:9px;border:2px solid #e63946;background:rgba(230,57,70,.12);color:#e63946;font-weight:700;font-family:\'Rajdhani\',sans-serif;font-size:12px;cursor:pointer;letter-spacing:.05em;transition:all .2s';
-    imgBtn.style.cssText ='flex:1;padding:9px;border-radius:9px;border:2px solid rgba(255,255,255,.1);background:#0a0a0a;color:#666;font-weight:700;font-family:\'Rajdhani\',sans-serif;font-size:12px;cursor:pointer;letter-spacing:.05em;transition:all .2s';
-    textSec.style.display=''; imgSec.style.display='none';
+  const ON  = 'flex:1;padding:9px;border-radius:9px;border:2px solid #e63946;background:rgba(230,57,70,.12);color:#e63946;font-weight:700;font-family:\'Rajdhani\',sans-serif;font-size:12px;cursor:pointer;letter-spacing:.05em;transition:all .2s';
+  const OFF = 'flex:1;padding:9px;border-radius:9px;border:2px solid rgba(255,255,255,.1);background:#161920;color:#666;font-weight:700;font-family:\'Rajdhani\',sans-serif;font-size:12px;cursor:pointer;letter-spacing:.05em;transition:all .2s';
+  document.getElementById('ep-type-text-btn').style.cssText = type==='text'  ? ON : OFF;
+  document.getElementById('ep-type-img-btn').style.cssText  = type==='image' ? ON : OFF;
+  document.getElementById('ep-type-html-btn').style.cssText = type==='html'  ? ON : OFF;
+  document.getElementById('ep-text-section').style.display = type==='text'  ? '' : 'none';
+  document.getElementById('ep-img-section').style.display  = type==='image' ? '' : 'none';
+  document.getElementById('ep-html-section').style.display = type==='html'  ? '' : 'none';
+}
+
+// Prévisualisation du fichier HTML sélectionné
+let epHtmlFile = null;
+function prevEpHtml(e){
+  epHtmlFile = e.target.files[0] || null;
+  const lbl = document.getElementById('ep-html-name');
+  const zone = document.getElementById('ep-html-dropzone');
+  if(epHtmlFile){
+    lbl.textContent = '✅ ' + epHtmlFile.name;
+    lbl.style.color = '#e63946';
+    zone.style.borderColor = '#e63946';
   } else {
-    imgBtn.style.cssText ='flex:1;padding:9px;border-radius:9px;border:2px solid #e63946;background:rgba(230,57,70,.12);color:#e63946;font-weight:700;font-family:\'Rajdhani\',sans-serif;font-size:12px;cursor:pointer;letter-spacing:.05em;transition:all .2s';
-    textBtn.style.cssText='flex:1;padding:9px;border-radius:9px;border:2px solid rgba(255,255,255,.1);background:#0a0a0a;color:#666;font-weight:700;font-family:\'Rajdhani\',sans-serif;font-size:12px;cursor:pointer;letter-spacing:.05em;transition:all .2s';
-    imgSec.style.display=''; textSec.style.display='none';
+    lbl.textContent = 'Cliquez ou glissez votre fichier .html';
+    lbl.style.color = '#888';
+    zone.style.borderColor = 'rgba(255,255,255,.15)';
   }
 }
 
@@ -3150,7 +3196,7 @@ async function submitEpisode(){
         emoji:rand(EMOJIS), authorId:currentUser.uid,
         createdAt:FB.serverTimestamp()
       });
-    } else {
+    } else if(currentEpType === 'image'){
       // ── Épisode images ──
       if(!epPageFiles.length){notif('Ajoutez au moins une image de page.',true);setBtn('ep-submit-btn',false,'PUBLIER L\'ÉPISODE');return;}
       const desc = document.getElementById('ep-desc-img-inp')?.value.trim()||'';
@@ -3167,6 +3213,19 @@ async function submitEpisode(){
         emoji:rand(EMOJIS), authorId:currentUser.uid,
         createdAt:FB.serverTimestamp()
       });
+    } else if(currentEpType === 'html'){
+      // ── Épisode HTML ──
+      if(!epHtmlFile){notif('Sélectionnez un fichier HTML.',true);setBtn('ep-submit-btn',false,'PUBLIER L\'ÉPISODE');return;}
+      const desc = document.getElementById('ep-desc-html-inp')?.value.trim()||'';
+      notif('Upload du fichier HTML...');
+      const htmlUrl = await uploadFile(epHtmlFile, 'episodes_html');
+      const isDraft3 = !!window._draftMode;
+      await FB.addDoc(FB.collection(FB.db,'stories',openSid,'episodes'),{
+        title, description:desc, htmlUrl, pages:[], thumbUrl:'', type:'html', draft: isDraft3,
+        emoji:'🌐', authorId:currentUser.uid,
+        createdAt:FB.serverTimestamp()
+      });
+      epHtmlFile = null;
     }
     // Post fil d'actualité (uniquement si pas brouillon)
     const isDraftFinal = !!window._draftMode;
@@ -3200,17 +3259,98 @@ function openReader(idx){
   const ep = currentEpisodes[idx];
   if(!ep) return;
   const storyTitle = document.getElementById('sm-title')?.textContent || '';
-  // Lecteur IMAGE uniquement si type='image' ET pages non vides
   const hasPages = Array.isArray(ep.pages) && ep.pages.length > 0;
   const isImageOnly = ep.type === 'image' && hasPages && !ep.content;
-  if(isImageOnly){
+
+  if(ep.type === 'html' && ep.htmlUrl){
+    // ── Lecteur HTML intégré (navigateur interne) ──
+    openHtmlReader(ep, storyTitle);
+  } else if(isImageOnly){
     readerEpIdx=idx;
     showReaderEp(idx);
     openM('m-reader');
   } else {
-    // Tous les autres cas → lecteur TEXTE (type='text', type indéfini, contenu présent)
     openTextReader(currentEpisodes, idx, storyTitle);
   }
+}
+
+// ── LECTEUR HTML : navigateur interne plein écran ──
+function openHtmlReader(ep, storyTitle){
+  // Créer ou récupérer le viewer
+  let viewer = document.getElementById('html-ep-viewer');
+  if(!viewer){
+    viewer = document.createElement('div');
+    viewer.id = 'html-ep-viewer';
+    viewer.style.cssText = [
+      'position:fixed;inset:0;z-index:9000;background:#000;',
+      'display:flex;flex-direction:column;',
+      'animation:fadeIn .2s ease'
+    ].join('');
+    viewer.innerHTML = `
+      <!-- Barre de navigation interne -->
+      <div id="html-ep-bar" style="
+        display:flex;align-items:center;gap:10px;
+        padding:10px 14px;
+        background:#0f1117;border-bottom:1px solid rgba(255,255,255,.1);
+        z-index:1;flex-shrink:0;
+      ">
+        <button onclick="closeHtmlReader()" style="
+          background:rgba(230,57,70,.15);border:1px solid rgba(230,57,70,.3);
+          color:#e63946;border-radius:8px;padding:6px 14px;
+          font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;
+          cursor:pointer;letter-spacing:.05em;white-space:nowrap;
+        ">← RETOUR</button>
+        <div style="flex:1;min-width:0">
+          <div id="html-ep-title" style="
+            font-family:'Cinzel',serif;font-size:13px;font-weight:700;
+            color:#f4a261;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+          "></div>
+          <div id="html-ep-story" style="font-size:10px;color:#555;letter-spacing:.08em;text-transform:uppercase"></div>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          <button onclick="htmlReaderZoom(-1)" title="Zoom -" style="background:#1d2028;border:1px solid #333;color:#aaa;border-radius:6px;padding:5px 9px;font-size:13px;cursor:pointer">−</button>
+          <button onclick="htmlReaderZoom(1)"  title="Zoom +" style="background:#1d2028;border:1px solid #333;color:#aaa;border-radius:6px;padding:5px 9px;font-size:13px;cursor:pointer">+</button>
+        </div>
+      </div>
+      <!-- iFrame : rendu HTML brut -->
+      <iframe id="html-ep-frame"
+        sandbox="allow-scripts allow-same-origin allow-popups"
+        style="flex:1;width:100%;border:none;background:#000;"
+      ></iframe>
+    `;
+    document.body.appendChild(viewer);
+  }
+
+  // Remplir les infos
+  document.getElementById('html-ep-title').textContent = ep.title || 'Épisode';
+  document.getElementById('html-ep-story').textContent = storyTitle;
+
+  // Charger le HTML dans l'iframe via URL Firebase Storage
+  const frame = document.getElementById('html-ep-frame');
+  frame.src = ep.htmlUrl;
+  window._htmlReaderZoom = 1;
+
+  viewer.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeHtmlReader(){
+  const viewer = document.getElementById('html-ep-viewer');
+  if(viewer){
+    const frame = document.getElementById('html-ep-frame');
+    if(frame) frame.src = 'about:blank';
+    viewer.style.display = 'none';
+  }
+  document.body.style.overflow = '';
+}
+
+function htmlReaderZoom(dir){
+  const frame = document.getElementById('html-ep-frame');
+  if(!frame) return;
+  window._htmlReaderZoom = Math.min(2, Math.max(0.5, (window._htmlReaderZoom||1) + dir*0.1));
+  frame.style.transform = `scale(${window._htmlReaderZoom})`;
+  frame.style.transformOrigin = 'top center';
+  frame.style.height = `${100/window._htmlReaderZoom}%`;
 }
 
 function readerNav(dir){
