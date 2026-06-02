@@ -3230,12 +3230,14 @@ async function submitEpisode(){
         setBtn('ep-submit-btn',false,'PUBLIER L\'ÉPISODE');
         return;
       }
-      // Firestore limite à ~1MB par document — avertir si trop grand
-      if(htmlContent.length > 900000){
-        notif('⚠️ Fichier HTML trop volumineux (max ~900Ko). Réduisez la taille.',true);
+      console.log('[HTML Episode] Taille:', htmlContent.length, 'octets');
+      // Firestore limite à ~1MB par document
+      if(htmlContent.length > 950000){
+        notif('⚠️ Fichier HTML trop volumineux (max ~950Ko). Réduisez la taille ou compressez les images embarquées.',true);
         setBtn('ep-submit-btn',false,'PUBLIER L\'ÉPISODE');
         return;
       }
+      notif(`📄 Fichier lu (${Math.round(htmlContent.length/1024)}Ko) — publication en cours...`);
       const isDraft3 = !!window._draftMode;
       await FB.addDoc(FB.collection(FB.db,'stories',openSid,'episodes'),{
         title, description:desc,
@@ -3282,7 +3284,7 @@ function openReader(idx){
   const hasPages = Array.isArray(ep.pages) && ep.pages.length > 0;
   const isImageOnly = ep.type === 'image' && hasPages && !ep.content;
 
-  if(ep.type === 'html' && ep.htmlUrl){
+  if(ep.type === 'html' && (ep.htmlContent || ep.htmlUrl)){
     // ── Lecteur HTML intégré (navigateur interne) ──
     openHtmlReader(ep, storyTitle);
   } else if(isImageOnly){
@@ -3348,18 +3350,21 @@ function openHtmlReader(ep, storyTitle){
   const frame = document.getElementById('html-ep-frame');
   window._htmlReaderZoom = 1;
 
-  // Charger le contenu HTML stocké en Firestore via Blob URL
-  if(ep.htmlContent){
-    // Libérer l'ancienne blob URL si elle existe
-    if(window._htmlBlobUrl){ URL.revokeObjectURL(window._htmlBlobUrl); }
-    const blob = new Blob([ep.htmlContent], {type:'text/html;charset=utf-8'});
-    window._htmlBlobUrl = URL.createObjectURL(blob);
-    frame.src = window._htmlBlobUrl;
-  } else if(ep.htmlUrl){
-    // Fallback : URL externe (ancien système)
-    frame.src = ep.htmlUrl;
-  } else {
-    frame.srcdoc = '<div style="color:#888;padding:40px;font-family:sans-serif">Contenu HTML indisponible.</div>';
+  // Charger le contenu HTML via Blob URL (priorité : htmlContent Firestore)
+  try {
+    if(ep.htmlContent && ep.htmlContent.length > 0){
+      if(window._htmlBlobUrl){ URL.revokeObjectURL(window._htmlBlobUrl); }
+      const blob = new Blob([ep.htmlContent], {type:'text/html;charset=utf-8'});
+      window._htmlBlobUrl = URL.createObjectURL(blob);
+      frame.src = window._htmlBlobUrl;
+    } else if(ep.htmlUrl){
+      frame.src = ep.htmlUrl;
+    } else {
+      frame.srcdoc = '<html><body style="background:#0f1117;color:#888;padding:40px;font-family:sans-serif;text-align:center"><p style="margin-top:40px">⚠️ Contenu HTML indisponible.</p></body></html>';
+    }
+  } catch(err) {
+    console.error('HTML reader error:', err);
+    frame.srcdoc = '<html><body style="background:#0f1117;color:#e63946;padding:40px;font-family:sans-serif">Erreur de chargement : ' + err.message + '</body></html>';
   }
 
   viewer.style.display = 'flex';
