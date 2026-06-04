@@ -2731,30 +2731,74 @@ const AI_WELCOME_HTML = `<div style="display:flex;gap:10px;align-items:flex-star
   </div>
 </div>`;
 
+// ── ID conversation unique — créé une fois, persisté
+// Une "conversation" = tout l'échange jusqu'à ce qu'on clique "Nouvelle conversation"
+if(!aiCurrentConvId){
+  aiCurrentConvId = localStorage.getItem('mf-ai-current-conv') || ('conv_' + Date.now());
+}
+
 function saveCurrentConvToStorage(){
   const msgs = document.getElementById('ai-full-msgs');
   if(!msgs || !aiCurrentConvId) return;
   const html = msgs.innerHTML;
-  if(html === AI_WELCOME_HTML) return; // rien à sauvegarder
+  // Ne pas sauvegarder si c'est juste le message de bienvenue
+  if(!aiConvMessages || aiConvMessages.length === 0) return;
   try{
     const convs = JSON.parse(localStorage.getItem('mf-ai-convs')||'{}');
-    convs[aiCurrentConvId] = { html, date: Date.now(), preview: aiConvMessages[0]?.content?.substring(0,80)||'Discussion' };
+    // Preview = premier message utilisateur de la conversation
+    const firstUserMsg = aiConvMessages.find(m=>m.role==='user');
+    const preview = firstUserMsg ? firstUserMsg.content.substring(0,80) : 'Discussion';
+    convs[aiCurrentConvId] = {
+      html,
+      date: convs[aiCurrentConvId]?.date || Date.now(), // garder la date de création
+      updated: Date.now(),
+      preview,
+      msgCount: aiConvMessages.length
+    };
     // Garder max 30 conversations
-    const keys = Object.keys(convs).sort((a,b)=>convs[b].date-convs[a].date);
+    const keys = Object.keys(convs).sort((a,b)=>convs[b].updated-convs[a].updated);
     if(keys.length > 30) keys.slice(30).forEach(k=>delete convs[k]);
     localStorage.setItem('mf-ai-convs', JSON.stringify(convs));
-  }catch(e){}
+    localStorage.setItem('mf-ai-current-conv', aiCurrentConvId);
+  }catch(e){ console.error('Save conv error:', e); }
 }
 
 function openAiFullscreen(){
   const el = document.getElementById('ai-fullscreen');
   el.style.display = 'flex';
   el.style.animation = 'fadeInScale .25s cubic-bezier(.16,1,.3,1) both';
-  // Restaurer la conversation courante si elle existe
-  if(!aiCurrentConvId){
-    aiCurrentConvId = 'conv_' + Date.now();
-    aiConvMessages = [];
+
+  // Restaurer la conversation en cours depuis localStorage
+  const savedConvId = localStorage.getItem('mf-ai-current-conv');
+  if(savedConvId && savedConvId === aiCurrentConvId){
+    // Même conversation — restaurer le HTML si le DOM est vide
+    const msgs = document.getElementById('ai-full-msgs');
+    if(msgs && aiConvMessages.length === 0){
+      try{
+        const convs = JSON.parse(localStorage.getItem('mf-ai-convs')||'{}');
+        if(convs[aiCurrentConvId]?.html){
+          msgs.innerHTML = convs[aiCurrentConvId].html;
+          aiConvMessages = convs[aiCurrentConvId].msgCount > 0 ? [{role:'restored'}] : [];
+          msgs.scrollTop = msgs.scrollHeight;
+        }
+      }catch(e){}
+    }
+  } else if(savedConvId){
+    // Reprendre la conversation sauvegardée
+    aiCurrentConvId = savedConvId;
+    const msgs = document.getElementById('ai-full-msgs');
+    if(msgs){
+      try{
+        const convs = JSON.parse(localStorage.getItem('mf-ai-convs')||'{}');
+        if(convs[aiCurrentConvId]?.html){
+          msgs.innerHTML = convs[aiCurrentConvId].html;
+          aiConvMessages = [{role:'restored'}];
+          msgs.scrollTop = msgs.scrollHeight;
+        }
+      }catch(e){}
+    }
   }
+
   setTimeout(()=>document.getElementById('ai-full-input')?.focus(), 100);
 }
 
@@ -2764,10 +2808,11 @@ function closeAiFullscreen(){
 }
 
 function clearAiChat(){
-  saveCurrentConvToStorage();
-  // Démarrer une nouvelle conversation
+  saveCurrentConvToStorage(); // sauvegarder l'ancienne avant d'en créer une nouvelle
+  // Nouvelle conversation avec nouvel ID
   aiCurrentConvId = 'conv_' + Date.now();
   aiConvMessages = [];
+  localStorage.setItem('mf-ai-current-conv', aiCurrentConvId);
   const msgs = document.getElementById('ai-full-msgs');
   if(msgs) msgs.innerHTML = AI_WELCOME_HTML;
 }
