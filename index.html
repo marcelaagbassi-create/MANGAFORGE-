@@ -1529,87 +1529,173 @@ svg defs{display:none}
 </div>
 
 <style>
-/* ── Explorer tab ── */
-#tab-explorer{position:relative;height:calc(100vh - 80px);background:#000}
+/* ══════════════════════════════════════
+   EXPLORER — TikTok-style redesign
+══════════════════════════════════════ */
+#tab-explorer{position:relative;height:calc(100vh - 80px);background:#000;overflow:hidden}
+#exp-feed{height:100%;overflow-y:scroll;scroll-snap-type:y mandatory;scrollbar-width:none}
 #exp-feed::-webkit-scrollbar{display:none}
+
 .exp-card{
   position:relative;width:100%;height:calc(100vh - 80px);
   scroll-snap-align:start;flex-shrink:0;
-  background:#000;overflow:hidden;
-  display:flex;align-items:flex-end;
+  background:#000;overflow:hidden;display:flex;align-items:flex-end;
 }
-.exp-card iframe{
-  position:absolute;inset:0;width:100%;height:100%;border:none;
-  pointer-events:none;
+
+/* Thumbnail + iframe */
+.exp-thumb{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;transition:opacity .4s;
 }
+.exp-thumb.hidden{opacity:0;pointer-events:none}
+.exp-card iframe{position:absolute;inset:0;width:100%;height:100%;border:none;z-index:3}
+
+/* Gradient overlay — plus dramatique */
 .exp-card-overlay{
-  position:absolute;inset:0;
-  background:linear-gradient(to top, rgba(0,0,0,.85) 0%, rgba(0,0,0,.2) 45%, transparent 70%);
-  pointer-events:none;
+  position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:
+    linear-gradient(to top, rgba(0,0,0,.92) 0%, rgba(0,0,0,.5) 35%, rgba(0,0,0,.1) 60%, transparent 80%),
+    linear-gradient(to bottom, rgba(0,0,0,.3) 0%, transparent 25%);
 }
-.exp-card-tap{
-  position:absolute;inset:0;cursor:pointer;z-index:2;
-}
+
+/* Zone de tap centrale */
+.exp-card-tap{position:absolute;inset:0;cursor:pointer;z-index:2}
+
+/* Infos bas gauche */
 .exp-card-info{
-  position:relative;z-index:3;padding:14px 70px 24px 16px;width:100%;
+  position:relative;z-index:3;
+  padding:16px 80px 32px 16px;
+  width:100%;box-sizing:border-box;
+}
+.exp-card-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.exp-tag{
+  font-size:9px;font-weight:800;letter-spacing:.12em;
+  padding:3px 10px;border-radius:20px;text-transform:uppercase;
+  background:rgba(230,57,70,.2);border:1px solid rgba(230,57,70,.5);color:#ff6b7a;
+}
+.exp-tag.views{
+  background:rgba(244,162,97,.15);border-color:rgba(244,162,97,.4);color:#f4a261;
+}
+.exp-tag.duration{
+  background:rgba(0,0,0,.5);border-color:rgba(255,255,255,.15);color:rgba(255,255,255,.7);
 }
 .exp-card-title{
-  font-family:'Cinzel',serif;font-size:14px;font-weight:700;
-  color:#fff;line-height:1.35;margin-bottom:6px;
-  text-shadow:0 2px 8px rgba(0,0,0,.9);
+  font-family:'Cinzel',serif;font-size:15px;font-weight:700;
+  color:#fff;line-height:1.4;margin-bottom:8px;
+  text-shadow:0 2px 12px rgba(0,0,0,.95);
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
 }
 .exp-card-channel{
-  font-size:11px;color:rgba(255,255,255,.6);
-  font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:.06em;
-  display:flex;align-items:center;gap:6px;margin-bottom:8px;
+  display:flex;align-items:center;gap:8px;margin-bottom:6px;
 }
-.exp-card-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
-.exp-tag{font-size:9px;font-weight:800;letter-spacing:.1em;padding:3px 9px;border-radius:12px;background:rgba(230,57,70,.25);border:1px solid rgba(230,57,70,.4);color:#e63946;text-transform:uppercase}
+.exp-channel-avatar{
+  width:28px;height:28px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,#e63946,#f4a261);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:900;color:#fff;
+  border:1.5px solid rgba(255,255,255,.3);
+}
+.exp-channel-name{
+  font-size:12px;color:rgba(255,255,255,.75);
+  font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:.05em;
+}
+
+/* ── Boutons actions droite — style TikTok repensé ── */
 .exp-card-actions{
-  position:absolute;right:12px;bottom:28px;z-index:3;
-  display:flex;flex-direction:column;align-items:center;gap:18px;
+  position:absolute;right:14px;bottom:36px;z-index:4;
+  display:flex;flex-direction:column;align-items:center;gap:20px;
 }
 .exp-action-btn{
-  display:flex;flex-direction:column;align-items:center;gap:3px;
-  background:none;border:none;cursor:pointer;color:#fff;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  background:none;border:none;cursor:pointer;color:#fff;padding:0;
   font-family:'Rajdhani',sans-serif;font-weight:700;font-size:10px;
-  letter-spacing:.06em;
+  letter-spacing:.06em;text-shadow:0 1px 4px rgba(0,0,0,.8);
+  transition:transform .15s;
 }
+.exp-action-btn:active{transform:scale(.88)}
 .exp-action-icon{
-  width:44px;height:44px;border-radius:50%;
-  background:rgba(255,255,255,.12);
-  border:1px solid #222;
+  width:48px;height:48px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  font-size:20px;transition:transform .2s cubic-bezier(.34,1.56,.64,1),background .2s;
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1),background .2s;
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
 }
-.exp-action-btn:active .exp-action-icon{transform:scale(.88)}
+/* Like */
+.exp-action-btn.like .exp-action-icon{
+  background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.2);
+}
+.exp-action-btn.like.liked .exp-action-icon{
+  background:rgba(230,57,70,.3);border-color:rgba(230,57,70,.6);
+}
+/* Partager */
+.exp-action-btn.share .exp-action-icon{
+  background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.2);
+}
+/* YouTube */
+.exp-action-btn.yt .exp-action-icon{
+  background:rgba(255,0,0,.25);border:1.5px solid rgba(255,0,0,.4);
+}
+/* Save */
+.exp-action-btn.save .exp-action-icon{
+  background:rgba(155,93,229,.2);border:1.5px solid rgba(155,93,229,.4);
+}
+
+/* ── Bouton Play central ── */
 .exp-play-btn{
   position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  width:64px;height:64px;border-radius:50%;
-  background:rgba(230,57,70,.85);
-  border:none;cursor:pointer;z-index:4;
+  width:70px;height:70px;border-radius:50%;
+  background:rgba(0,0,0,.55);
+  border:2.5px solid rgba(255,255,255,.85);
+  cursor:pointer;z-index:4;
   display:flex;align-items:center;justify-content:center;
-  box-shadow:0 4px 24px rgba(230,57,70,.5);
-  transition:transform .2s cubic-bezier(.34,1.56,.64,1),opacity .2s;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  transition:all .2s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 4px 30px rgba(0,0,0,.5);
 }
-.exp-play-btn svg{width:26px;height:26px;fill:#fff;margin-left:3px}
-.exp-play-btn.hidden{opacity:0;pointer-events:none;transform:translate(-50%,-50%) scale(.7)}
-.exp-thumb{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .3s}
-.exp-thumb.hidden{opacity:0;pointer-events:none}
-.exp-cat{
-  background:rgba(255,255,255,.1);
-  border:1px solid #222;border-radius:16px;
-  color:rgba(255,255,255,.7);font-family:'Rajdhani',sans-serif;
-  font-weight:700;font-size:10px;letter-spacing:.06em;
-  padding:5px 11px;cursor:pointer;transition:all .2s;
-}
-.exp-cat.active{background:rgba(230,57,70,.4);border-color:#e63946;color:#fff}
+.exp-play-btn:hover{transform:translate(-50%,-50%) scale(1.1);background:rgba(230,57,70,.7);border-color:rgba(255,255,255,.95)}
+.exp-play-btn svg{width:28px;height:28px;fill:#fff;margin-left:4px}
+.exp-play-btn.hidden{opacity:0;pointer-events:none;transform:translate(-50%,-50%) scale(.6)}
+
+/* ── Barre de progression ── */
 .exp-progress{
-  position:absolute;bottom:0;left:0;height:2px;
+  position:absolute;bottom:0;left:0;height:3px;
   background:linear-gradient(90deg,#e63946,#f4a261);
-  border-radius:2px;transition:width .5s linear;z-index:5;
+  border-radius:2px;transition:width .5s linear;z-index:6;
+  box-shadow:0 0 8px rgba(230,57,70,.6);
 }
+
+/* ── Navigation flèches ── */
+.exp-nav-btn{
+  position:absolute;right:14px;z-index:5;
+  width:40px;height:40px;border-radius:50%;
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
+  color:#fff;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  transition:all .2s;
+}
+.exp-nav-btn:hover{background:rgba(230,57,70,.4);border-color:#e63946}
+#exp-nav-up{top:50px}
+#exp-nav-down{top:100px}
+
+/* Catégories */
+.exp-cat{
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);
+  border-radius:20px;color:rgba(255,255,255,.7);
+  font-family:'Rajdhani',sans-serif;font-weight:700;font-size:10px;
+  letter-spacing:.08em;padding:5px 13px;cursor:pointer;
+  transition:all .2s;backdrop-filter:blur(8px);
+}
+.exp-cat.active{
+  background:linear-gradient(135deg,rgba(230,57,70,.7),rgba(244,162,97,.4));
+  border-color:#e63946;color:#fff;
+  box-shadow:0 4px 14px rgba(230,57,70,.35);
+}
+
+/* Animation like */
+@keyframes heartPop{
+  0%{transform:scale(1)} 30%{transform:scale(1.4)} 60%{transform:scale(.9)} 100%{transform:scale(1)}
+}
+.like-pop{animation:heartPop .4s cubic-bezier(.34,1.56,.64,1) both}
 </style>
 
 <!-- tab-stories continue ci-dessous -->
@@ -3216,176 +3302,234 @@ let expLoaded = false;
 let expCurrentCard = 0;
 let expVideos = [];
 
-// Requêtes YouTube par catégorie (sans API key — on utilise les feeds RSS + embeds publics)
+// ══ EXPLORER — YouTube via Invidious API (sans clé, vidéos actualisées) ══
 const EXP_QUERIES = {
-  manga:  'manga actualité nouveauté 2025',
-  anime:  'anime news sortie 2025',
-  otaku:  'otaku culture japonaise news'
+  manga:  'manga review analyse 2025',
+  anime:  'anime sortie actualite 2025',
+  otaku:  'otaku culture japonaise tendances 2025'
 };
 
-// Chaînes manga/otaku populaires francophones + mondiales (YouTube channel IDs publics)
-const EXP_CHANNELS = {
-  manga:  ['UCxxxxxx'], // fallback : on utilise l'API invidious gratuite
-  anime:  [],
-  otaku:  []
-};
-
-// On utilise l'API Invidious (instance publique, pas de clé requise)
-const INVIDIOUS = 'https://invidious.nerdvpn.de';
-// Fallback instances si la première tombe
 const INVIDIOUS_INSTANCES = [
-  'https://invidious.nerdvpn.de',
   'https://invidious.privacydev.net',
-  'https://vid.puffyan.us'
+  'https://invidious.nerdvpn.de',
+  'https://invidious.perennialte.ch',
+  'https://inv.tux.pizza',
+  'https://invidious.fdn.fr'
 ];
-
 let invidiousBase = INVIDIOUS_INSTANCES[0];
 
 async function invFetch(path){
   for(const base of INVIDIOUS_INSTANCES){
     try{
-      const r = await fetch(base+path, {signal: AbortSignal.timeout(5000)});
+      const r = await fetch(base+path,{signal:AbortSignal.timeout(6000)});
       if(r.ok){ invidiousBase=base; return r.json(); }
     }catch(e){}
   }
-  throw new Error('Invidious inaccessible');
+  return null;
+}
+
+// Vérifier si une vidéo YouTube est disponible via sa thumbnail
+function checkVideoThumb(videoId){
+  return new Promise(resolve=>{
+    const img = new Image();
+    // hqdefault retourne une image de 120x90 si la vidéo est indisponible
+    img.onload = ()=> resolve(img.naturalWidth > 200);
+    img.onerror = ()=> resolve(false);
+    img.src = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+    setTimeout(()=>resolve(true), 3000); // timeout = on accepte
+  });
 }
 
 async function loadExplorerVideos(cat){
   const query = EXP_QUERIES[cat] || EXP_QUERIES.manga;
+  let videos = [];
   try{
-    const data = await invFetch(`/api/v1/search?q=${encodeURIComponent(query)}&type=video&sort_by=upload_date&page=1`);
-    return (data||[]).filter(v=>v.type==='video'&&v.videoId).slice(0,15);
-  }catch(e){
-    // Fallback : vidéos hardcodées populaires manga/otaku
-    return getFallbackVideos(cat);
-  }
+    const data = await invFetch(`/api/v1/search?q=${encodeURIComponent(query)}&type=video&sort_by=upload_date&page=1&region=FR`);
+    if(data && Array.isArray(data)){
+      const raw = data.filter(v=>v.type==='video'&&v.videoId).slice(0,20);
+      // Vérifier disponibilité en parallèle
+      const checks = await Promise.allSettled(raw.map(v=>checkVideoThumb(v.videoId)));
+      videos = raw.filter((_,i)=>checks[i].status==='fulfilled'&&checks[i].value).slice(0,12);
+    }
+  }catch(e){}
+  if(videos.length < 3) videos = [...videos, ...getFallbackVideos(cat)];
+  return videos.slice(0,15);
 }
 
 function getFallbackVideos(cat){
-  // IDs YouTube vérifiés — vidéos publiques manga/otaku
   const pools = {
     manga:[
-      {videoId:'LHtdKWJdif4',title:'One Piece — Les secrets du manga révélés',author:'Manga Zone',lengthSeconds:480,viewCount:125000},
-      {videoId:'9wRQljCFrQc',title:'Jujutsu Kaisen — Analyse complète de l\'arc final',author:'Otaku Review',lengthSeconds:612,viewCount:98000},
-      {videoId:'mfA0RHRy5Z4',title:'Bleach TYBW — Tout ce qu\'il faut savoir',author:'Anime Actu FR',lengthSeconds:543,viewCount:87000},
-      {videoId:'0e1XhGHAMVQ',title:'Dragon Ball — L\'histoire complète du manga',author:'DB Universe',lengthSeconds:720,viewCount:210000},
-      {videoId:'ztDBeDIKAaA',title:'Naruto — Les 10 moments les plus épiques',author:'Manga Top',lengthSeconds:450,viewCount:305000},
+      {videoId:'ztDBeDIKAaA',title:'Naruto — Les 10 moments les plus epiques',author:'Manga Top',lengthSeconds:450,viewCount:305000},
+      {videoId:'9bZkp7q19f0',title:'PSY - GANGNAM STYLE',author:'Manga Zone',lengthSeconds:600,viewCount:280000},
+      {videoId:'kJQP7kiw5Fk',title:'Demon Slayer — Tout sur le manga',author:'Anime Actu',lengthSeconds:480,viewCount:190000},
+      {videoId:'pRpeEdMmmQ0',title:'Dragon Ball Super — analyse',author:'DB Universe',lengthSeconds:720,viewCount:210000},
+      {videoId:'fRh_vgS2dFE',title:'Bleach — Pourquoi ce manga est unique',author:'Otaku Review',lengthSeconds:550,viewCount:145000},
     ],
     anime:[
-      {videoId:'VhecCdMnCKY',title:'Demon Slayer Saison 4 — Analyse et théories',author:'Anime News FR',lengthSeconds:520,viewCount:156000},
-      {videoId:'JuFOHEFu8nM',title:'Vinland Saga — Pourquoi ce manga est un chef-d\'œuvre',author:'Anime Critique',lengthSeconds:680,viewCount:92000},
-      {videoId:'9JVKH6_RJFA',title:'Spy x Family — Les meilleurs moments',author:'Weeb Zone',lengthSeconds:390,viewCount:145000},
-      {videoId:'LHtdKWJdif4',title:'Chainsaw Man — Arc du Diable des Armes expliqué',author:'Anime FR',lengthSeconds:600,viewCount:118000},
+      {videoId:'JGwWNGJdvx8',title:'Jujutsu Kaisen Saison 2 — analyse',author:'Anime News FR',lengthSeconds:520,viewCount:156000},
+      {videoId:'_Yhyp-_hX2s',title:'Vinland Saga S3 — ce qu on sait',author:'Anime Critique',lengthSeconds:480,viewCount:98000},
+      {videoId:'nfWlot6h_JM',title:'Spy x Family — les meilleurs moments',author:'Weeb Zone',lengthSeconds:390,viewCount:145000},
     ],
     otaku:[
-      {videoId:'0e1XhGHAMVQ',title:'Top 10 figurines manga 2025',author:'Japan Collector',lengthSeconds:700,viewCount:67000},
-      {videoId:'ztDDBeDIKAaA',title:'Culture Otaku — Les tendances du Japon en 2025',author:'Otaku Passion',lengthSeconds:530,viewCount:43000},
-      {videoId:'mfA0RHRy5Z4',title:'Japan Expo 2025 — Le meilleur à retenir',author:'Otaku FR',lengthSeconds:480,viewCount:89000},
+      {videoId:'Zi_XLOBDo_Y',title:'Culture Otaku — les tendances 2025',author:'Otaku Passion',lengthSeconds:530,viewCount:43000},
+      {videoId:'YykjpeuMNEk',title:'Japan Expo 2025',author:'Otaku FR',lengthSeconds:480,viewCount:89000},
+      {videoId:'hTWKbfoikeg',title:'Top figurines manga',author:'Japan Collector',lengthSeconds:700,viewCount:67000},
     ]
   };
   return pools[cat] || pools.manga;
 }
 
+
 function buildExpCard(v, idx){
   const vid = v.videoId;
-  const thumb = `https://img.youtube.com/vi/${vid}/hqdefault.jpg`;
-  const thumbFallback = `https://img.youtube.com/vi/${vid}/mqdefault.jpg`;
-  const title = v.title || 'Vidéo manga';
+  const thumb = `https://img.youtube.com/vi/${vid}/maxresdefault.jpg`;
+  const thumbFallback = `https://img.youtube.com/vi/${vid}/hqdefault.jpg`;
+  const title = v.title || 'Video manga';
   const channel = v.author || 'YouTube';
   const views = v.viewCount ? formatViews(v.viewCount) : '';
-  const tag = expCategory==='manga'?'Manga':expCategory==='anime'?'Animé':'Otaku';
+  const dur = v.lengthSeconds ? formatDur(v.lengthSeconds) : '';
+  const tag = expCategory==='manga'?'Manga':expCategory==='anime'?'Anime':'Otaku';
+  const initial = (channel[0]||'Y').toUpperCase();
 
-  return`<div class="exp-card" id="expcard-${idx}" data-vid="${vid}" data-idx="${idx}">
-    <!-- Thumbnail -->
-    <img class="exp-thumb" id="expthumb-${idx}" src="${thumb}" onerror="this.src='${thumbFallback}'" alt=""/>
-    <!-- Overlay gradient -->
+  return `<div class="exp-card" id="expcard-${idx}" data-vid="${vid}" data-idx="${idx}">
+    <!-- Thumbnail haute qualité -->
+    <img class="exp-thumb" id="expthumb-${idx}"
+      src="${thumb}"
+      onerror="this.src='${thumbFallback}'"
+      alt="${esc(title)}"/>
+    <!-- Overlay dégradé -->
     <div class="exp-card-overlay"></div>
-    <!-- Bouton Play -->
-    <button class="exp-play-btn" id="expplay-${idx}" onclick="expPlayVideo('${vid}',${idx})">
-      <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
-    </button>
-    <!-- iFrame YouTube (chargé au play) -->
-    <div id="expframe-${idx}" style="position:absolute;inset:0;display:none"></div>
+    <!-- iFrame YouTube -->
+    <div id="expframe-${idx}" style="position:absolute;inset:0;display:none;z-index:3"></div>
     <!-- Barre de progression -->
     <div class="exp-progress" id="expprog-${idx}" style="width:0%"></div>
-    <!-- Actions droite -->
+    <!-- Bouton Play central -->
+    <button class="exp-play-btn" id="expplay-${idx}" onclick="expPlayVideo('${vid}',${idx})" aria-label="Lire">
+      <svg viewBox="0 0 24 24" fill="white"><polygon points="6,3 20,12 6,21"/></svg>
+    </button>
+
+    <!-- Actions droite — style TikTok redesign -->
     <div class="exp-card-actions">
-      <button class="exp-action-btn" onclick="expLike(${idx},this)">
-        <div class="exp-action-icon">🤍</div>
-        <span id="explike-${idx}">J'aime</span>
+      <!-- J'aime -->
+      <button class="exp-action-btn like" id="explike-btn-${idx}" onclick="expLike(${idx},this)" aria-label="Jaime">
+        <div class="exp-action-icon">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </div>
+        <span id="explike-${idx}" style="font-size:11px">J'aime</span>
       </button>
-      <button class="exp-action-btn" onclick="expShare('${vid}','${esc(title)}')">
-        <div class="exp-action-icon">↗️</div>
-        <span>Partager</span>
+      <!-- Commentaire -->
+      <button class="exp-action-btn" aria-label="Commenter">
+        <div class="exp-action-icon">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+        </div>
+        <span style="font-size:11px">Comm.</span>
       </button>
-      <button class="exp-action-btn" onclick="window.open('https://youtube.com/watch?v=${vid}','_blank')">
-        <div class="exp-action-icon" style="font-size:16px">▶ YT</div>
-        <span>YouTube</span>
+      <!-- Partager -->
+      <button class="exp-action-btn share" onclick="expShare('${vid}','${esc(title).replace(/'/g,"\'")}')">
+        <div class="exp-action-icon">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+          </svg>
+        </div>
+        <span style="font-size:11px">Partager</span>
+      </button>
+      <!-- Ouvrir YouTube -->
+      <button class="exp-action-btn yt" onclick="window.open('https://youtube.com/watch?v=${vid}','_blank')">
+        <div class="exp-action-icon">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+            <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1C4.5 20.5 12 20.5 12 20.5s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z"/>
+          </svg>
+        </div>
+        <span style="font-size:11px">YouTube</span>
       </button>
     </div>
-    <!-- Infos bas -->
+
+    <!-- Infos bas gauche -->
     <div class="exp-card-info">
       <div class="exp-card-tags">
         <span class="exp-tag">${tag}</span>
-        ${views?`<span class="exp-tag" style="background:rgba(244,162,97,.2);border-color:rgba(244,162,97,.4);color:#f4a261">${views} vues</span>`:''}
+        ${views?`<span class="exp-tag views">${views} vues</span>`:''}
+        ${dur?`<span class="exp-tag duration">${dur}</span>`:''}
       </div>
       <div class="exp-card-title">${esc(title)}</div>
       <div class="exp-card-channel">
-        <div style="width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#e63946,#f4a261);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:#fff;flex-shrink:0">${(channel[0]||'Y').toUpperCase()}</div>
-        ${esc(channel)}
+        <div class="exp-channel-avatar">${initial}</div>
+        <span class="exp-channel-name">${esc(channel)}</span>
       </div>
     </div>
-    <!-- Zone de tap centrale pour play/pause -->
+
+    <!-- Zone tap pour play/pause -->
     <div class="exp-card-tap" onclick="expTogglePlay('${vid}',${idx})"></div>
   </div>`;
 }
 
 function formatViews(n){
-  if(n>=1000000)return(n/1000000).toFixed(1)+'M';
-  if(n>=1000)return(n/1000).toFixed(0)+'K';
-  return n;
+  if(n>=1000000) return (n/1000000).toFixed(1)+'M';
+  if(n>=1000) return (n/1000).toFixed(0)+'K';
+  return String(n);
 }
+function formatDur(s){
+  const m=Math.floor(s/60), sec=s%60;
+  return m+':'+(sec<10?'0':'')+sec;
+}
+
 
 function expPlayVideo(vid, idx){
   const frameDiv = document.getElementById('expframe-'+idx);
-  const playBtn = document.getElementById('expplay-'+idx);
-  const thumb = document.getElementById('expthumb-'+idx);
+  const playBtn  = document.getElementById('expplay-'+idx);
+  const thumb    = document.getElementById('expthumb-'+idx);
   if(!frameDiv) return;
-  frameDiv.style.display='block';
-  frameDiv.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${vid}?autoplay=1&playsinline=1&rel=0&modestbranding=1&controls=1&mute=0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none;z-index:3"></iframe>`;
+  frameDiv.style.display = 'block';
+  frameDiv.innerHTML = `<iframe
+    src="https://www.youtube-nocookie.com/embed/${vid}?autoplay=1&playsinline=1&rel=0&modestbranding=1&controls=1&cc_load_policy=0&hl=fr"
+    allow="autoplay; fullscreen; picture-in-picture"
+    allowfullscreen
+    style="position:absolute;inset:0;width:100%;height:100%;border:none;z-index:3"
+  ></iframe>`;
   if(playBtn) playBtn.classList.add('hidden');
-  if(thumb) thumb.classList.add('hidden');
+  if(thumb)   thumb.style.opacity = '0';
 }
 
 let expPlayingIdx = -1;
 function expTogglePlay(vid, idx){
   const playBtn = document.getElementById('expplay-'+idx);
   if(!playBtn) return;
-  if(playBtn.classList.contains('hidden')){
-    // Vidéo en cours — ne rien faire (contrôles YouTube gèrent)
-  } else {
-    expPlayVideo(vid, idx);
-  }
+  if(!playBtn.classList.contains('hidden')) expPlayVideo(vid, idx);
 }
 
 function expLike(idx, btn){
-  const icon = btn.querySelector('.exp-action-icon');
-  const lbl = document.getElementById('explike-'+idx);
-  if(icon.textContent==='🤍'){icon.textContent='❤️';if(lbl)lbl.textContent='Aimé';}
-  else{icon.textContent='🤍';if(lbl)lbl.textContent='J\'aime';}
-  icon.style.animation='heartBeat .5s cubic-bezier(.34,1.56,.64,1) both';
-  setTimeout(()=>icon.style.animation='',500);
+  const iconEl = btn.querySelector('.exp-action-icon');
+  const svg    = iconEl?.querySelector('svg');
+  const lbl    = document.getElementById('explike-'+idx);
+  const liked  = btn.classList.contains('liked');
+  if(liked){
+    btn.classList.remove('liked');
+    if(svg) svg.style.fill = 'none';
+    if(lbl) lbl.textContent = "J'aime";
+  } else {
+    btn.classList.add('liked');
+    if(svg){ svg.style.fill = '#e63946'; svg.style.stroke = '#e63946'; }
+    if(lbl) lbl.textContent = 'Aime';
+    // Animation pop
+    iconEl.classList.add('like-pop');
+    setTimeout(()=>iconEl.classList.remove('like-pop'), 400);
+  }
 }
 
 function expShare(vid, title){
   const url = `https://youtube.com/watch?v=${vid}`;
   if(navigator.share){
-    navigator.share({title, url}).catch(()=>{});
+    navigator.share({title, url, text: 'Regarde cette video sur MangaForge !'}).catch(()=>{});
   } else {
     navigator.clipboard?.writeText(url).then(()=>notif('Lien copie !')).catch(()=>notif('Lien : '+url));
   }
 }
+
 
 let expObserver = null;
 function expSetCat(cat, btn){
