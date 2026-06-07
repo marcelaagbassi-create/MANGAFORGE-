@@ -1494,23 +1494,38 @@ svg defs{display:none}
 <!-- EXPLORER — VIDÉOS MANGA/OTAKU STYLE TIKTOK -->
 <div class="sec" id="tab-explorer" style="padding:0;margin:0;overflow:hidden;position:relative">
 
-  <!-- En-tête fixe superposé -->
-  <div id="exp-header" style="position:absolute;top:0;left:0;right:0;z-index:10;padding:14px 16px 10px;background:linear-gradient(to bottom,rgba(10,14,26,.92),transparent);pointer-events:none">
-    <div style="display:flex;align-items:center;justify-content:space-between">
-      <div>
-        <div style="font-family:'Cinzel',serif;font-size:16px;font-weight:900;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.8)">⛩ Explorer</div>
-        <div style="font-size:9px;color:rgba(255,255,255,.4);letter-spacing:.2em;text-transform:uppercase;margin-top:2px">Actus Manga & Otaku</div>
+  <!-- ══ HEADER EXPLORER FIXE ══ -->
+  <div id="exp-header" style="position:fixed;top:0;left:0;right:0;z-index:100;pointer-events:none">
+    <!-- Barre du haut : retour + recherche + catégories -->
+    <div style="display:flex;flex-direction:column;gap:8px;padding:12px 14px 8px;background:linear-gradient(to bottom,rgba(0,0,0,.9) 0%,rgba(0,0,0,.6) 70%,transparent 100%);pointer-events:all">
+      <!-- Ligne 1 : icône + titre + retour -->
+      <div style="display:flex;align-items:center;gap:10px">
+        <button onclick="expGoBack()" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div style="flex:1">
+          <div style="font-family:'Cinzel',serif;font-size:14px;font-weight:900;color:#fff;letter-spacing:.04em">⛩ Explorer</div>
+          <div style="font-size:8px;color:rgba(255,255,255,.4);letter-spacing:.18em;font-family:'Rajdhani',sans-serif;font-weight:700">MANGA · ANIME · CRÉATEURS</div>
+        </div>
       </div>
-      <div id="exp-cats" style="display:flex;gap:6px;pointer-events:all">
-        <button class="exp-cat active" onclick="expSetCat('manga',this)">🎌 Manga</button>
-        <button class="exp-cat" onclick="expSetCat('anime',this)">📺 Animé</button>
-        <button class="exp-cat" onclick="expSetCat('otaku',this)">🌸 Otaku</button>
+      <!-- Ligne 2 : barre de recherche -->
+      <div style="position:relative">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="2" stroke-linecap="round" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);pointer-events:none"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="exp-search-inp" type="text" placeholder="Rechercher des videos manga..."
+          oninput="expSearchVideos(this.value)"
+          style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:22px;color:#fff;padding:9px 14px 9px 34px;font-size:13px;font-family:'Rajdhani',sans-serif;font-weight:600;outline:none;backdrop-filter:blur(8px)"/>
+      </div>
+      <!-- Ligne 3 : catégories -->
+      <div id="exp-cats" style="display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px">
+        <button class="exp-cat active" onclick="expSetMode('youtube','manga',this)">🎌 Manga YT</button>
+        <button class="exp-cat" onclick="expSetMode('youtube','anime',this)">📺 Anime YT</button>
+        <button class="exp-cat" onclick="expSetMode('creators',null,this)">👥 Créateurs</button>
       </div>
     </div>
   </div>
 
   <!-- Écran de chargement -->
-  <div id="exp-loading" style="display:flex;align-items:center;justify-content:center;height:calc(100vh - 80px);background:#000;position:absolute;inset:0;z-index:5">
+  <div id="exp-loading" style="display:flex;align-items:center;justify-content:center;height:100vh;background:#000;position:fixed;inset:0;z-index:50">
     <div style="text-align:center">
       <div style="font-size:48px;margin-bottom:14px;animation:loader-float 2s ease-in-out infinite">⛩</div>
       <div style="font-family:'Cinzel',serif;font-size:12px;color:rgba(255,255,255,.4);letter-spacing:.2em">CHARGEMENT</div>
@@ -1520,10 +1535,13 @@ svg defs{display:none}
     </div>
   </div>
 
-  <!-- Feed scroll vertical type TikTok -->
-  <div id="exp-feed" style="height:calc(100vh - 80px);overflow-y:scroll;scroll-snap-type:y mandatory;scrollbar-width:none;-ms-overflow-style:none;position:relative;z-index:1">
-    <div id="exp-cards" style="display:flex;flex-direction:column"></div>
+  <!-- Feed scroll vertical TikTok -->
+  <div id="exp-feed" style="height:100vh;overflow-y:scroll;scroll-snap-type:y mandatory;scrollbar-width:none;-ms-overflow-style:none;position:relative;z-index:1">
+    <div id="exp-cards"></div>
   </div>
+
+  <!-- Grille créateurs (mode créateurs) -->
+  <div id="exp-creators-grid" style="display:none;height:100vh;overflow-y:auto;padding:130px 14px 20px;box-sizing:border-box;background:#0a0c15"></div>
 </div>
 
 <style>
@@ -1531,6 +1549,12 @@ svg defs{display:none}
    EXPLORER — TikTok-style redesign
 ══════════════════════════════════════ */
 #tab-explorer{position:fixed;inset:0;height:100vh;width:100vw;background:#000;overflow:hidden;z-index:30}
+/* Quand Explorer actif — cacher nav et header globaux */
+body.explorer-mode header,
+body.explorer-mode #main-nav-wrapper,
+body.explorer-mode #ai-assistant-btn{ display:none !important; }
+body.explorer-mode main{ padding:0 !important; }
+#exp-cats::-webkit-scrollbar{display:none}
 #exp-feed{height:100vh;overflow-y:scroll;scroll-snap-type:y mandatory;scrollbar-width:none}
 #exp-feed::-webkit-scrollbar{display:none}
 
@@ -3291,14 +3315,12 @@ function switchTab(name,btn){
   if(name!=='mangadex'){const ci=document.getElementById('cmt-inp');const cb=document.getElementById('cmt-btn');if(ci)ci.style.display='';if(cb)cb.style.display='';}
   closeFabMenu();
 
-  // Explorer = plein écran (cacher header + footer + bouton IA)
-  const isExplorer = name==='explorer';
-  const header = document.querySelector('header');
-  const navWrap = document.getElementById('main-nav-wrapper');
-  const aiBtn   = document.getElementById('ai-assistant-btn');
-  if(header)  header.style.display  = isExplorer ? 'none' : '';
-  if(navWrap) navWrap.style.display = isExplorer ? 'none' : '';
-  if(aiBtn)   aiBtn.style.display   = isExplorer ? 'none' : '';
+  // Explorer = plein écran via classe CSS
+  if(name==='explorer'){
+    document.body.classList.add('explorer-mode');
+  } else {
+    document.body.classList.remove('explorer-mode');
+  }
 
   // Barre de recherche — connecter à l'onglet actif
   window._currentTab = name;
@@ -3327,16 +3349,26 @@ let expCurrentCard = 0;
 let expVideos = [];
 
 // ══ EXPLORER — YouTube via Invidious API (sans clé, vidéos actualisées) ══
-// Requêtes très ciblées — manga/anime/otaku YouTubers uniquement
+// Requêtes STRICTEMENT manga/anime
 const EXP_QUERIES = {
-  manga:  'manga review analyse chapitre 2025 -kpop -danse -sport -gaming -vlog',
-  anime:  'anime review analyse episode 2025 -kpop -danse -sport -gaming',
-  otaku:  'otaku manga anime japonais culture 2025 -kpop -danse'
+  manga: 'manga review analyse chapitre one piece naruto bleach jujutsu 2025',
+  anime: 'anime episode review shonen seinen 2025'
 };
-// Mots clés manga obligatoires pour filtrer les résultats
-const EXP_MANGA_KEYWORDS = ['manga','anime','otaku','one piece','naruto','bleach','jujutsu',
-  'demon slayer','attack on titan','shonen','seinen','shojo','chapitre','épisode','episode',
-  'weeb','cosplay','japan','japonais','review','analyse','avis'];
+// TOUS les mots-clés doivent correspondre au manga/anime — filtre strict
+const EXP_MANGA_KEYWORDS = [
+  'manga','mangas','anime','animes','otaku','one piece','naruto','bleach',
+  'jujutsu kaisen','demon slayer','kimetsu','attack on titan','shingeki',
+  'shonen','seinen','shojo','manhwa','manhua','webtoon','chapitre','episode',
+  'épisode','weeb','japan','japonais','review manga','avis manga','top manga',
+  'dragon ball','berserk','vinland','spy x family','chainsaw','solo leveling',
+  'black clover','fairy tail','my hero','boku no hero','hunter x hunter'
+];
+// Mots qui EXCLUENT une vidéo (hors manga)
+const EXP_EXCLUDE_WORDS = [
+  'kpop','k-pop','dance','danse','sport','football','gaming','vlog','makeup',
+  'cuisine','food','travel','voyage','musik','music clip','reaction kpop',
+  'tiktok dance','challenge','fitness','gym','yoga'
+];
 
 const INVIDIOUS_INSTANCES = [
   'https://invidious.privacydev.net',
@@ -3379,8 +3411,12 @@ async function loadExplorerVideos(cat){
         if(v.type!=='video'||!v.videoId) return false;
         const t = (v.title||'').toLowerCase();
         const a = (v.author||'').toLowerCase();
-        // Filtrer : doit contenir au moins 1 mot-clé manga
-        return EXP_MANGA_KEYWORDS.some(k=>t.includes(k)||a.includes(k));
+        const combined = t + ' ' + a;
+        // Doit contenir AU MOINS 1 mot-clé manga
+        const hasManga = EXP_MANGA_KEYWORDS.some(k=>combined.includes(k));
+        // Ne doit contenir AUCUN mot d'exclusion
+        const hasExcluded = EXP_EXCLUDE_WORDS.some(k=>combined.includes(k));
+        return hasManga && !hasExcluded;
       }).slice(0,25);
       // Vérifier disponibilité en parallèle
       const checks = await Promise.allSettled(raw.map(v=>checkVideoThumb(v.videoId)));
@@ -3492,8 +3528,8 @@ function buildExpCard(v, idx){
         ${dur?`<span class="exp-tag duration">${dur}</span>`:''}
       </div>
       <div class="exp-card-title">${esc(title)}</div>
-      <div class="exp-card-channel">
-        <div class="exp-channel-avatar">${initial}</div>
+      <div class="exp-card-channel" onclick="event.stopPropagation()" style="cursor:default">
+        <div class="exp-channel-avatar" style="cursor:default">${initial}</div>
         <span class="exp-channel-name">${esc(channel)}</span>
       </div>
     </div>
@@ -3647,7 +3683,82 @@ function filterUsers(q){
   });
 }
 
+let expMode = 'youtube'; // 'youtube' ou 'creators'
 let expObserver = null;
+
+function expGoBack(){
+  document.body.classList.remove('explorer-mode');
+  switchTab('feed', document.querySelector('.nb'));
+}
+
+async function expSetMode(mode, cat, btn){
+  document.querySelectorAll('.exp-cat').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  expMode = mode;
+
+  const feed = document.getElementById('exp-feed');
+  const grid = document.getElementById('exp-creators-grid');
+
+  if(mode === 'creators'){
+    // Mode créateurs MangaForge
+    if(feed) feed.style.display = 'none';
+    if(grid){ grid.style.display = 'block'; renderExpCreators(); }
+  } else {
+    // Mode YouTube manga
+    if(feed) feed.style.display = 'block';
+    if(grid) grid.style.display = 'none';
+    expCategory = cat || 'manga';
+    expLoaded = false;
+    expCurrentCard = 0;
+    expVideos = [];
+    const cards = document.getElementById('exp-cards');
+    if(cards) cards.innerHTML = '';
+    document.getElementById('exp-loading').style.display = 'flex';
+    const videos = await loadExplorerVideos(expCategory);
+    expVideos = videos;
+    document.getElementById('exp-loading').style.display = 'none';
+    if(cards) cards.innerHTML = videos.map((v,i)=>buildExpCard(v,i)).join('');
+    expLoaded = true;
+  }
+}
+
+// Afficher les créateurs MangaForge dans l'Explorer
+async function renderExpCreators(){
+  const grid = document.getElementById('exp-creators-grid');
+  if(!grid) return;
+  grid.innerHTML = '<div style="font-family:Rajdhani,sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;color:rgba(255,255,255,.3);margin-bottom:14px">CRÉATEURS MANGAFORGE</div><div class="skeleton" style="height:80px;border-radius:12px;margin-bottom:10px"></div><div class="skeleton" style="height:80px;border-radius:12px;margin-bottom:10px"></div>';
+  try{
+    const snap = await FB.getDocs(FB.collection(FB.db,'users'));
+    const users = [];
+    snap.forEach(d=>{ const u=d.data(); u.id=d.id; if(u.displayName||u.name) users.push(u); });
+    if(!users.length){
+      grid.innerHTML += '<div style="text-align:center;color:rgba(255,255,255,.3);font-family:Rajdhani,sans-serif;padding:30px">Aucun createur disponible</div>';
+      return;
+    }
+    grid.innerHTML = '<div style="font-family:Rajdhani,sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;color:rgba(255,255,255,.3);margin-bottom:14px">CRÉATEURS MANGAFORGE</div>' +
+      users.map(u=>`
+        <div onclick="expOpenCreator('${u.id}')" style="display:flex;align-items:center;gap:12px;padding:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;margin-bottom:10px;cursor:pointer;transition:background .2s" onmouseover="this.style.background='rgba(230,57,70,.08)'" onmouseout="this.style.background='rgba(255,255,255,.04)'">
+          <div style="width:52px;height:52px;border-radius:50%;overflow:hidden;flex-shrink:0;border:2px solid rgba(230,57,70,.4);background:#1d2028">
+            ${u.avatar?`<img src="${u.avatar}" width="52" height="52" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">`:''}
+            <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#e63946;font-family:'Cinzel',serif">${(u.displayName||u.name||'?')[0].toUpperCase()}</div>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-family:'Cinzel',serif;font-size:13px;color:#eaeef5;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(u.displayName||u.name||'Créateur')}</div>
+            <div style="font-size:11px;color:#888;font-family:'Rajdhani',sans-serif;margin-top:2px">${esc(u.bio||u.role||'Membre MangaForge')}</div>
+            ${u.storiesCount?`<div style="font-size:10px;color:rgba(230,57,70,.7);margin-top:3px;font-weight:700">${u.storiesCount} histoires</div>`:''}
+          </div>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>`).join('');
+  }catch(e){
+    grid.innerHTML = '<div style="color:#e63946;padding:20px;font-family:Rajdhani,sans-serif">Erreur de chargement</div>';
+  }
+}
+
+function expOpenCreator(uid){
+  // Ouvrir la page profil du créateur
+  openUserProfile(uid);
+}
+
 function expSetCat(cat, btn){
   expCategory = cat;
   document.querySelectorAll('.exp-cat').forEach(b=>b.classList.remove('active'));
@@ -3668,6 +3779,9 @@ async function initExplorer(){
       _expNavTimer = setTimeout(expHideNav, 3000);
     }, {passive:true});
   }
+  // Démarrer en mode YouTube manga par défaut
+  expMode = 'youtube';
+  expCategory = 'manga';
   expLoaded = true;
   const loading = document.getElementById('exp-loading');
   const cards = document.getElementById('exp-cards');
