@@ -3122,7 +3122,7 @@ async function aiFSend(){
   try{
     const ctx = cachedStories?.filter(s=>s.uid===currentUser?.uid).map(s=>`"${s.title}" (${s.genre})`).join(', ');
     const sys = `Tu es un assistant créatif expert en manga et storytelling sur MangaForge. Tu parles en français.${ctx?` L'utilisateur a créé: ${ctx}.`:''} Sois inspirant, précis, utilise des emojis. Quand tu génères une histoire complète ou un synopsis développé, ajoute OBLIGATOIREMENT à la fin un bloc: |||STORY|||{"title":"TITRE","genre":"Genre","synopsis":"Synopsis complet","tags":"tag1, tag2"}|||END|||`;
-    const result = await callClaude(text, sys);
+    const result = await callClaude(text, sys, imageAttachments);
 
     // Détecter bloc histoire
     let display = result;
@@ -3423,35 +3423,76 @@ const EXP_EXCLUDE_WORDS = [
   'bts ','exo ','stray kids'
 ];
 
+// ══ Explorer — YouTube via RSS public (pas de clé, pas de blocage) ══
+// IDs de chaînes YouTube manga/anime actives et vérifiées
+const MANGA_YT_CHANNELS = {
+  manga: [
+    'UCHXtp7RTtNwMiqiMiI5BZ8w', // Solarus (manga FR)
+    'UCmRBkuPjbBB0JFnhDNRNiJg', // Maki FR
+    'UC68EqiLRdMsEKb7AuoI8M8w', // Japscan
+    'UCLgBVzqMUP3LGQVBCZ-1Xqg', // AnimeGaming
+    'UCKv9UBqIhZFCyFjx7HuJfpA', // One Piece info
+  ],
+  anime: [
+    'UCsOBdLuO4tGLgSrsCTVVDcg', // Crunchyroll FR
+    'UCHXtp7RTtNwMiqiMiI5BZ8w', // Solarus
+    'UCmRBkuPjbBB0JFnhDNRNiJg', // Maki FR
+    'UC68EqiLRdMsEKb7AuoI8M8w', // Japscan
+  ]
+};
+
+// Proxy CORS pour les RSS YouTube
+const RSS_PROXIES = [
+  'https://api.rss2json.com/v1/api.json?rss_url=',
+  'https://rssproxy.migor.org/api/rss?url='
+];
+
+async function fetchChannelRSS(channelId){
+  const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+  for(const proxy of RSS_PROXIES){
+    try{
+      const r = await fetch(proxy + encodeURIComponent(rssUrl), {signal: AbortSignal.timeout(8000)});
+      if(!r.ok) continue;
+      const data = await r.json();
+      // rss2json format
+      if(data.items && Array.isArray(data.items)){
+        return data.items.map(item => {
+          const vid = (item.link||item.guid||'').match(/v=([^&]+)/)?.[1] || '';
+          return {
+            videoId: vid,
+            title: item.title || '',
+            author: item.author || data.feed?.title || '',
+            lengthSeconds: 0,
+            viewCount: 0,
+            pubDate: item.pubDate
+          };
+        }).filter(v=>v.videoId);
+      }
+      // rss XML fallback (parse manuellement)
+      const text = await r.text?.();
+      if(text){
+        const matches = [...text.matchAll(/<yt:videoId>(.*?)<\/yt:videoId>[\s\S]*?<title>(.*?)<\/title>/g)];
+        return matches.map(m=>({videoId:m[1], title:m[2], author:'', lengthSeconds:0, viewCount:0}));
+      }
+    }catch(e){}
+  }
+  return [];
+}
+
+// Fallback: utiliser Invidious si RSS ne marche pas
 const INVIDIOUS_INSTANCES = [
   'https://invidious.privacydev.net',
-  'https://invidious.nerdvpn.de',
-  'https://invidious.perennialte.ch',
-  'https://inv.tux.pizza',
-  'https://invidious.fdn.fr'
+  'https://invidious.fdn.fr',
+  'https://inv.tux.pizza'
 ];
-let invidiousBase = INVIDIOUS_INSTANCES[0];
-
 async function invFetch(path){
   for(const base of INVIDIOUS_INSTANCES){
     try{
-      const r = await fetch(base+path,{signal:AbortSignal.timeout(6000)});
-      if(r.ok){ invidiousBase=base; return r.json(); }
+      const r = await fetch(base+path,{signal:AbortSignal.timeout(5000)});
+      if(r.ok) return r.json();
     }catch(e){}
   }
   return null;
-}
-
-// Vérifier si une vidéo YouTube est disponible via sa thumbnail
-function checkVideoThumb(videoId){
-  return new Promise(resolve=>{
-    const img = new Image();
-    // hqdefault retourne une image de 120x90 si la vidéo est indisponible
-    img.onload = ()=> resolve(img.naturalWidth > 200);
-    img.onerror = ()=> resolve(false);
-    img.src = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
-    setTimeout(()=>resolve(true), 3000); // timeout = on accepte
-  });
 }
 
 async function loadExplorerVideos(cat){
@@ -6348,8 +6389,23 @@ function toggleAiProvider(){
   notif(`IA : ${aiProvider === 'gemini' ? 'Gemini ✨' : 'Mistral ⚡'}`, false);
 }
 
-async function callClaude(prompt, systemPrompt=''){
+async function callClaude(prompt, systemPrompt='', images=[]){
   const SYSTEM = systemPrompt || 'Tu es un assistant créatif spécialisé en manga. Tu parles en français. Sois concis, inspirant et créatif.';
+
+  // Construire le contenu du message — format Mistral vision
+  let userContent;
+  if(images && images.length > 0){
+    // Format Mistral Pixtral (vision) : image_url avec data URI base64
+    userContent = [
+      ...images.map(img=>({
+        type: 'image_url',
+        image_url: { url: `data:${img.mediaType};base64,${img.base64}` }
+      })),
+      { type: 'text', text: prompt || 'Decris cette image en detail. Quels personnages, styles, ambiances vois-tu ? Comment pourrais-je m en inspirer pour mon manga ?' }
+    ];
+  } else {
+    userContent = prompt;
+  }
 
   const tryProvider = async (prov) => {
     const r = await fetch(`${AI_SERVER_URL}/api/chat`, {
@@ -6358,7 +6414,8 @@ async function callClaude(prompt, systemPrompt=''){
       body: JSON.stringify({
         provider: prov,
         system: SYSTEM,
-        messages: [{role:'user', content:prompt}]
+        messages: [{ role:'user', content: userContent }],
+        vision: images && images.length > 0  // indiquer au serveur que c'est une requête vision
       })
     });
     if(!r.ok) throw new Error(`Erreur ${prov} (${r.status})`);
@@ -6368,11 +6425,12 @@ async function callClaude(prompt, systemPrompt=''){
   };
 
   try {
-    return await tryProvider(aiProvider);
+    // Images → toujours Mistral (modèle pixtral-12b pour la vision)
+    const provider = (images && images.length > 0) ? 'mistral' : aiProvider;
+    return await tryProvider(provider);
   } catch(e) {
-    // Fallback automatique vers l'autre provider
     const fallback = aiProvider === 'mistral' ? 'gemini' : 'mistral';
-    console.warn(`[AI] ${aiProvider} échoué, tentative ${fallback}...`);
+    console.warn('[AI] Fallback vers', fallback);
     return await tryProvider(fallback);
   }
 }
@@ -6494,13 +6552,27 @@ function aiPickMedia(type){
 }
 
 function aiHandleFile(event, type){
-  const file = event.target.files[0];
+  const file = event.target.files && event.target.files[0];
   if(!file) return;
   const maxMB = type === 'video' ? 50 : 10;
-  if(file.size > maxMB * 1024 * 1024){ notif(`Fichier trop grand (max ${maxMB}Mo).`,true); return; }
-  aiAttachments.push({ file, type, name: file.name });
-  renderAiAttachments();
-  event.target.value = '';
+  if(file.size > maxMB * 1024 * 1024){ notif('Fichier trop grand (max '+maxMB+'Mo).',true); return; }
+
+  // Images → lire en base64 pour les envoyer à Claude API
+  if(file.type.startsWith('image/')){
+    const reader = new FileReader();
+    reader.onload = e => {
+      const b64 = e.target.result.split(',')[1];
+      aiAttachments.push({ file, type, name: file.name, base64: b64, mediaType: file.type });
+      renderAiAttachments();
+      notif('Image jointe — Claude pourra la voir !');
+    };
+    reader.readAsDataURL(file);
+  } else {
+    aiAttachments.push({ file, type, name: file.name });
+    renderAiAttachments();
+    notif('Fichier joint : ' + file.name);
+  }
+  if(event.target) event.target.value = '';
 }
 
 function renderAiAttachments(){
