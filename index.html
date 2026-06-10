@@ -376,6 +376,107 @@ setTimeout(() => {
   border-top-color:#f4a261;
 }
 
+
+/* ══ MANGA EDITOR ══ */
+#manga-editor{ font-family:'Rajdhani',sans-serif; }
+.me-tool{
+  background:none;border:none;color:#666;
+  width:34px;height:34px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .15s;flex-shrink:0;
+}
+.me-tool:hover{background:rgba(255,255,255,.07);color:#ccc}
+.me-tool.active{background:rgba(230,57,70,.2);color:#e63946;border:1px solid rgba(230,57,70,.3)}
+.me-grid-btn{
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  color:#888;border-radius:5px;padding:3px 6px;font-size:12px;cursor:pointer;
+  transition:all .15s;white-space:nowrap;
+}
+.me-grid-btn:hover{background:rgba(230,57,70,.15);border-color:rgba(230,57,70,.3);color:#e63946}
+.me-action-btn{
+  background:none;border:none;color:#666;
+  width:30px;height:30px;border-radius:6px;
+  font-size:15px;cursor:pointer;transition:all .15s;
+  display:flex;align-items:center;justify-content:center;
+}
+.me-action-btn:hover{background:rgba(255,255,255,.07);color:#ccc}
+.me-panel-tab{
+  flex:1;background:none;border:none;border-bottom:2px solid transparent;
+  color:#555;padding:8px 4px;font-size:10px;font-weight:700;
+  letter-spacing:.08em;cursor:pointer;font-family:'Rajdhani',sans-serif;
+  transition:all .15s;
+}
+.me-panel-tab.active{color:#e63946;border-bottom-color:#e63946}
+.me-bubble-btn{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  color:#888;border-radius:7px;padding:6px 4px;font-size:10px;font-weight:700;
+  cursor:pointer;transition:all .15s;letter-spacing:.03em;
+}
+.me-bubble-btn:hover{background:rgba(155,93,229,.15);border-color:rgba(155,93,229,.3);color:#9b5de5}
+.me-sfx-chip{
+  background:rgba(230,57,70,.08);border:1px solid rgba(230,57,70,.2);
+  color:rgba(230,57,70,.7);border-radius:5px;padding:3px 7px;
+  font-size:9px;font-weight:900;letter-spacing:.1em;cursor:pointer;
+  transition:all .15s;font-family:'Cinzel',serif;
+}
+.me-sfx-chip:hover{background:rgba(230,57,70,.2);color:#e63946}
+/* Canvas pages */
+.me-page{
+  background:#fff;
+  position:relative;
+  box-shadow:0 8px 32px rgba(0,0,0,.6);
+  border-radius:2px;
+  cursor:crosshair;
+  overflow:hidden;
+  flex-shrink:0;
+}
+.me-case{
+  position:absolute;border:3px solid #000;
+  background:#fff;overflow:hidden;
+  cursor:move;box-sizing:border-box;
+  transition:box-shadow .1s;
+}
+.me-case.selected{box-shadow:0 0 0 2px #e63946,0 0 0 4px rgba(230,57,70,.25)}
+.me-case img{width:100%;height:100%;object-fit:cover;pointer-events:none}
+.me-bubble{
+  position:absolute;cursor:move;user-select:none;
+}
+.me-bubble.selected .me-bubble-inner{outline:2px solid #e63946}
+.me-bubble-inner{
+  position:relative;background:#fff;border:2.5px solid #000;
+  padding:8px 10px;font-family:'Comic Sans MS','Bangers',cursive;
+  font-size:13px;color:#000;text-align:center;min-width:70px;min-height:34px;
+  border-radius:14px;cursor:text;word-break:break-word;
+}
+.me-sfx-el{
+  position:absolute;cursor:move;
+  font-family:'Bangers','Impact',sans-serif;
+  font-size:36px;font-weight:900;
+  color:#e63946;text-shadow:3px 3px 0 #000,-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000;
+  letter-spacing:.05em;user-select:none;transform-origin:center;
+}
+.me-sfx-el.selected{outline:2px dashed #e63946;outline-offset:4px}
+.me-text-el{
+  position:absolute;cursor:move;
+  font-family:'Rajdhani',sans-serif;font-size:14px;color:#000;
+  min-width:60px;padding:2px;
+}
+.me-text-el.selected{outline:2px dashed #9b5de5;outline-offset:2px}
+/* Poignée de redimensionnement */
+.me-resize-handle{
+  position:absolute;width:10px;height:10px;
+  background:#e63946;border-radius:50%;
+  border:1px solid #fff;cursor:nwse-resize;z-index:5;
+}
+/* Layer list */
+.me-layer-item{
+  display:flex;align-items:center;gap:6px;padding:5px 6px;
+  border-radius:7px;cursor:pointer;transition:background .15s;
+  font-size:11px;color:#888;margin-bottom:2px;
+}
+.me-layer-item:hover{background:rgba(255,255,255,.06)}
+.me-layer-item.active{background:rgba(230,57,70,.1);color:#e63946}
+
 </style>
 
 <!-- ══════════ AUTH ══════════ -->
@@ -1895,6 +1996,32 @@ body.explorer-mode{ overflow:hidden; }
 <div class="sec" id="tab-studio">
   <h1 class="sec-title">Studio</h1>
   <p class="sec-sub">Tableau de bord créateur — gérez vos œuvres comme un pro</p>
+
+  <!-- Accès éditeur de planches -->
+  <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap">
+    <button onclick="openMangaEditor()" style="
+      flex:1;min-width:160px;
+      background:linear-gradient(135deg,#e63946,#c1121f);
+      border:none;border-radius:14px;padding:16px;
+      color:#fff;cursor:pointer;text-align:left;
+      box-shadow:0 6px 20px rgba(230,57,70,.35);
+      transition:transform .2s,box-shadow .2s;
+    " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+      <div style="font-size:26px;margin-bottom:6px">🎨</div>
+      <div style="font-family:'Cinzel',serif;font-size:13px;font-weight:900;letter-spacing:.04em">Éditeur de Planches</div>
+      <div style="font-size:10px;opacity:.7;margin-top:3px;font-family:'Rajdhani',sans-serif;letter-spacing:.06em">CASES · BULLES · IMAGES IA</div>
+    </button>
+    <button onclick="openM('m-addepisode')" style="
+      flex:1;min-width:160px;
+      background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);
+      border-radius:14px;padding:16px;color:#ccc;cursor:pointer;text-align:left;
+      transition:all .2s;
+    " onmouseover="this.style.background='rgba(255,255,255,.09)'" onmouseout="this.style.background='rgba(255,255,255,.05)'">
+      <div style="font-size:26px;margin-bottom:6px">📤</div>
+      <div style="font-family:'Cinzel',serif;font-size:13px;font-weight:900;letter-spacing:.04em">Publier un Épisode</div>
+      <div style="font-size:10px;opacity:.5;margin-top:3px;font-family:'Rajdhani',sans-serif;letter-spacing:.06em">TEXTE · IMAGES · HTML</div>
+    </button>
+  </div>
 
   <!-- Analytique -->
   <div class="glass studio-analytics" style="padding:18px;margin-bottom:18px">
@@ -7041,6 +7168,210 @@ function openAddEpisodeFromFab(){
   </div>
 </div>
 
+
+<!-- ══════════════════════════════════════════════════════
+     ÉDITEUR DE PLANCHES MANGA
+══════════════════════════════════════════════════════ -->
+<div id="manga-editor" style="display:none;position:fixed;inset:0;z-index:600;background:#0a0c15;flex-direction:column;font-family:'Rajdhani',sans-serif">
+
+  <!-- Barre d'outils principale -->
+  <div id="me-toolbar" style="background:#0d0f1a;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:0;height:52px;flex-shrink:0;overflow-x:auto;scrollbar-width:none">
+
+    <!-- Logo + Retour -->
+    <button onclick="closeMangaEditor()" style="background:none;border:none;border-right:1px solid rgba(255,255,255,.08);color:#aaa;padding:0 14px;height:100%;cursor:pointer;display:flex;align-items:center;gap:7px;white-space:nowrap;flex-shrink:0">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+      <span style="font-size:11px;font-weight:700;letter-spacing:.06em">STUDIO</span>
+    </button>
+
+    <!-- Groupe outils -->
+    <div style="display:flex;align-items:center;border-right:1px solid rgba(255,255,255,.08);padding:0 6px;height:100%;gap:2px;flex-shrink:0">
+      <button class="me-tool active" id="me-tool-select"  onclick="meSetTool('select')"  title="Sélectionner (V)">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3l14 9-7 1-4 7z"/></svg>
+      </button>
+      <button class="me-tool" id="me-tool-panel"   onclick="meSetTool('panel')"   title="Ajouter une case (P)">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="1"/></svg>
+      </button>
+      <button class="me-tool" id="me-tool-bubble"  onclick="meSetTool('bubble')"  title="Bulle de dialogue (B)">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </button>
+      <button class="me-tool" id="me-tool-text"    onclick="meSetTool('text')"    title="Texte libre (T)">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+      </button>
+      <button class="me-tool" id="me-tool-image"   onclick="meSetTool('image')"   title="Image (I)">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      </button>
+      <button class="me-tool" id="me-tool-sfx"     onclick="meSetTool('sfx')"     title="Effet sonore (S)">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+      </button>
+      <button class="me-tool" id="me-tool-pen"     onclick="meSetTool('pen')"     title="Dessiner (D)">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+      </button>
+    </div>
+
+    <!-- Grilles prédéfinies -->
+    <div style="display:flex;align-items:center;padding:0 8px;gap:4px;border-right:1px solid rgba(255,255,255,.08);flex-shrink:0">
+      <span style="font-size:9px;color:#555;letter-spacing:.1em;margin-right:2px">GRILLE</span>
+      <button class="me-grid-btn" onclick="meApplyGrid('1x1')" title="1 case">⬜</button>
+      <button class="me-grid-btn" onclick="meApplyGrid('2x1')" title="2 colonnes">⬛⬛</button>
+      <button class="me-grid-btn" onclick="meApplyGrid('2x2')" title="4 cases">⊞</button>
+      <button class="me-grid-btn" onclick="meApplyGrid('3x2')" title="6 cases">⊟</button>
+      <button class="me-grid-btn" onclick="meApplyGrid('manga5')" title="5 cases manga">🗾</button>
+      <button class="me-grid-btn" onclick="meApplyGrid('manga7')" title="7 cases manga">📖</button>
+    </div>
+
+    <!-- Actions -->
+    <div style="display:flex;align-items:center;padding:0 8px;gap:4px;border-right:1px solid rgba(255,255,255,.08);flex-shrink:0">
+      <button class="me-action-btn" onclick="meUndo()" title="Annuler (Ctrl+Z)">↩</button>
+      <button class="me-action-btn" onclick="meRedo()" title="Rétablir (Ctrl+Y)">↪</button>
+      <button class="me-action-btn" onclick="meDeleteSelected()" title="Supprimer" style="color:#e63946">🗑</button>
+    </div>
+
+    <!-- Format page -->
+    <div style="display:flex;align-items:center;padding:0 8px;gap:6px;border-right:1px solid rgba(255,255,255,.08);flex-shrink:0">
+      <span style="font-size:9px;color:#555;letter-spacing:.1em">FORMAT</span>
+      <select id="me-format" onchange="meSetFormat(this.value)" style="background:#161920;border:1px solid #2a2d3a;color:#ccc;border-radius:6px;padding:4px 6px;font-size:10px;font-family:'Rajdhani',sans-serif;font-weight:700">
+        <option value="a4p">A4 Portrait</option>
+        <option value="a4l">A4 Paysage</option>
+        <option value="manga">Manga (B5)</option>
+        <option value="webtoon">Webtoon</option>
+        <option value="square">Carré</option>
+      </select>
+    </div>
+
+    <!-- Export + IA -->
+    <div style="display:flex;align-items:center;padding:0 8px;gap:4px;margin-left:auto;flex-shrink:0">
+      <button onclick="meOpenAiGen()" style="background:rgba(155,93,229,.15);border:1px solid rgba(155,93,229,.3);color:#9b5de5;border-radius:8px;padding:5px 12px;font-size:10px;font-weight:700;cursor:pointer;letter-spacing:.06em;white-space:nowrap">✦ IA</button>
+      <button onclick="meExportPNG()" style="background:rgba(230,57,70,.15);border:1px solid rgba(230,57,70,.3);color:#e63946;border-radius:8px;padding:5px 10px;font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap">PNG</button>
+      <button onclick="meExportAndPublish()" style="background:linear-gradient(135deg,#e63946,#c1121f);border:none;color:#fff;border-radius:8px;padding:5px 12px;font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:0 3px 10px rgba(230,57,70,.4)">PUBLIER →</button>
+    </div>
+  </div>
+
+  <!-- Corps : panneau gauche + canvas + panneau droit -->
+  <div style="flex:1;display:flex;overflow:hidden">
+
+    <!-- ── PANNEAU GAUCHE — Calques + Propriétés ── -->
+    <div id="me-left-panel" style="width:200px;background:#0d0f1a;border-right:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden">
+      <!-- Onglets -->
+      <div style="display:flex;border-bottom:1px solid rgba(255,255,255,.07)">
+        <button class="me-panel-tab active" id="me-tab-layers" onclick="meShowPanel('layers')">Calques</button>
+        <button class="me-panel-tab" id="me-tab-props"  onclick="meShowPanel('props')">Props</button>
+      </div>
+      <!-- Calques -->
+      <div id="me-panel-layers" style="flex:1;overflow-y:auto;padding:8px">
+        <div style="font-size:9px;color:#555;letter-spacing:.1em;margin-bottom:8px">CALQUES</div>
+        <div id="me-layers-list"></div>
+        <button onclick="meAddLayer()" style="width:100%;margin-top:8px;background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.1);color:#666;border-radius:7px;padding:6px;font-size:10px;font-weight:700;cursor:pointer;letter-spacing:.06em">+ CALQUE</button>
+      </div>
+      <!-- Propriétés -->
+      <div id="me-panel-props" style="flex:1;overflow-y:auto;padding:8px;display:none">
+        <div style="font-size:9px;color:#555;letter-spacing:.1em;margin-bottom:10px">PROPRIÉTÉS</div>
+        <div id="me-props-content">
+          <div style="color:#444;font-size:11px;text-align:center;padding:20px">Sélectionnez un élément</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CANVAS CENTRAL ── -->
+    <div id="me-canvas-wrap" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;background:#1a1c24;overflow:auto;padding:20px;position:relative">
+      <!-- Pages -->
+      <div id="me-pages" style="display:flex;flex-direction:column;gap:20px;align-items:center">
+        <!-- Page 1 générée par JS -->
+      </div>
+      <!-- Zoom controls -->
+      <div style="position:fixed;bottom:80px;right:220px;display:flex;gap:6px;z-index:10">
+        <button onclick="meZoom(-0.1)" style="background:#0d0f1a;border:1px solid #2a2d3a;color:#888;border-radius:7px;width:32px;height:32px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">−</button>
+        <button onclick="meZoom(0)"    style="background:#0d0f1a;border:1px solid #2a2d3a;color:#666;border-radius:7px;width:48px;height:32px;font-size:10px;font-weight:700;cursor:pointer" id="me-zoom-label">100%</button>
+        <button onclick="meZoom(+0.1)" style="background:#0d0f1a;border:1px solid #2a2d3a;color:#888;border-radius:7px;width:32px;height:32px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>
+      </div>
+    </div>
+
+    <!-- ── PANNEAU DROIT — Upload + IA + Bulles ── -->
+    <div id="me-right-panel" style="width:220px;background:#0d0f1a;border-left:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto">
+
+      <!-- Upload images -->
+      <div style="padding:10px;border-bottom:1px solid rgba(255,255,255,.06)">
+        <div style="font-size:9px;color:#555;letter-spacing:.1em;margin-bottom:8px">IMAGES</div>
+        <div id="me-img-dropzone" onclick="document.getElementById('me-img-input').click()" style="border:2px dashed rgba(255,255,255,.1);border-radius:10px;padding:16px 10px;text-align:center;cursor:pointer;transition:border-color .2s" onmouseover="this.style.borderColor='rgba(230,57,70,.4)'" onmouseout="this.style.borderColor='rgba(255,255,255,.1)'">
+          <div style="font-size:22px;margin-bottom:4px">🖼️</div>
+          <div style="font-size:10px;color:#666;font-weight:700">Uploader des images</div>
+          <div style="font-size:9px;color:#444;margin-top:2px">PNG · JPG · WEBP</div>
+        </div>
+        <input type="file" id="me-img-input" accept="image/*" multiple style="display:none" onchange="meUploadImages(event)"/>
+        <div id="me-img-gallery" style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px"></div>
+      </div>
+
+      <!-- Génération IA d'images -->
+      <div style="padding:10px;border-bottom:1px solid rgba(255,255,255,.06)">
+        <div style="font-size:9px;color:#555;letter-spacing:.1em;margin-bottom:8px">GÉNÉRATION IA</div>
+        <textarea id="me-ai-prompt" placeholder="Décrivez la scène manga à générer..." style="width:100%;box-sizing:border-box;background:#0f1117;border:1px solid #2a2d3a;border-radius:8px;color:#eaeef5;padding:8px;font-size:11px;resize:none;min-height:64px;outline:none;font-family:'Rajdhani',sans-serif"></textarea>
+        <div style="display:flex;gap:4px;margin-top:6px">
+          <select id="me-ai-style" style="flex:1;background:#0f1117;border:1px solid #2a2d3a;color:#ccc;border-radius:6px;padding:5px;font-size:10px;font-family:'Rajdhani',sans-serif;font-weight:700">
+            <option value="manga">Manga N&B</option>
+            <option value="manga_color">Manga Couleur</option>
+            <option value="anime">Anime</option>
+            <option value="sketch">Esquisse</option>
+            <option value="panel">Case manga</option>
+            <option value="character">Personnage</option>
+            <option value="background">Décor</option>
+            <option value="cover">Couverture</option>
+          </select>
+        </div>
+        <button onclick="meGenerateAiImage()" id="me-ai-gen-btn" style="width:100%;margin-top:6px;background:linear-gradient(135deg,#9b5de5,#7b2fd6);border:none;color:#fff;border-radius:8px;padding:8px;font-size:11px;font-weight:900;cursor:pointer;letter-spacing:.06em;box-shadow:0 3px 10px rgba(155,93,229,.35)">✦ GÉNÉRER</button>
+        <div id="me-ai-result" style="margin-top:8px"></div>
+      </div>
+
+      <!-- Types de bulles -->
+      <div style="padding:10px;border-bottom:1px solid rgba(255,255,255,.06)">
+        <div style="font-size:9px;color:#555;letter-spacing:.1em;margin-bottom:8px">BULLES DE DIALOGUE</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px">
+          <button class="me-bubble-btn" onclick="meAddBubble('speech')"   title="Bulle parole">💬 Parole</button>
+          <button class="me-bubble-btn" onclick="meAddBubble('thought')"  title="Bulle pensée">💭 Pensée</button>
+          <button class="me-bubble-btn" onclick="meAddBubble('shout')"    title="Cri / Action">📢 Cri</button>
+          <button class="me-bubble-btn" onclick="meAddBubble('whisper')"  title="Chuchotement">🤫 Chuchoter</button>
+          <button class="me-bubble-btn" onclick="meAddBubble('narrator')" title="Narration">📜 Narrateur</button>
+          <button class="me-bubble-btn" onclick="meAddBubble('sfx')"      title="Effet sonore">💥 SFX</button>
+        </div>
+      </div>
+
+      <!-- Effets de texte SFX -->
+      <div style="padding:10px;border-bottom:1px solid rgba(255,255,255,.06)">
+        <div style="font-size:9px;color:#555;letter-spacing:.1em;margin-bottom:8px">EFFETS SONORES</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px">
+          <button class="me-sfx-chip" onclick="meAddSFX('BOOM')">BOOM</button>
+          <button class="me-sfx-chip" onclick="meAddSFX('BANG')">BANG</button>
+          <button class="me-sfx-chip" onclick="meAddSFX('CRASH')">CRASH</button>
+          <button class="me-sfx-chip" onclick="meAddSFX('SLASH')">SLASH</button>
+          <button class="me-sfx-chip" onclick="meAddSFX('WHOOSH')">WHOOSH</button>
+          <button class="me-sfx-chip" onclick="meAddSFX('ZAP')">ZAP</button>
+          <button class="me-sfx-chip" onclick="meAddSFX('CRACK')">CRACK</button>
+          <button class="me-sfx-chip" onclick="meAddSFX('THUD')">THUD</button>
+          <button class="me-sfx-chip" onclick="meAddSFX('POW')">POW</button>
+          <button class="me-sfx-chip" onclick="meAddSFX('SWOOSH')">SWOOSH</button>
+        </div>
+      </div>
+
+      <!-- Couleurs et traits -->
+      <div style="padding:10px">
+        <div style="font-size:9px;color:#555;letter-spacing:.1em;margin-bottom:8px">STYLE</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <label style="font-size:10px;color:#777;flex:1">Couleur</label>
+          <input type="color" id="me-color" value="#000000" onchange="meSetColor(this.value)" style="width:32px;height:28px;border:none;border-radius:5px;cursor:pointer;background:none;padding:0"/>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <label style="font-size:10px;color:#777;flex:1">Épaisseur</label>
+          <input type="range" id="me-stroke" min="1" max="12" value="2" onchange="meSetStroke(this.value)" style="flex:2"/>
+          <span id="me-stroke-val" style="font-size:10px;color:#666;width:16px">2</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <label style="font-size:10px;color:#777;flex:1">Opacité</label>
+          <input type="range" id="me-opacity" min="10" max="100" value="100" onchange="meSetOpacity(this.value)" style="flex:2"/>
+          <span id="me-opacity-val" style="font-size:10px;color:#666;width:24px">100%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ══════════ CURSEUR PERSONNALISÉ ══════════ -->
 <div id="mf-cursor"></div>
 <div id="mf-cursor-dot"></div>
@@ -7585,6 +7916,677 @@ function elToggle(text, voiceId, btnId){
   elSpeak(text, voiceId, ()=>{
     if(btn) btn.innerHTML = '🔊';
   });
+}
+
+
+// ════════════════════════════════════════════════════════
+// ÉDITEUR DE PLANCHES MANGA
+// ════════════════════════════════════════════════════════
+const ME = {
+  tool: 'select',
+  zoom: 1,
+  color: '#000000',
+  stroke: 2,
+  opacity: 1,
+  pages: [],
+  currentPage: 0,
+  selected: null,
+  history: [],
+  historyIdx: -1,
+  dragging: false,
+  dragStart: null,
+  drawing: false,
+  drawCanvas: null,
+  drawCtx: null,
+  formats: {
+    a4p:    { w: 595, h: 842,  label: 'A4 Portrait' },
+    a4l:    { w: 842, h: 595,  label: 'A4 Paysage' },
+    manga:  { w: 515, h: 728,  label: 'Manga B5' },
+    webtoon:{ w: 720, h: 2400, label: 'Webtoon' },
+    square: { w: 600, h: 600,  label: 'Carré' }
+  },
+  format: 'manga',
+  uploadedImages: []
+};
+
+function openMangaEditor(){
+  const ed = document.getElementById('manga-editor');
+  ed.style.display = 'flex';
+  document.body.classList.add('explorer-mode'); // cacher header/footer
+  if(!ME.pages.length) meInitPage();
+  meRenderLayers();
+}
+
+function closeMangaEditor(){
+  document.getElementById('manga-editor').style.display = 'none';
+  document.body.classList.remove('explorer-mode');
+}
+
+// ── Initialiser une page ──
+function meInitPage(){
+  const fmt = ME.formats[ME.format];
+  const page = {
+    id: 'page-' + Date.now(),
+    format: ME.format,
+    w: fmt.w, h: fmt.h,
+    elements: [],
+    layers: [{ id: 'layer-1', name: 'Calque 1', visible: true, locked: false }],
+    activeLayer: 'layer-1'
+  };
+  ME.pages.push(page);
+  ME.currentPage = ME.pages.length - 1;
+  meRenderPages();
+}
+
+// ── Rendu des pages ──
+function meRenderPages(){
+  const container = document.getElementById('me-pages');
+  if(!container) return;
+  container.innerHTML = '';
+  ME.pages.forEach((page, pi) => {
+    const scale = ME.zoom;
+    const div = document.createElement('div');
+    div.className = 'me-page';
+    div.id = page.id;
+    div.style.width  = (page.w * scale) + 'px';
+    div.style.height = (page.h * scale) + 'px';
+
+    // Canvas de dessin
+    const drawCv = document.createElement('canvas');
+    drawCv.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:2';
+    drawCv.width  = page.w * scale;
+    drawCv.height = page.h * scale;
+    drawCv.id = page.id + '-draw';
+    div.appendChild(drawCv);
+
+    // Éléments
+    page.elements.forEach(el => {
+      div.appendChild(meRenderElement(el, scale));
+    });
+
+    // Events
+    div.addEventListener('mousedown',  e => meOnPageMouseDown(e, pi, scale));
+    div.addEventListener('mousemove',  e => meOnPageMouseMove(e, pi, scale));
+    div.addEventListener('mouseup',    e => meOnPageMouseUp(e, pi, scale));
+    div.addEventListener('touchstart', e => meOnPageTouchStart(e, pi, scale), {passive:false});
+    div.addEventListener('touchmove',  e => meOnPageTouchMove(e, pi, scale), {passive:false});
+    div.addEventListener('touchend',   e => meOnPageTouchEnd(e, pi, scale), {passive:false});
+
+    container.appendChild(div);
+  });
+
+  // Numéro de page
+  const lbl = document.createElement('div');
+  lbl.style.cssText = 'display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap;justify-content:center';
+  ME.pages.forEach((p, pi) => {
+    const b = document.createElement('button');
+    b.textContent = 'Page ' + (pi+1);
+    b.style.cssText = `background:${pi===ME.currentPage?'rgba(230,57,70,.3)':'rgba(255,255,255,.06)'};border:1px solid ${pi===ME.currentPage?'rgba(230,57,70,.5)':'rgba(255,255,255,.1)'};color:${pi===ME.currentPage?'#e63946':'#888'};border-radius:7px;padding:5px 12px;font-size:10px;font-weight:700;cursor:pointer;`;
+    b.onclick = () => { ME.currentPage = pi; meRenderPages(); };
+    lbl.appendChild(b);
+  });
+  const addBtn = document.createElement('button');
+  addBtn.textContent = '+ Page';
+  addBtn.style.cssText = 'background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.15);color:#666;border-radius:7px;padding:5px 12px;font-size:10px;font-weight:700;cursor:pointer;';
+  addBtn.onclick = meAddPage;
+  lbl.appendChild(addBtn);
+  container.appendChild(lbl);
+}
+
+function meRenderElement(el, scale){
+  const d = document.createElement('div');
+  d.id = el.id;
+  d.style.position = 'absolute';
+  d.style.left   = (el.x * scale) + 'px';
+  d.style.top    = (el.y * scale) + 'px';
+  d.style.width  = (el.w * scale) + 'px';
+  d.style.height = (el.h * scale) + 'px';
+  d.style.zIndex = el.z || 1;
+  if(ME.selected === el.id) d.classList.add('selected');
+
+  if(el.type === 'case'){
+    d.className = 'me-case' + (ME.selected===el.id?' selected':'');
+    d.style.borderWidth = (el.borderW||3) + 'px';
+    d.style.borderColor = el.borderColor || '#000';
+    if(el.imageUrl){
+      const img = document.createElement('img');
+      img.src = el.imageUrl;
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;pointer-events:none';
+      d.appendChild(img);
+    }
+    d.addEventListener('mousedown', e => { e.stopPropagation(); meSelect(el.id); meDragStart(e, el, scale); });
+    d.addEventListener('touchstart', e => { e.stopPropagation(); meSelect(el.id); meDragStartTouch(e, el, scale); }, {passive:false});
+
+  } else if(el.type === 'bubble'){
+    d.className = 'me-bubble' + (ME.selected===el.id?' selected':'');
+    const inner = document.createElement('div');
+    inner.className = 'me-bubble-inner';
+    inner.contentEditable = 'true';
+    inner.textContent = el.text || 'Texte...';
+    inner.style.fontFamily = el.font || 'Comic Sans MS';
+    inner.style.fontSize = ((el.fontSize||13)*scale) + 'px';
+    inner.style.borderRadius = el.bubbleStyle==='thought'?'50%':el.bubbleStyle==='shout'?'4px':'14px';
+    inner.style.background = el.bg || '#fff';
+    inner.oninput = () => { el.text = inner.textContent; };
+    // Queue pointer
+    if(el.bubbleStyle==='speech'||el.bubbleStyle==='shout'){
+      const arrow = document.createElement('div');
+      arrow.style.cssText = 'position:absolute;bottom:-14px;left:20px;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:14px solid #000;';
+      inner.appendChild(arrow);
+      const arrowInner = document.createElement('div');
+      arrowInner.style.cssText = 'position:absolute;bottom:-11px;left:21px;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:13px solid '+(el.bg||'#fff')+';';
+      inner.appendChild(arrowInner);
+    }
+    d.appendChild(inner);
+    d.addEventListener('mousedown', e => { e.stopPropagation(); meSelect(el.id); meDragStart(e, el, scale); });
+    d.addEventListener('touchstart', e => { e.stopPropagation(); meSelect(el.id); meDragStartTouch(e, el, scale); }, {passive:false});
+
+  } else if(el.type === 'sfx'){
+    d.className = 'me-sfx-el' + (ME.selected===el.id?' selected':'');
+    d.textContent = el.text || 'BOOM';
+    d.style.fontSize = ((el.fontSize||36)*scale) + 'px';
+    d.style.color = el.color || '#e63946';
+    d.style.transform = `rotate(${el.rotate||0}deg)`;
+    d.style.width = 'auto';
+    d.style.height = 'auto';
+    d.addEventListener('mousedown', e => { e.stopPropagation(); meSelect(el.id); meDragStart(e, el, scale); });
+    d.addEventListener('touchstart', e => { e.stopPropagation(); meSelect(el.id); meDragStartTouch(e, el, scale); }, {passive:false});
+
+  } else if(el.type === 'text'){
+    d.className = 'me-text-el' + (ME.selected===el.id?' selected':'');
+    d.contentEditable = 'true';
+    d.textContent = el.text || 'Texte';
+    d.style.fontSize = ((el.fontSize||14)*scale) + 'px';
+    d.style.color = el.color || '#000';
+    d.style.fontFamily = el.font || 'Rajdhani';
+    d.oninput = () => { el.text = d.textContent; };
+    d.addEventListener('mousedown', e => { e.stopPropagation(); meSelect(el.id); meDragStart(e, el, scale); });
+    d.addEventListener('touchstart', e => { e.stopPropagation(); meSelect(el.id); meDragStartTouch(e, el, scale); }, {passive:false});
+  }
+
+  return d;
+}
+
+// ── Outil actif ──
+function meSetTool(t){
+  ME.tool = t;
+  document.querySelectorAll('.me-tool').forEach(b=>b.classList.remove('active'));
+  const btn = document.getElementById('me-tool-'+t);
+  if(btn) btn.classList.add('active');
+  const page = document.getElementById(ME.pages[ME.currentPage]?.id);
+  if(page) page.style.cursor = t==='select'?'default':t==='pen'?'crosshair':'crosshair';
+}
+
+// ── Events page ──
+function meGetPagePos(e, scale){
+  const page = document.getElementById(ME.pages[ME.currentPage]?.id);
+  if(!page) return {x:0,y:0};
+  const rect = page.getBoundingClientRect();
+  const clientX = e.clientX || (e.touches && e.touches[0]?.clientX) || 0;
+  const clientY = e.clientY || (e.touches && e.touches[0]?.clientY) || 0;
+  return { x: (clientX-rect.left)/scale, y: (clientY-rect.top)/scale };
+}
+
+let _meDrawStart = null;
+function meOnPageMouseDown(e, pi, scale){
+  if(pi !== ME.currentPage) return;
+  const pos = meGetPagePos(e, scale);
+  ME.currentPage = pi;
+
+  if(ME.tool === 'panel'){
+    _meDrawStart = pos;
+    ME.drawing = true;
+    e.preventDefault();
+  } else if(ME.tool === 'bubble'){
+    meAddBubble('speech', pos);
+  } else if(ME.tool === 'text'){
+    meAddTextEl(pos);
+  } else if(ME.tool === 'select'){
+    meDeselect();
+  } else if(ME.tool === 'pen'){
+    _meDrawStart = pos;
+    ME.drawing = true;
+    const cv = document.getElementById(ME.pages[pi].id + '-draw');
+    if(cv){ ME.drawCtx = cv.getContext('2d'); ME.drawCtx.beginPath(); ME.drawCtx.moveTo(pos.x*scale, pos.y*scale); }
+    e.preventDefault();
+  }
+}
+
+function meOnPageMouseMove(e, pi, scale){
+  if(!ME.drawing || pi !== ME.currentPage) return;
+  const pos = meGetPagePos(e, scale);
+  if(ME.tool === 'pen' && ME.drawCtx){
+    ME.drawCtx.lineTo(pos.x*scale, pos.y*scale);
+    ME.drawCtx.strokeStyle = ME.color;
+    ME.drawCtx.lineWidth = ME.stroke;
+    ME.drawCtx.lineCap = 'round';
+    ME.drawCtx.lineJoin = 'round';
+    ME.drawCtx.stroke();
+  }
+  e.preventDefault();
+}
+
+function meOnPageMouseUp(e, pi, scale){
+  if(!ME.drawing || pi !== ME.currentPage) return;
+  const pos = meGetPagePos(e, scale);
+  if(ME.tool === 'panel' && _meDrawStart){
+    const x = Math.min(_meDrawStart.x, pos.x);
+    const y = Math.min(_meDrawStart.y, pos.y);
+    const w = Math.abs(pos.x - _meDrawStart.x);
+    const h = Math.abs(pos.y - _meDrawStart.y);
+    if(w > 20 && h > 20) meAddCase({x,y,w,h});
+  }
+  ME.drawing = false;
+  _meDrawStart = null;
+  if(ME.drawCtx){ ME.drawCtx.beginPath(); ME.drawCtx = null; }
+}
+
+function meOnPageTouchStart(e,pi,scale){ if(e.touches.length===1){ const t=e.touches[0]; meOnPageMouseDown({clientX:t.clientX,clientY:t.clientY},pi,scale); } }
+function meOnPageTouchMove(e,pi,scale){ if(e.touches.length===1){ const t=e.touches[0]; meOnPageMouseMove({clientX:t.clientX,clientY:t.clientY},pi,scale); e.preventDefault(); } }
+function meOnPageTouchEnd(e,pi,scale){ if(e.changedTouches.length===1){ const t=e.changedTouches[0]; meOnPageMouseUp({clientX:t.clientX,clientY:t.clientY},pi,scale); } }
+
+// ── Drag élément ──
+let _meDragEl=null, _meDragOff={x:0,y:0};
+function meDragStart(e, el, scale){
+  _meDragEl = el;
+  _meDragOff = { x: e.clientX - el.x*scale, y: e.clientY - el.y*scale };
+  const onMove = ev => {
+    el.x = (ev.clientX - _meDragOff.x) / scale;
+    el.y = (ev.clientY - _meDragOff.y) / scale;
+    const dom = document.getElementById(el.id);
+    if(dom){ dom.style.left = (el.x*scale)+'px'; dom.style.top = (el.y*scale)+'px'; }
+  };
+  const onUp = () => { document.removeEventListener('mousemove',onMove); document.removeEventListener('mouseup',onUp); meSaveHistory(); };
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+}
+function meDragStartTouch(e, el, scale){
+  const t0 = e.touches[0];
+  const offX = t0.clientX - el.x*scale;
+  const offY = t0.clientY - el.y*scale;
+  const onMove = ev => {
+    const t = ev.touches[0];
+    el.x = (t.clientX - offX) / scale;
+    el.y = (t.clientY - offY) / scale;
+    const dom = document.getElementById(el.id);
+    if(dom){ dom.style.left=(el.x*scale)+'px'; dom.style.top=(el.y*scale)+'px'; }
+    ev.preventDefault();
+  };
+  const onEnd = () => { document.removeEventListener('touchmove',onMove); document.removeEventListener('touchend',onEnd); meSaveHistory(); };
+  document.addEventListener('touchmove',onMove,{passive:false});
+  document.addEventListener('touchend',onEnd);
+}
+
+// ── Ajouter éléments ──
+function meAddCase(rect){
+  const page = ME.pages[ME.currentPage];
+  const el = { id:'el-'+Date.now(), type:'case', x:rect?.x||40, y:rect?.y||40, w:rect?.w||200, h:rect?.h||150, z:page.elements.length+1, borderW:3, borderColor:'#000', imageUrl:'' };
+  page.elements.push(el);
+  meSaveHistory();
+  meRenderPages();
+  meSelect(el.id);
+  meShowProps(el);
+}
+
+function meAddBubble(style, pos){
+  const page = ME.pages[ME.currentPage];
+  const x = pos?.x || 60 + Math.random()*100;
+  const y = pos?.y || 60 + Math.random()*100;
+  const el = { id:'el-'+Date.now(), type:'bubble', x, y, w:120, h:60, z:page.elements.length+2, bubbleStyle:style, text:style==='narrator'?'[Narration]':style==='sfx'?'SFX':'Texte...', font:'Comic Sans MS', fontSize:13, bg:'#fff' };
+  page.elements.push(el);
+  meSaveHistory();
+  meRenderPages();
+  meSelect(el.id);
+}
+
+function meAddSFX(text){
+  const page = ME.pages[ME.currentPage];
+  const el = { id:'el-'+Date.now(), type:'sfx', x:80+Math.random()*100, y:80+Math.random()*80, w:150, h:60, z:page.elements.length+3, text, fontSize:40, color:ME.color, rotate:Math.random()*20-10 };
+  page.elements.push(el);
+  meSaveHistory();
+  meRenderPages();
+  meSelect(el.id);
+}
+
+function meAddTextEl(pos){
+  const page = ME.pages[ME.currentPage];
+  const el = { id:'el-'+Date.now(), type:'text', x:pos?.x||80, y:pos?.y||80, w:120, h:30, z:page.elements.length+1, text:'Texte libre', fontSize:14, color:ME.color, font:'Rajdhani' };
+  page.elements.push(el);
+  meSaveHistory();
+  meRenderPages();
+  meSelect(el.id);
+}
+
+// ── Grilles prédéfinies ──
+function meApplyGrid(type){
+  const page = ME.pages[ME.currentPage];
+  const W = page.w, H = page.h;
+  const pad = 12, gap = 6;
+  const configs = {
+    '1x1': [[{x:pad,y:pad,w:W-pad*2,h:H-pad*2}]],
+    '2x1': [[{x:pad,y:pad,w:(W-pad*2-gap)/2,h:H-pad*2},{x:pad+(W-pad*2-gap)/2+gap,y:pad,w:(W-pad*2-gap)/2,h:H-pad*2}]],
+    '2x2': [[
+      {x:pad,y:pad,w:(W-pad*2-gap)/2,h:(H-pad*2-gap)/2},
+      {x:pad+(W-pad*2-gap)/2+gap,y:pad,w:(W-pad*2-gap)/2,h:(H-pad*2-gap)/2},
+      {x:pad,y:pad+(H-pad*2-gap)/2+gap,w:(W-pad*2-gap)/2,h:(H-pad*2-gap)/2},
+      {x:pad+(W-pad*2-gap)/2+gap,y:pad+(H-pad*2-gap)/2+gap,w:(W-pad*2-gap)/2,h:(H-pad*2-gap)/2}
+    ]],
+    '3x2': [[
+      {x:pad,y:pad,w:(W-pad*2-gap*2)/3,h:(H-pad*2-gap)/2},
+      {x:pad+(W-pad*2-gap*2)/3+gap,y:pad,w:(W-pad*2-gap*2)/3,h:(H-pad*2-gap)/2},
+      {x:pad+(W-pad*2-gap*2)/3*2+gap*2,y:pad,w:(W-pad*2-gap*2)/3,h:(H-pad*2-gap)/2},
+      {x:pad,y:pad+(H-pad*2-gap)/2+gap,w:(W-pad*2-gap*2)/3,h:(H-pad*2-gap)/2},
+      {x:pad+(W-pad*2-gap*2)/3+gap,y:pad+(H-pad*2-gap)/2+gap,w:(W-pad*2-gap*2)/3,h:(H-pad*2-gap)/2},
+      {x:pad+(W-pad*2-gap*2)/3*2+gap*2,y:pad+(H-pad*2-gap)/2+gap,w:(W-pad*2-gap*2)/3,h:(H-pad*2-gap)/2}
+    ]],
+    'manga5': [[
+      {x:pad,y:pad,w:W-pad*2,h:(H-pad*2)*0.35},
+      {x:pad,y:pad+(H-pad*2)*0.35+gap,w:(W-pad*2-gap)*0.6,h:(H-pad*2)*0.3},
+      {x:pad+(W-pad*2-gap)*0.6+gap,y:pad+(H-pad*2)*0.35+gap,w:(W-pad*2-gap)*0.4,h:(H-pad*2)*0.3},
+      {x:pad,y:pad+(H-pad*2)*0.65+gap*2,w:(W-pad*2-gap)*0.4,h:(H-pad*2)*0.35},
+      {x:pad+(W-pad*2-gap)*0.4+gap,y:pad+(H-pad*2)*0.65+gap*2,w:(W-pad*2-gap)*0.6,h:(H-pad*2)*0.35}
+    ]],
+    'manga7': [[
+      {x:pad,y:pad,w:(W-pad*2-gap)*0.55,h:(H-pad*2)*0.28},
+      {x:pad+(W-pad*2-gap)*0.55+gap,y:pad,w:(W-pad*2-gap)*0.45,h:(H-pad*2)*0.28},
+      {x:pad,y:pad+(H-pad*2)*0.28+gap,w:W-pad*2,h:(H-pad*2)*0.22},
+      {x:pad,y:pad+(H-pad*2)*0.5+gap*2,w:(W-pad*2-gap)*0.35,h:(H-pad*2)*0.26},
+      {x:pad+(W-pad*2-gap)*0.35+gap,y:pad+(H-pad*2)*0.5+gap*2,w:(W-pad*2-gap)*0.65,h:(H-pad*2)*0.26},
+      {x:pad,y:pad+(H-pad*2)*0.76+gap*3,w:(W-pad*2-gap)*0.65,h:(H-pad*2)*0.24},
+      {x:pad+(W-pad*2-gap)*0.65+gap,y:pad+(H-pad*2)*0.76+gap*3,w:(W-pad*2-gap)*0.35,h:(H-pad*2)*0.24}
+    ]]
+  };
+  const layout = configs[type];
+  if(!layout) return;
+  // Supprimer les cases existantes
+  page.elements = page.elements.filter(e=>e.type!=='case');
+  layout[0].forEach(r => {
+    page.elements.push({ id:'el-'+Date.now()+Math.random(), type:'case', ...r, z:1, borderW:3, borderColor:'#000', imageUrl:'' });
+  });
+  meSaveHistory();
+  meRenderPages();
+}
+
+// ── Sélection ──
+function meSelect(id){
+  ME.selected = id;
+  meRenderPages();
+  const page = ME.pages[ME.currentPage];
+  const el = page?.elements.find(e=>e.id===id);
+  if(el) meShowProps(el);
+}
+function meDeselect(){ ME.selected=null; meRenderPages(); meShowPanel('props'); const pc=document.getElementById('me-props-content'); if(pc) pc.innerHTML='<div style="color:#444;font-size:11px;text-align:center;padding:20px">Selectionnez un element</div>'; }
+
+// ── Propriétés ──
+function meShowProps(el){
+  meShowPanel('props');
+  const pc = document.getElementById('me-props-content');
+  if(!pc) return;
+  const typeLabels = { case:'Case', bubble:'Bulle', sfx:'SFX', text:'Texte', image:'Image' };
+  pc.innerHTML = `
+    <div style="font-size:10px;color:#e63946;font-weight:700;letter-spacing:.08em;margin-bottom:10px">${typeLabels[el.type]||el.type}</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div><label style="font-size:9px;color:#555;letter-spacing:.08em">X</label><input type="number" value="${Math.round(el.x)}" onchange="meSetProp('${el.id}','x',+this.value)" style="width:100%;background:#0f1117;border:1px solid #2a2d3a;color:#ccc;border-radius:5px;padding:4px 6px;font-size:11px;box-sizing:border-box"/></div>
+      <div><label style="font-size:9px;color:#555;letter-spacing:.08em">Y</label><input type="number" value="${Math.round(el.y)}" onchange="meSetProp('${el.id}','y',+this.value)" style="width:100%;background:#0f1117;border:1px solid #2a2d3a;color:#ccc;border-radius:5px;padding:4px 6px;font-size:11px;box-sizing:border-box"/></div>
+      <div><label style="font-size:9px;color:#555;letter-spacing:.08em">Largeur</label><input type="number" value="${Math.round(el.w)}" onchange="meSetProp('${el.id}','w',+this.value)" style="width:100%;background:#0f1117;border:1px solid #2a2d3a;color:#ccc;border-radius:5px;padding:4px 6px;font-size:11px;box-sizing:border-box"/></div>
+      <div><label style="font-size:9px;color:#555;letter-spacing:.08em">Hauteur</label><input type="number" value="${Math.round(el.h)}" onchange="meSetProp('${el.id}','h',+this.value)" style="width:100%;background:#0f1117;border:1px solid #2a2d3a;color:#ccc;border-radius:5px;padding:4px 6px;font-size:11px;box-sizing:border-box"/></div>
+      ${el.type==='sfx'||el.type==='text'?`<div><label style="font-size:9px;color:#555;letter-spacing:.08em">Taille police</label><input type="number" value="${el.fontSize||14}" onchange="meSetProp('${el.id}','fontSize',+this.value)" style="width:100%;background:#0f1117;border:1px solid #2a2d3a;color:#ccc;border-radius:5px;padding:4px 6px;font-size:11px;box-sizing:border-box"/></div>`:''}
+      ${el.type==='case'?`
+        <div><label style="font-size:9px;color:#555;letter-spacing:.08em">Bord px</label><input type="number" value="${el.borderW||3}" onchange="meSetProp('${el.id}','borderW',+this.value)" style="width:100%;background:#0f1117;border:1px solid #2a2d3a;color:#ccc;border-radius:5px;padding:4px 6px;font-size:11px;box-sizing:border-box"/></div>
+        <button onclick="meSetImageOnCase('${el.id}')" style="width:100%;background:rgba(230,57,70,.1);border:1px solid rgba(230,57,70,.2);color:#e63946;border-radius:7px;padding:7px;font-size:10px;font-weight:700;cursor:pointer;margin-top:4px">🖼 Choisir image</button>
+        <button onclick="meGenerateImageForCase('${el.id}')" style="width:100%;background:rgba(155,93,229,.1);border:1px solid rgba(155,93,229,.2);color:#9b5de5;border-radius:7px;padding:7px;font-size:10px;font-weight:700;cursor:pointer;margin-top:4px">✦ Generer IA</button>
+      `:''}
+      <button onclick="meDeleteEl('${el.id}')" style="width:100%;background:rgba(230,57,70,.1);border:1px solid rgba(230,57,70,.2);color:#e63946;border-radius:7px;padding:7px;font-size:10px;font-weight:700;cursor:pointer;margin-top:6px">🗑 Supprimer</button>
+    </div>`;
+}
+
+function meSetProp(id, prop, val){
+  const page = ME.pages[ME.currentPage];
+  const el = page?.elements.find(e=>e.id===id);
+  if(el){ el[prop]=val; meRenderPages(); }
+}
+
+// ── Upload images ──
+function meUploadImages(event){
+  const files = Array.from(event.target.files);
+  files.forEach(file=>{
+    const reader = new FileReader();
+    reader.onload = e => {
+      const url = e.target.result;
+      ME.uploadedImages.push({ url, name: file.name });
+      meRenderGallery();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function meRenderGallery(){
+  const gal = document.getElementById('me-img-gallery');
+  if(!gal) return;
+  gal.innerHTML = ME.uploadedImages.map((img,i)=>`
+    <div style="position:relative;cursor:pointer" onclick="mePlaceImage(${i})" title="${img.name}">
+      <img src="${img.url}" style="width:48px;height:48px;object-fit:cover;border-radius:6px;border:1px solid rgba(255,255,255,.1)"/>
+    </div>`).join('');
+}
+
+function mePlaceImage(idx){
+  const img = ME.uploadedImages[idx];
+  if(!img) return;
+  // Placer dans la case sélectionnée ou créer une nouvelle case
+  const page = ME.pages[ME.currentPage];
+  const selEl = page.elements.find(e=>e.id===ME.selected && e.type==='case');
+  if(selEl){
+    selEl.imageUrl = img.url;
+    meRenderPages();
+  } else {
+    meAddCase({x:40,y:40,w:200,h:180});
+    setTimeout(()=>{
+      const newCase = page.elements[page.elements.length-1];
+      if(newCase){ newCase.imageUrl=img.url; meRenderPages(); }
+    }, 50);
+  }
+}
+
+function meSetImageOnCase(caseId){
+  const inp = document.createElement('input');
+  inp.type='file'; inp.accept='image/*'; inp.style.display='none';
+  inp.onchange = e => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const page = ME.pages[ME.currentPage];
+      const el = page.elements.find(e=>e.id===caseId);
+      if(el){ el.imageUrl=ev.target.result; meRenderPages(); document.body.removeChild(inp); }
+    };
+    reader.readAsDataURL(file);
+  };
+  document.body.appendChild(inp);
+  setTimeout(()=>inp.click(), 50);
+}
+
+// ── Génération IA pour une case ──
+async function meGenerateImageForCase(caseId){
+  const prompt = document.getElementById('me-ai-prompt')?.value.trim() || 'manga panel scene';
+  const style  = document.getElementById('me-ai-style')?.value || 'manga';
+  const styleMap = {
+    manga:'manga black and white ink detailed lineart', manga_color:'manga colorful vibrant illustration',
+    anime:'anime style high quality illustration', sketch:'pencil sketch rough draft manga',
+    panel:'manga panel action dynamic', character:'full body character design manga style',
+    background:'manga background detailed environment', cover:'manga book cover cinematic professional'
+  };
+  notif('Generation IA en cours...');
+  const fullPrompt = prompt + ', ' + (styleMap[style]||'manga style');
+  const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=512&height=512&seed=${Math.floor(Math.random()*99999)}&nologo=true&enhance=true`;
+  const page = ME.pages[ME.currentPage];
+  const el = page.elements.find(e=>e.id===caseId);
+  if(el){
+    // Preload
+    const img = new Image();
+    img.onload = () => { el.imageUrl = url; meRenderPages(); notif('Image IA ajoutee a la case !'); };
+    img.onerror = () => notif('Erreur generation IA.', true);
+    img.src = url;
+  }
+}
+
+async function meGenerateAiImage(){
+  const prompt = document.getElementById('me-ai-prompt')?.value.trim();
+  if(!prompt){ notif('Entrez un prompt.', true); return; }
+  const style  = document.getElementById('me-ai-style')?.value || 'manga';
+  const styleMap = {
+    manga:'manga black and white ink detailed lineart japanese manga',
+    manga_color:'manga colorful vibrant high quality',
+    anime:'anime style illustration',
+    sketch:'pencil sketch manga draft',
+    panel:'manga panel sequential art',
+    character:'full body character manga design',
+    background:'manga background scenic detailed',
+    cover:'manga book cover professional cinematic'
+  };
+  const btn = document.getElementById('me-ai-gen-btn');
+  if(btn){ btn.textContent='Generation...'; btn.disabled=true; }
+  const fullPrompt = prompt + ', ' + (styleMap[style]||'manga style');
+  const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=512&height=512&seed=${Math.floor(Math.random()*99999)}&nologo=true&enhance=true`;
+  const res = document.getElementById('me-ai-result');
+  if(res) res.innerHTML = '<div class="skeleton" style="width:100%;height:80px;border-radius:8px"></div>';
+  const img = new Image();
+  img.onload = () => {
+    if(res) res.innerHTML = `<div style="position:relative"><img src="${url}" style="width:100%;border-radius:8px;border:1px solid rgba(155,93,229,.2);cursor:pointer" onclick="mePlaceAiImage('${url}')" title="Cliquez pour ajouter a une case"/><div style="font-size:9px;color:#666;margin-top:4px;text-align:center">Cliquez pour ajouter a une case</div></div>`;
+    if(btn){ btn.textContent='✦ GENERER'; btn.disabled=false; }
+    ME.uploadedImages.push({ url, name:'ia-generated.jpg' });
+    meRenderGallery();
+  };
+  img.onerror = () => { if(res) res.innerHTML='<div style="color:#e63946;font-size:10px">Erreur generation</div>'; if(btn){ btn.textContent='✦ GENERER'; btn.disabled=false; } };
+  img.src = url;
+}
+
+function mePlaceAiImage(url){
+  const page = ME.pages[ME.currentPage];
+  const selEl = page.elements.find(e=>e.id===ME.selected && e.type==='case');
+  if(selEl){ selEl.imageUrl=url; meRenderPages(); notif('Image ajoutee a la case !'); }
+  else { meAddCase({x:40,y:40,w:220,h:180}); setTimeout(()=>{ const el=page.elements[page.elements.length-1]; if(el){el.imageUrl=url;meRenderPages();} },60); }
+}
+
+// ── Format ──
+function meSetFormat(f){
+  ME.format = f;
+  const page = ME.pages[ME.currentPage];
+  if(page){ page.format=f; const fmt=ME.formats[f]; page.w=fmt.w; page.h=fmt.h; meRenderPages(); }
+}
+
+// ── Zoom ──
+function meZoom(delta){
+  if(delta===0){ ME.zoom=1; }
+  else{ ME.zoom = Math.min(3, Math.max(0.3, ME.zoom+delta)); }
+  const lbl = document.getElementById('me-zoom-label');
+  if(lbl) lbl.textContent = Math.round(ME.zoom*100)+'%';
+  meRenderPages();
+}
+
+// ── Couleur / Style ──
+function meSetColor(v){ ME.color=v; }
+function meSetStroke(v){ ME.stroke=parseInt(v); const l=document.getElementById('me-stroke-val'); if(l)l.textContent=v; }
+function meSetOpacity(v){ ME.opacity=v/100; const l=document.getElementById('me-opacity-val'); if(l)l.textContent=v+'%'; }
+
+// ── Supprimer ──
+function meDeleteEl(id){
+  const page = ME.pages[ME.currentPage];
+  page.elements = page.elements.filter(e=>e.id!==id);
+  ME.selected = null;
+  meSaveHistory(); meRenderPages();
+}
+function meDeleteSelected(){ if(ME.selected) meDeleteEl(ME.selected); }
+
+// ── Pages ──
+function meAddPage(){ meInitPage(); }
+
+// ── Calques ──
+function meAddLayer(){
+  const page = ME.pages[ME.currentPage];
+  const l = { id:'layer-'+Date.now(), name:'Calque '+(page.layers.length+1), visible:true, locked:false };
+  page.layers.push(l);
+  meRenderLayers();
+}
+function meRenderLayers(){
+  const list = document.getElementById('me-layers-list');
+  if(!list) return;
+  const page = ME.pages[ME.currentPage];
+  if(!page){ list.innerHTML=''; return; }
+  list.innerHTML = [...page.layers].reverse().map(l=>`
+    <div class="me-layer-item${l.id===page.activeLayer?' active':''}" onclick="page ? (page.activeLayer='${l.id}',meRenderLayers()) : null">
+      <span style="font-size:14px">${l.visible?'👁':'○'}</span>
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.name}</span>
+    </div>`).join('');
+}
+
+// ── Panneau gauche ──
+function meShowPanel(name){
+  document.querySelectorAll('.me-panel-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('me-tab-'+name)?.classList.add('active');
+  document.getElementById('me-panel-layers').style.display = name==='layers'?'flex':'none';
+  document.getElementById('me-panel-props').style.display  = name==='props' ?'block':'none';
+}
+
+// ── Historique ──
+function meSaveHistory(){
+  const state = JSON.stringify(ME.pages[ME.currentPage]?.elements||[]);
+  ME.history = ME.history.slice(0, ME.historyIdx+1);
+  ME.history.push(state);
+  if(ME.history.length > 30) ME.history.shift();
+  ME.historyIdx = ME.history.length-1;
+}
+function meUndo(){
+  if(ME.historyIdx <= 0) return;
+  ME.historyIdx--;
+  ME.pages[ME.currentPage].elements = JSON.parse(ME.history[ME.historyIdx]);
+  meRenderPages();
+}
+function meRedo(){
+  if(ME.historyIdx >= ME.history.length-1) return;
+  ME.historyIdx++;
+  ME.pages[ME.currentPage].elements = JSON.parse(ME.history[ME.historyIdx]);
+  meRenderPages();
+}
+
+// ── Export PNG ──
+async function meExportPNG(){
+  const page = ME.pages[ME.currentPage];
+  const html2c = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+  notif('Export PNG en cours...');
+  const loadScript = src => new Promise(r=>{ const s=document.createElement('script'); s.src=src; s.onload=r; document.head.appendChild(s); });
+  if(!window.html2canvas) await loadScript(html2c);
+  const el = document.getElementById(page.id);
+  if(!el){ notif('Erreur export.',true); return; }
+  const canvas = await window.html2canvas(el, { scale:2, useCORS:true, backgroundColor:'#ffffff' });
+  const a = document.createElement('a');
+  a.download = 'planche-manga-'+Date.now()+'.png';
+  a.href = canvas.toDataURL('image/png');
+  a.click();
+  notif('Planche exportee !');
+}
+
+// ── Exporter + Publier comme épisode HTML ──
+async function meExportAndPublish(){
+  const page = ME.pages[ME.currentPage];
+  notif('Preparation de la planche...');
+  const html2c = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+  const loadScript = src => new Promise(r=>{ const s=document.createElement('script'); s.src=src; s.onload=r; document.head.appendChild(s); });
+  if(!window.html2canvas) await loadScript(html2c);
+  const el = document.getElementById(page.id);
+  if(!el){ notif('Erreur.', true); return; }
+  const canvas = await window.html2canvas(el, { scale:1.5, useCORS:true, backgroundColor:'#ffffff' });
+  const imgData = canvas.toDataURL('image/jpeg', 0.9);
+  // Générer un HTML d'épisode avec la planche
+  const epHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0;background:#111;display:flex;align-items:center;justify-content:center;min-height:100vh}img{max-width:100%;height:auto;display:block}</style></head><body><img src="${imgData}" alt="Planche manga"/></body></html>`;
+  closeMangaEditor();
+  setTimeout(()=>{
+    openM('m-addepisode');
+    setEpType('html');
+    epHtmlFile = new File([epHtml], 'planche-manga.html', {type:'text/html'});
+    const lbl = document.getElementById('ep-html-name');
+    if(lbl){ lbl.textContent='Planche exportee du Studio'; lbl.style.color='#e63946'; }
+    notif('Planche prete a publier ! Ajoutez un titre et publiez.');
+  }, 400);
 }
 
 </script>
