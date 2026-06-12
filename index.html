@@ -499,6 +499,48 @@ setTimeout(() => {
 .me-grid-full:hover{background:rgba(230,57,70,.15);border-color:rgba(230,57,70,.3);color:#e63946}
 .me-grid-full:hover span{color:#e63946}
 
+
+/* ── Éditeur mobile : 2 écrans séparés ── */
+#me-canvas-screen{ flex:1; display:flex; flex-direction:column; overflow:hidden; }
+#me-ai-screen{
+  display:none; flex:1; flex-direction:column;
+  background:#0a0c15; overflow-y:auto;
+}
+@media (max-width: 768px){
+  #me-canvas-screen.hidden{ display:none !important; }
+  #me-ai-screen.visible{ display:flex !important; }
+}
+
+/* ── Générateur IA plein écran ── */
+#me-ai-fullscreen{
+  padding:16px; display:flex; flex-direction:column; gap:12px; flex:1;
+}
+.me-ai-style-grid{
+  display:grid; grid-template-columns:repeat(2,1fr); gap:8px;
+}
+.me-ai-style-card{
+  background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1);
+  border-radius:12px; padding:10px; text-align:center; cursor:pointer;
+  transition:all .2s;
+}
+.me-ai-style-card:hover,
+.me-ai-style-card.selected{
+  background:rgba(155,93,229,.15); border-color:rgba(155,93,229,.4); color:#c084fc;
+}
+.me-ai-style-card .icon{ font-size:22px; margin-bottom:4px; }
+.me-ai-style-card .label{ font-size:10px; font-weight:700; letter-spacing:.06em; color:#888; }
+.me-ai-style-card.selected .label{ color:#c084fc; }
+
+
+.me-res-btn{
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  color:#777;border-radius:8px;padding:5px 10px;font-size:10px;font-weight:700;
+  cursor:pointer;transition:all .15s;font-family:'Rajdhani',sans-serif;letter-spacing:.04em;
+}
+.me-res-btn.selected,.me-res-btn:hover{
+  background:rgba(155,93,229,.2);border-color:rgba(155,93,229,.4);color:#c084fc;
+}
+
 </style>
 
 <!-- ══════════ AUTH ══════════ -->
@@ -7254,6 +7296,25 @@ function openAddEpisodeFromFab(){
     </div>
   </div>
 
+  <!-- ── SÉLECTEUR DE MODE MOBILE ── -->
+  <div id="me-mode-switcher" style="background:#0d0f1a;display:flex;border-bottom:2px solid rgba(255,255,255,.06);flex-shrink:0">
+    <button id="me-mode-canvas" onclick="meSwitchMode('canvas')"
+      style="flex:1;padding:8px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;
+             letter-spacing:.08em;border:none;cursor:pointer;transition:all .2s;
+             background:rgba(230,57,70,.15);color:#e63946;border-bottom:2px solid #e63946;">
+      🖊 PLANCHE
+    </button>
+    <button id="me-mode-ai" onclick="meSwitchMode('ai')"
+      style="flex:1;padding:8px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;
+             letter-spacing:.08em;border:none;cursor:pointer;transition:all .2s;
+             background:none;color:#555;border-bottom:2px solid transparent;">
+      ✦ GÉNÉRER IMAGE IA
+    </button>
+  </div>
+
+  <!-- ══ ÉCRAN CANVAS ══ -->
+  <div id="me-canvas-screen">
+
   <!-- ── BARRE SECONDAIRE : Grilles + Format + Zoom ── -->
   <div style="background:#0d0f1a;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;height:38px;flex-shrink:0;padding:0 10px;gap:8px;overflow-x:auto;scrollbar-width:none">
     <!-- Grilles -->
@@ -7394,6 +7455,100 @@ function openAddEpisodeFromFab(){
 
     </div>
   </div>
+  </div><!-- end me-canvas-screen -->
+
+  <!-- ══ ÉCRAN GÉNÉRATEUR IA PLEIN ÉCRAN ══ -->
+  <div id="me-ai-screen">
+    <div id="me-ai-fullscreen">
+
+      <!-- En-tête -->
+      <div style="text-align:center;padding-bottom:4px">
+        <div style="font-family:'Cinzel',serif;font-size:16px;font-weight:900;color:#c084fc;margin-bottom:4px">✦ Générateur d'Images IA</div>
+        <div style="font-size:10px;color:#555;letter-spacing:.1em">POUR TES PLANCHES MANGA</div>
+      </div>
+
+      <!-- Prompt -->
+      <div style="background:#0f1117;border:1px solid rgba(155,93,229,.25);border-radius:14px;padding:12px">
+        <div style="font-size:10px;color:rgba(155,93,229,.7);font-weight:700;letter-spacing:.1em;margin-bottom:7px">DÉCRIS LA SCÈNE</div>
+        <textarea id="me-ai-prompt-full" placeholder="Ex: Un guerrier manga aux cheveux blancs tenant une épée dans une forêt sombre, style Demon Slayer..."
+          style="width:100%;box-sizing:border-box;background:none;border:none;color:#eaeef5;font-size:13px;
+                 resize:none;min-height:80px;outline:none;font-family:'Rajdhani',sans-serif;line-height:1.5"></textarea>
+      </div>
+
+      <!-- Styles visuels -->
+      <div>
+        <div style="font-size:10px;color:#555;letter-spacing:.1em;margin-bottom:8px">STYLE VISUEL</div>
+        <div class="me-ai-style-grid">
+          <div class="me-ai-style-card selected" data-style="manga" onclick="meAiSelectStyle(this,'manga')">
+            <div class="icon">⬜</div><div class="label">MANGA N&B</div>
+          </div>
+          <div class="me-ai-style-card" data-style="manga_color" onclick="meAiSelectStyle(this,'manga_color')">
+            <div class="icon">🎨</div><div class="label">MANGA COULEUR</div>
+          </div>
+          <div class="me-ai-style-card" data-style="anime" onclick="meAiSelectStyle(this,'anime')">
+            <div class="icon">✨</div><div class="label">ANIME</div>
+          </div>
+          <div class="me-ai-style-card" data-style="sketch" onclick="meAiSelectStyle(this,'sketch')">
+            <div class="icon">✏️</div><div class="label">ESQUISSE</div>
+          </div>
+          <div class="me-ai-style-card" data-style="panel" onclick="meAiSelectStyle(this,'panel')">
+            <div class="icon">🎞️</div><div class="label">CASE MANGA</div>
+          </div>
+          <div class="me-ai-style-card" data-style="character" onclick="meAiSelectStyle(this,'character')">
+            <div class="icon">🧍</div><div class="label">PERSONNAGE</div>
+          </div>
+          <div class="me-ai-style-card" data-style="background" onclick="meAiSelectStyle(this,'background')">
+            <div class="icon">🏯</div><div class="label">DÉCOR</div>
+          </div>
+          <div class="me-ai-style-card" data-style="cover" onclick="meAiSelectStyle(this,'cover')">
+            <div class="icon">📕</div><div class="label">COUVERTURE</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Résolution -->
+      <div style="background:#0f1117;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px">
+        <div style="font-size:10px;color:#555;letter-spacing:.1em;margin-bottom:7px">RÉSOLUTION</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="me-res-btn selected" onclick="meAiSelectRes(this,'512x512')">512×512</button>
+          <button class="me-res-btn" onclick="meAiSelectRes(this,'512x768')">512×768 Portrait</button>
+          <button class="me-res-btn" onclick="meAiSelectRes(this,'768x512')">768×512 Paysage</button>
+          <button class="me-res-btn" onclick="meAiSelectRes(this,'768x768')">768×768 HD</button>
+        </div>
+      </div>
+
+      <!-- Bouton générer -->
+      <button id="me-ai-gen-full-btn" onclick="meGenerateAiImageFull()"
+        style="background:linear-gradient(135deg,#9b5de5,#6a1fd0);border:none;color:#fff;
+               border-radius:14px;padding:16px;font-family:'Rajdhani',sans-serif;
+               font-size:15px;font-weight:900;letter-spacing:.08em;cursor:pointer;
+               box-shadow:0 6px 20px rgba(155,93,229,.45);transition:all .2s">
+        ✦ GÉNÉRER L'IMAGE
+      </button>
+
+      <!-- Résultat -->
+      <div id="me-ai-result-full" style="display:none;flex-direction:column;gap:10px;align-items:center">
+        <div id="me-ai-loading-full" style="display:none;text-align:center;padding:20px;color:rgba(155,93,229,.6);font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:.1em">
+          <div class="ai-typing" style="justify-content:center;margin-bottom:10px"><span></span><span></span><span></span></div>
+          GÉNÉRATION EN COURS...
+        </div>
+        <img id="me-ai-img-full" style="display:none;max-width:100%;border-radius:14px;border:1px solid rgba(155,93,229,.3)" alt=""/>
+        <div id="me-ai-action-full" style="display:none;width:100%;display:flex;gap:8px;flex-direction:column">
+          <button onclick="meAiAddToCanvas()" style="background:linear-gradient(135deg,#e63946,#c1121f);border:none;color:#fff;border-radius:12px;padding:13px;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:900;letter-spacing:.06em;cursor:pointer;box-shadow:0 4px 14px rgba(230,57,70,.35)">
+            ✚ AJOUTER À LA PLANCHE
+          </button>
+          <button onclick="meAiDownload()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#aaa;border-radius:12px;padding:11px;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;cursor:pointer">
+            ⬇ TÉLÉCHARGER
+          </button>
+          <button onclick="meGenerateAiImageFull()" style="background:rgba(155,93,229,.1);border:1px solid rgba(155,93,229,.25);color:#9b5de5;border-radius:12px;padding:11px;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;cursor:pointer">
+            🔄 RÉGÉNÉRER
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
 </div>
 
 <!-- ══════════ CURSEUR PERSONNALISÉ ══════════ -->
@@ -8618,6 +8773,130 @@ async function meExportAndPublish(){
     if(lbl){ lbl.textContent='Planche exportee du Studio'; lbl.style.color='#e63946'; }
     notif('Planche prete a publier ! Ajoutez un titre et publiez.');
   }, 400);
+}
+
+
+// ── Switch mode planche / IA ──
+let _meCurrentAiStyle = 'manga';
+let _meCurrentAiRes   = '512x512';
+let _meLastAiUrl      = '';
+
+function meSwitchMode(mode){
+  const canvas = document.getElementById('me-canvas-screen');
+  const ai     = document.getElementById('me-ai-screen');
+  const btnC   = document.getElementById('me-mode-canvas');
+  const btnA   = document.getElementById('me-mode-ai');
+  if(mode === 'canvas'){
+    if(canvas) canvas.style.display = 'flex';
+    if(ai)     ai.style.display = 'none';
+    if(btnC){ btnC.style.background='rgba(230,57,70,.15)'; btnC.style.color='#e63946'; btnC.style.borderBottom='2px solid #e63946'; }
+    if(btnA){ btnA.style.background='none'; btnA.style.color='#555'; btnA.style.borderBottom='2px solid transparent'; }
+  } else {
+    if(canvas) canvas.style.display = 'none';
+    if(ai)     ai.style.display = 'flex';
+    if(btnA){ btnA.style.background='rgba(155,93,229,.15)'; btnA.style.color='#9b5de5'; btnA.style.borderBottom='2px solid #9b5de5'; }
+    if(btnC){ btnC.style.background='none'; btnC.style.color='#555'; btnC.style.borderBottom='2px solid transparent'; }
+  }
+}
+
+function meAiSelectStyle(el, style){
+  document.querySelectorAll('.me-ai-style-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  _meCurrentAiStyle = style;
+}
+
+function meAiSelectRes(el, res){
+  document.querySelectorAll('.me-res-btn').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');
+  _meCurrentAiRes = res;
+}
+
+async function meGenerateAiImageFull(){
+  const promptEl = document.getElementById('me-ai-prompt-full');
+  const prompt = promptEl?.value.trim();
+  if(!prompt){ notif('Ecrivez une description de la scene.', true); return; }
+
+  const styleMap = {
+    manga:       'manga black and white ink detailed lineart japanese manga style',
+    manga_color: 'manga colorful vibrant high quality illustration',
+    anime:       'anime style high quality illustration',
+    sketch:      'pencil sketch rough draft manga style',
+    panel:       'manga panel sequential art dynamic composition',
+    character:   'full body character design manga style clean lineart',
+    background:  'manga background detailed scenic environment',
+    cover:       'manga book cover professional cinematic dramatic'
+  };
+
+  const [w, h] = _meCurrentAiRes.split('x').map(Number);
+
+  const btn = document.getElementById('me-ai-gen-full-btn');
+  const result = document.getElementById('me-ai-result-full');
+  const loading = document.getElementById('me-ai-loading-full');
+  const img = document.getElementById('me-ai-img-full');
+  const actions = document.getElementById('me-ai-action-full');
+
+  if(btn){ btn.textContent = '⏳ GÉNÉRATION...'; btn.disabled = true; }
+  if(result){ result.style.display = 'flex'; }
+  if(loading){ loading.style.display = 'block'; }
+  if(img){ img.style.display = 'none'; }
+  if(actions){ actions.style.display = 'none'; }
+
+  const fullPrompt = prompt + ', ' + (styleMap[_meCurrentAiStyle] || 'manga style');
+  const seed = Math.floor(Math.random() * 999999);
+  const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${w}&height=${h}&seed=${seed}&nologo=true&enhance=true&model=flux`;
+  _meLastAiUrl = url;
+
+  // Charger l'image
+  const testImg = new Image();
+  testImg.onload = () => {
+    if(loading) loading.style.display = 'none';
+    if(img){ img.src = url; img.style.display = 'block'; }
+    if(actions){ actions.style.display = 'flex'; }
+    if(btn){ btn.textContent = '✦ GÉNÉRER L\'IMAGE'; btn.disabled = false; }
+    // Ajouter à la galerie du canvas
+    ME.uploadedImages.push({ url, name: 'ia-' + Date.now() + '.jpg' });
+    meRenderGallery();
+    notif('Image generee ! Appuyez sur "Ajouter a la planche"');
+  };
+  testImg.onerror = () => {
+    if(loading) loading.innerHTML = '<span style="color:#e63946">Echec. Reessayez avec un autre prompt.</span>';
+    if(btn){ btn.textContent = '✦ GÉNÉRER L\'IMAGE'; btn.disabled = false; }
+  };
+  // Timeout de 45s
+  setTimeout(() => {
+    if(btn && btn.disabled){ btn.textContent = '✦ GÉNÉRER L\'IMAGE'; btn.disabled = false; }
+  }, 45000);
+  testImg.src = url;
+}
+
+function meAiAddToCanvas(){
+  if(!_meLastAiUrl){ notif('Aucune image generee.', true); return; }
+  // Ajouter dans une case ou créer une nouvelle
+  const page = ME.pages[ME.currentPage];
+  const selEl = page?.elements.find(e=>e.id===ME.selected && e.type==='case');
+  if(selEl){
+    selEl.imageUrl = _meLastAiUrl;
+    meRenderPages();
+    notif('Image ajoutee a la case selectionnee !');
+  } else {
+    meAddCase({x:30, y:30, w:200, h:200});
+    setTimeout(()=>{
+      const el = page.elements[page.elements.length-1];
+      if(el){ el.imageUrl = _meLastAiUrl; meRenderPages(); }
+    }, 60);
+    notif('Image ajoutee dans une nouvelle case !');
+  }
+  // Revenir au canvas
+  meSwitchMode('canvas');
+}
+
+function meAiDownload(){
+  if(!_meLastAiUrl) return;
+  const a = document.createElement('a');
+  a.href = _meLastAiUrl;
+  a.download = 'manga-ia-' + Date.now() + '.jpg';
+  a.target = '_blank';
+  a.click();
 }
 
 </script>
